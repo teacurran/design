@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Calendar</title>
+    <meta charset="utf-8">
+    <script src="https://cdn.jsdelivr.net/npm/@svgdotjs/svg.js"></script>
+</head>
+<body style="height: 100vh;">
+    <div id="drawing" style="height: 100%;"></div>
+
+    <script>
+      const getDayName = (date) => {
+        const days = ['Su', 'M', 'Tu', 'W', 'Th', 'F', 'Sa'];
+        return days[date.getDay()];
+      };
+
+      const getMonthName = (monthNumber) => {
+        const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+        return months[monthNumber];
+      };
+
+      const DEFAULT_CELL_BG = 'rgba(255, 255, 255, 0)';
+      const WEEKEND_CELL_BG = 'rgba(255, 0, 0, 0.1)';
+      const BORDER_COLOR = 'rgb(255, 0, 0)';
+
+      const optHighlightWeekends = true;
+      const optShowDaynames = false;
+
+      const cellPadding = 5;
+      const cellWidth = 50;
+      const cellHeight = 75;
+      const gridWidth = 32 * cellWidth;
+      const gridHeight = 12 * cellHeight;
+      const startDate = new Date(2024, 0, 1);
+
+      const draw = SVG().addTo('#drawing').size('100%', '100%');
+
+      for (let row = 0; row < 12; row++) {
+        for (let col = 0; col < 32; col++) {
+          const x = col * cellWidth;
+          const y = row * cellHeight;
+
+          const date = new Date(new Date().getFullYear(), row, col);
+
+          let cellBackgroundColor = DEFAULT_CELL_BG
+
+          if (optHighlightWeekends && date.getMonth() === row) {
+            if (date.getDay() == 0 || date.getDay() == 6) {
+              cellBackgroundColor = WEEKEND_CELL_BG
+            }
+          }          
+          
+          if (col === 0) {
+            // draw.line(x, y + cellHeight, x + cellWidth, y + cellHeight).stroke(BORDER_COLOR);
+
+            draw.text(function(add) {
+              add.tspan(getMonthName(row)).newLine();
+            }).move(x, y + 40).font({
+              size: 20,
+              family: 'Helvetica',
+              weight: 'bold'
+            }).rotate(-25);
+          } else {
+            draw.rect(cellWidth, cellHeight)
+              .attr({ x: x, y: y, fill: cellBackgroundColor, stroke: BORDER_COLOR });
+          }
+                   
+          if (date.getMonth() === row) {
+            const dayName = getDayName(date);
+
+            draw.text(function(add) {
+              add.tspan(col).newLine();
+            }).move(x + cellPadding, y).font({
+              size: 12,
+              family: 'Helvetica',
+              weight: 'bold'
+            });
+
+            if (optShowDaynames) {
+              draw.text(function(add) {
+                add.tspan(dayName);
+              }).move(x + cellPadding, y + 50).font({
+                size: 12,
+                family: 'Helvetica',
+                weight: 'bold'
+              });
+            }
+          }
+        }
+      }
+    </script>
+
+</body>
+</html>
