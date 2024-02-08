@@ -24,7 +24,11 @@
       const BORDER_COLOR = 'rgb(255, 0, 0)';
 
       const optHighlightWeekends = true;
-      const optShowDaynames = false;
+      const optShowDayNames = true;
+      const optShowWeekendDayNames = false;
+      const optRainbowDays1 = false;
+      const optRainbowDays2 = false;
+      const optRainbowDays3 = true;
 
       const cellPadding = 5;
       const cellWidth = 50;
@@ -35,10 +39,23 @@
 
       const draw = SVG().addTo('#drawing').size('100%', '100%');
 
-      for (let row = 0; row < 12; row++) {
-        for (let col = 0; col < 32; col++) {
+
+      draw.text(function(add) {
+              add.tspan(2024).newLine();
+            }).move(1400, 60).font({
+              size: 80,
+              family: 'Helvetica',
+              weight: 'bold'
+            });
+
+      const totalColumns = 32;
+      const totalRows = 12;
+      const maxDistance = Math.sqrt(Math.pow(totalRows - 1, 2) + Math.pow(totalColumns - 1, 2));
+
+      for (let row = 0; row < totalRows; row++) {
+        for (let col = 0; col < totalColumns; col++) {
           const x = col * cellWidth;
-          const y = row * cellHeight;
+          const y = row * cellHeight + 100;
 
           const date = new Date(new Date().getFullYear(), row, col);
 
@@ -48,8 +65,51 @@
             if (date.getDay() == 0 || date.getDay() == 6) {
               cellBackgroundColor = WEEKEND_CELL_BG
             }
-          }          
+          }
           
+          if (optRainbowDays1) {
+            const hue = date.getDay() * 30;
+            cellBackgroundColor = `hsl(${hue}, 100%, 80%)`;            
+          }
+
+          if (optRainbowDays2) {
+            const hue = (col / (30)) * 360;
+        
+            // Assuming saturation and lightness are constant to keep the example simple
+            const saturation = 100; // 100% for vibrant colors
+            const lightness = 50; // 50% is a balanced lightness for visibility
+        
+            // Construct the HSL color string
+            cellBackgroundColor = `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+          }
+          
+          if (optRainbowDays3) {
+            // Calculate Euclidean distance from the bottom right corner
+            const distance = Math.sqrt(Math.pow(totalRows - 1 - row, 2) + Math.pow(totalColumns - 1 - col, 2));
+            
+            // Normalize distance
+            const normalizedDistance = distance / maxDistance;
+            
+            // Adjust hue based on distance (you can experiment with this part)
+            const hue = normalizedDistance * 360;
+            
+            // Adjust lightness from 50% at the nearest point to 10% at the farthest to create a radial effect
+            // You can adjust the range of lightness based on your desired effect
+            //const lightness = 50 - (normalizedDistance * 40); // Ranges from 10% to 50%
+            
+            // Modify lightness adjustment to ensure colors remain light across the gradient
+            // Consider keeping lightness above a minimum threshold that avoids the colors becoming too dark
+            const lightnessMin = 80; // Minimum lightness value to avoid dark colors
+            const lightnessMax = 95; // Maximum lightness value for vibrant colors
+            const lightness = lightnessMin + (1 - normalizedDistance) * (lightnessMax - lightnessMin);
+
+
+            // Saturation can remain constant or be adjusted similarly
+            const saturation = 50; // Keeping saturation constant for vibrant colors
+            
+            cellBackgroundColor = `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+          }
+
           if (col === 0) {
             // draw.line(x, y + cellHeight, x + cellWidth, y + cellHeight).stroke(BORDER_COLOR);
 
@@ -76,7 +136,12 @@
               weight: 'bold'
             });
 
-            if (optShowDaynames) {
+            let showDay = optShowDayNames;
+            if (date.getDay() == 0 || date.getDay() == 6) {
+              showDay = optShowWeekendDayNames;
+            }
+
+            if (showDay) {
               draw.text(function(add) {
                 add.tspan(dayName);
               }).move(x + cellPadding, y + 50).font({
