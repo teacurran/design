@@ -19,16 +19,72 @@
         return months[monthNumber];
       };
 
+
+      const getMoonPhase = (year, month, day) => {
+        const knownNewMoonDate = new Date(2000, 0, 6); // January 6, 2000
+        const currentDate = new Date(year, month - 1, day);
+        const differenceInDays = (currentDate - knownNewMoonDate) / (1000 * 60 * 60 * 24);
+        const lunarCycleLength = 29.53;
+        const phaseIndex = Math.floor((differenceInDays % lunarCycleLength) / (lunarCycleLength / 8));
+
+        return phaseIndex; // Returns an index between 0 and 7
+      }
+
+      // Function to generate SVG for a given moon phase
+      const generateMoon = (draw, year, month, day) => {
+        const phase = getMoonPhase(year, month, day);
+
+        // Create a group for the moon phase SVG, which can be positioned
+        const moonPhase = draw.group();
+
+        // Add a circle for the moon background
+        moonPhase.circle(100).fill('black').attr({cx: 50, cy: 50});
+
+        // The moon phase logic - adjusting the circle to represent different phases
+        switch(phase) {
+          case 0: // New Moon
+            moonPhase.circle(100).fill('black');
+            break;
+          case 1: // Waxing Crescent
+            moonPhase.ellipse(60, 100).fill('white').move(20, 0);
+            break;
+          case 2: // First Quarter
+            moonPhase.rect(50, 100).fill('white').move(50, 0);
+            break;
+          case 3: // Waxing Gibbous
+            moonPhase.ellipse(140, 100).fill('white').move(-20, 0);
+            break;
+          case 4: // Full Moon
+            moonPhase.circle(100).fill('white');
+            break;
+          case 5: // Waning Gibbous
+            moonPhase.ellipse(140, 100).fill('black').move(-20, 0);
+            moonPhase.circle(100).fill('white');
+            break;
+          case 6: // Last Quarter
+            moonPhase.rect(50, 100).fill('black').move(0, 0);
+            moonPhase.circle(100).fill('white');
+            break;``
+          case 7: // Waning Crescent
+            moonPhase.ellipse(60, 100).fill('black').move(20, 0);
+            moonPhase.circle(100).fill('white');
+            break;
+        }
+
+        return moonPhase;
+      }
+
       const DEFAULT_CELL_BG = 'rgba(255, 255, 255, 0)';
       const WEEKEND_CELL_BG = 'rgba(255, 0, 0, 0.1)';
-      const BORDER_COLOR = 'rgb(255, 0, 0)';
+      const BORDER_COLOR = 'rgba(0, 0, 0, .5)';
 
       const optHighlightWeekends = true;
       const optShowDayNames = true;
-      const optShowWeekendDayNames = false;
-      const optRainbowDays1 = false;
+      const optShowWeekendDayNames = true;
+      const optRainbowDays1 = true;
       const optRainbowDays2 = false;
-      const optRainbowDays3 = true;
+      const optRainbowDays3 = false;
+      const optShowMoonPhases = true;
 
       const cellPadding = 5;
       const cellWidth = 50;
@@ -38,7 +94,6 @@
       const startDate = new Date(2024, 0, 1);
 
       const draw = SVG().addTo('#drawing').size('100%', '100%');
-
 
       draw.text(function(add) {
               add.tspan(2024).newLine();
@@ -58,6 +113,9 @@
           const y = row * cellHeight + 100;
 
           const date = new Date(new Date().getFullYear(), row, col);
+          const day = date.getDate();
+          const month = date.getMonth();
+          const year = date.getFullYear();
 
           let cellBackgroundColor = DEFAULT_CELL_BG
 
@@ -69,7 +127,7 @@
           
           if (optRainbowDays1) {
             const hue = date.getDay() * 30;
-            cellBackgroundColor = `hsl(${hue}, 100%, 80%)`;            
+            cellBackgroundColor = `hsl(${hue}, 100%, 90%)`;            
           }
 
           if (optRainbowDays2) {
@@ -125,6 +183,7 @@
               .attr({ x: x, y: y, fill: cellBackgroundColor, stroke: BORDER_COLOR });
           }
                    
+          // if the month different than row then it's the next month and should be blank
           if (date.getMonth() === row) {
             const dayName = getDayName(date);
 
@@ -149,6 +208,11 @@
                 family: 'Helvetica',
                 weight: 'bold'
               });
+            }
+
+            if (optShowMoonPhases) {
+              const moon = generateMoon(draw, year, month, day);
+              moon.move(x + 30, y + 5).size(15, 15);
             }
           }
         }
