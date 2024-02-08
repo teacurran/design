@@ -87,7 +87,8 @@
       const optShowMoonPhases = true;
       const optFriday13th = true;
       const optPersonalHolidays = true;
-      const optFederalHolidays = true;
+      const optUSFederalHolidays = true;
+      const optCanadianHolidays = true;
       const optOtherHolidays = true;
       const optJewishHolidays = true;
       const optIslamicHolidays = true;
@@ -267,7 +268,7 @@
               }
             }
 
-            if (optFederalHolidays) {
+            if (optUSFederalHolidays) {
               const federalHolidays = [
                 {
                   name: 'New Year\'s Day',
@@ -292,7 +293,7 @@
                 {
                   name: 'Independence Day',
                   date: new Date(year, 6, 4),
-                  emoji: '🎆'
+                  emoji: '🇺🇸'
                 },
                 {
                   name: 'Veterans Day',
@@ -312,6 +313,52 @@
               ];
 
               const holiday = federalHolidays.find(holiday => holiday.date.getTime() === date.getTime());              
+              if (holiday) {
+                draw.text(function(add) {
+                  add.tspan(holiday.emoji).newLine();
+                }).move(x + 26, y + 50).font({
+                  size: 20,
+                  family: 'Helvetica',
+                  weight: 'bold'
+                });
+              }
+            }
+
+            if (optCanadianHolidays) {
+              const canadianHolidays = [
+                {
+                  name: 'Canada Day',
+                  date: new Date(year, 6, 1),
+                  emoji: '🇨🇦'
+                },
+                {
+                  name: 'Victoria Day',
+                  date: new Date(year, 4, 18),
+                  emoji: '🇨🇦'
+                },
+                {
+                  name: 'Canada Day',
+                  date: new Date(year, 6, 1),
+                  emoji: '🇨🇦'
+                },
+                {
+                  name: 'Remembrance Day',
+                  date: new Date(year, 10, 11),
+                  emoji: '🇨🇦'
+                },
+                {
+                  name: 'Thanksgiving Day',
+                  date: new Date(year, 9, 14),
+                  emoji: '🇨🇦🦃'
+                },
+                {
+                  name: 'Boxing Day',
+                  date: new Date(year, 11, 26),
+                  emoji: '🎁'
+                }
+              ];
+
+              const holiday = canadianHolidays.find(holiday => holiday.date.getTime() === date.getTime());              
               if (holiday) {
                 draw.text(function(add) {
                   add.tspan(holiday.emoji).newLine();
@@ -344,6 +391,21 @@
                   name: 'April Fools Day',
                   date: new Date(year, 3, 1),
                   emoji: '🤡'
+                },
+                {
+                  name: 'May Day',
+                  date: new Date(year, 4, 1),
+                  emoji: '🌷'
+                },
+                {
+                  name: 'Cinco de Mayo',
+                  date: new Date(year, 4, 5),
+                  emoji: '🇲🇽'
+                },
+                {
+                  name: 'Labor Day',
+                  date: new Date(year, 8, 2),
+                  emoji: '👷'
                 },
                 {
                   name: 'Halloween',
@@ -474,10 +536,20 @@
             if (optHinduHolidays) {
               const hinduHolidays = [
                 {
+                  name: 'Republic Day',
+                  date: new Date(year, 0, 26),
+                  emoji: '🇮🇳'
+                },
+                {
+                  name: 'Independence Day',
+                  date: new Date(year, 7, 15),
+                  emoji: '🇮🇳'
+                },
+                {
                   name: 'Diwali',
                   date: new Date(year, 10, 14),
                   emoji: '🪔'
-                },
+                },                
                 {
                   name: 'Holi',
                   date: new Date(year, 2, 9),
@@ -487,6 +559,21 @@
                   name: 'Raksha Bandhan',
                   date: new Date(year, 7, 3),
                   emoji: '👫'
+                },
+                {
+                  name: 'Ganesh Chaturthi',
+                  date: new Date(year, 8, 2),
+                  emoji: '🐘'
+                },
+                {
+                  name: 'Navaratri',
+                  date: new Date(year, 9, 29),
+                  emoji: '🎉'
+                },
+                {
+                  name: 'Makar Sankranti',
+                  date: new Date(year, 0, 14),
+                  emoji: '🪁'
                 }
               ];
 
