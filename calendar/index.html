@@ -85,6 +85,7 @@
       const optRainbowDays2 = false;
       const optRainbowDays3 = false;
       const optShowMoonPhases = true;
+      const optFriday13th = true;
 
       const cellPadding = 5;
       const cellWidth = 50;
@@ -213,6 +214,18 @@
             if (optShowMoonPhases) {
               const moon = generateMoon(draw, year, month, day);
               moon.move(x + 30, y + 5).size(15, 15);
+            }
+
+            if (optFriday13th) {
+              if (date.getDay() === 5 && date.getDate() === 13) {
+                draw.text(function(add) {
+                  add.tspan('👻').newLine();
+                }).move(x + 26, y + 50).font({
+                  size: 20,
+                  family: 'Helvetica',
+                  weight: 'bold'
+                });
+              }
             }
           }
         }
