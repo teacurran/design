@@ -1,0 +1,37 @@
+version: "3.9"
+
+services:
+  client:
+    image: client
+    build:
+      context: ./client   
+    working_dir: /app
+    command: npm start
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+
+    environment:
+      - NODE_ENV=development
+    expose:
+      - "3000"
+    ports:
+      - "3000:3000"
+
+  server:
+    image: server
+    build:
+      context: ./server   
+    working_dir: /app
+    command: npm start
+    volumes:
+      - ./server:/app
+      - /app/node_modules
+
+    environment:
+      - NODE_ENV=development
+    expose:
+      - "3000"
+    ports:
+      - "3000:3000"
+
