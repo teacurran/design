@@ -13,25 +13,21 @@ services:
 
     environment:
       - NODE_ENV=development
-    expose:
-      - "3000"
     ports:
-      - "3000:3000"
+      - "3401:3000"
 
   server:
     image: server
     build:
       context: ./server   
     working_dir: /app
-    command: npm start
+    command: npm run api-dev
     volumes:
       - ./server:/app
       - /app/node_modules
 
     environment:
       - NODE_ENV=development
-    expose:
-      - "3000"
     ports:
-      - "3000:3000"
+      - "3400:3000"
 
