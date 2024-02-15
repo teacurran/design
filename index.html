@@ -85,6 +85,8 @@
   const optRainbowDays1 = false;
   const optRainbowDays2 = false;
   const optRainbowDays3 = false;
+  const optRainbowWeekends = false;
+  const optVermontWeekends = true;
   const optShowMoonPhases = true;
   const optFriday13th = true;
   const optPersonalHolidays = true;
@@ -111,6 +113,21 @@
   const geoPath = d3.geoPath(geoProjection);
   const geoHemisphere = d3.geoCircle()();
 
+  const vermontMonthlyColors = {
+    0: ['#FFFFFF', '#E8F1F2', '#BBD5DA', '#95A5A6', '#727272', '#5E6A71', '#3B444B', '#2C3E50', '#DADFE1', '#ABB7B7'], // Snowy and frosty hues
+    1: ['#FFFFFF', '#ECECEC', '#D6E6E4', '#C0C5C1', '#9FA9A3', '#7E8C8D', '#616A6B', '#505B62', '#394A51', '#22313F'], // Late winter, hinting at spring
+    2: ['#E9F7EF', '#D4EFDF', '#A9DFBF', '#7DCEA0', '#52BE80', '#3498DB', '#85C1E9', '#AED6F1', '#D6DBDF', '#85929E'], // Early spring, snow melting, fresh greens
+    3: ['#EAF2F8', '#D4E6F1', '#AED6F1', '#85C1E9', '#5499C7', '#48C9B0', '#76D7C4', '#A2D9CE', '#EBF5FB', '#B3B6B7'], // Spring, clear skies, blooming flowers
+    4: ['#E8F6F3', '#D0ECE7', '#A2D9CE', '#73C6B6', '#45B39D', '#58D68D', '#82E0AA', '#ABEBC6', '#D5F5E3', '#FEF9E7'], // Late spring, lush landscapes
+    5: ['#FDEDEC', '#FADBD8', '#F5B7B1', '#F1948A', '#EC7063', '#E74C3C', '#CD6155', '#A93226', '#922B21', '#7B241C'], // Early summer, warm tones, sunsets
+    6: ['#F9EBEA', '#F2D7D5', '#E6B0AA', '#D98880', '#CD6155', '#C0392B', '#A93226', '#922B21', '#7B241C', '#641E16'], // Peak summer, warmth, longer days
+    7: ['#F5CBA7', '#F0B27A', '#EB984E', '#E67E22', '#CA6F1E', '#AF601A', '#935116', '#784212', '#6E2C00', '#566573'], // Late summer, transition to fall
+    8: ['#FAD7A0', '#F8C471', '#F5B041', '#F39C12', '#D68910', '#B9770E', '#9C640C', '#7E5109', '#6E2C00', '#1A5276'], // Early fall, leaves changing
+    9: ['#FDEBD0', '#FAD7A0', '#F8C471', '#F5B041', '#F39C12', '#D68910', '#B9770E', '#9C640C', '#7E5109', '#6E2C00'], // Peak fall, vibrant foliage
+    10: ['#F4F6F7', '#E5E8E8', '#CCD1D1', '#B2BABB', '#99A3A4', '#7F8C8D', '#626567', '#515A5A', '#424949', '#333F42'], // Late fall, transition to winter
+    11: ['#FBFCFC', '#ECF0F1', '#D0D3D4', '#B3B6B7', '#979A9A', '#808B96', '#566573', '#2C3E50', '#212F3C', '#1C2833']  // Early winter, holiday season, snowy landscapes
+  };
+
   const svg = d3.create("svg")
     .attr("width", "100%")
     .attr("height", "100%");
@@ -131,6 +148,7 @@
   const maxDistance = Math.sqrt(Math.pow(totalRows - 1, 2) + Math.pow(totalColumns - 1, 2));
 
   for (let row = 0; row < totalRows; row++) {
+    let weekendIndex = -1;
     for (let col = 0; col < totalColumns; col++) {
       const x = col * cellWidth;
       const y = row * cellHeight + 100;
@@ -141,6 +159,12 @@
       const year = date.getFullYear();
 
       let cellBackgroundColor = DEFAULT_CELL_BG
+
+      let isWeekend = false;
+      if (date.getDay() == 0 || date.getDay() == 6) {
+        isWeekend = true;
+        weekendIndex++;
+      }
 
       if (optHighlightWeekends && date.getMonth() === row) {
         if (date.getDay() == 0 || date.getDay() == 6) {
@@ -189,6 +213,20 @@
         const saturation = 50; // Keeping saturation constant for vibrant colors
 
         cellBackgroundColor = `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+      }
+
+      if (optRainbowWeekends) {
+        if (date.getDay() == 0 || date.getDay() == 6) {
+          const hue = (col / (30)) * 360;
+          cellBackgroundColor = `hsl(${hue}, 100%, 90%)`;
+        }
+      }
+
+      if (optVermontWeekends) {
+        if (isWeekend) {
+          cellBackgroundColor = d3.rgb(vermontMonthlyColors[row][weekendIndex]);
+          console.log(`Weekend: ${weekendIndex} - ${cellBackgroundColor}`);
+        }
       }
 
       if (col === 0) {
