@@ -104,6 +104,13 @@
   const gridHeight = 12 * cellHeight;
   const startDate = new Date(2024, 0, 1);
 
+  const geoProjection = d3.geoOrthographic()
+    .translate([0, 0])
+    .scale(10);
+
+  const geoPath = d3.geoPath(geoProjection);
+  const geoHemisphere = d3.geoCircle()();
+
   const svg = d3.create("svg")
     .attr("width", "100%")
     .attr("height", "100%");
@@ -114,7 +121,7 @@
   svg.append("text")
     .text("2024")
     .attr("x", 1400)
-    .attr("y", 60)
+    .attr("y", 80)
     .attr("font-size", "80px")
     .attr("font-family", "Helvetica")
     .attr("font-weight", "bold");
@@ -232,8 +239,16 @@
         }
 
         if (optShowMoonPhases) {
-          // const moon = generateMoon(draw, year, month, day);
-          // moon.move(x + 30, y + 5).size(15, 15);
+          const date = new Date(year, month, day);
+          const d3Date = d3.timeYear(date);
+          const noon = d3.timeHour.offset(d3Date, 12);
+          const moonIllumination = SunCalc.getMoonIllumination(date);
+          const moonAngle = 180 - moonIllumination.phase * 360;
+
+          svg.append("path")
+            .attr("fill", "#000000")
+            .attr("d", `${geoProjection.rotate([moonAngle, 0]), geoPath(geoHemisphere)}`)
+            .attr("transform", `translate(${x + 35}, ${y + 12}) scale(0.75)`);
         }
 
         if (optFriday13th) {
