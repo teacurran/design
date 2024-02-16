@@ -4,6 +4,12 @@ import {getMoonIllumination} from "suncalc";
 import * as d3 from 'd3';
 import { geoOrthographic } from 'd3-geo';
 import { JSDOM } from 'jsdom';
+import * as emoji from 'node-emoji'
+import { Notomoji } from 'svgmoji';
+import * as fluent from 'fluentui-emoji-js';
+
+import data from '../node_modules/svgmoji/emoji.json';
+const notomoji = new Notomoji({ data, type: 'all' });
 
 dotenv.config();
 
@@ -24,7 +30,7 @@ app.get("/", (req: Request, res: Response): void => {
   res.send("Express + TypeScript Server");
 });
 
-app.get("/calendar", (req: Request, res: Response): void => {
+app.get("/calendar", async (req: Request, res: Response): Promise<void> => {
   const DEFAULT_CELL_BG: string = 'rgba(255, 255, 255, 0)';
   const WEEKEND_CELL_BG: string = 'rgba(0, 0, 0, 0.1)';
   const BORDER_COLOR: string = 'rgba(0, 0, 0, .5)';
@@ -204,7 +210,6 @@ app.get("/calendar", (req: Request, res: Response): void => {
       if (optVermontWeekends) {
         if (isWeekend) {
           cellBackgroundColor = vermontMonthlyColors[row][weekendIndex];
-          console.log(`Weekend: ${weekendIndex} - ${cellBackgroundColor}`);
         }
       }
 
@@ -301,13 +306,28 @@ app.get("/calendar", (req: Request, res: Response): void => {
 
           const holiday = personalHolidays.find(holiday => holiday.date.getTime() === date.getTime());
           if (holiday) {
-            svg.append("text")
-                .text(holiday.emoji)
+            const emojiName = emoji.which(holiday.emoji);
+            const notOmojiUrl = notomoji.url(holiday.emoji);
+            console.log(`name: ${emojiName}, url: ${notOmojiUrl}`);
+
+            const fluentFile = await fluent.fromGlyph(holiday.emoji, 'High Contrast');
+            const fluentUrl = `https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@latest/assets${fluentFile}`
+            console.log(`name: ${emojiName}, fluentUrl: ${fluentUrl}`);
+
+            svg.append("image")
+                .attr("xlink:href", fluentUrl)
                 .attr("x", x + 26)
-                .attr("y", y + 64)
-                .attr("font-size", "20px")
-                .attr("font-family", "Helvetica")
-                .attr("font-weight", "bold");
+                .attr("y", y + cellHeight - 24)
+                .attr("width", 20)
+                .attr("height", 20);
+
+            // svg.append("text")
+            //     .text(holiday.emoji)
+            //     .attr("x", x + 26)
+            //     .attr("y", y + 64)
+            //     .attr("font-size", "20px")
+            //     .attr("font-family", "Helvetica")
+            //     .attr("font-weight", "bold");
           }
         }
 
