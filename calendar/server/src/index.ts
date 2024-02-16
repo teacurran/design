@@ -1,9 +1,11 @@
 import express, { Express, Request, Response } from "express";
+import dotenv from "dotenv";
 import {getMoonIllumination} from "suncalc";
-
 import * as d3 from 'd3';
+import { geoOrthographic } from 'd3-geo';
+import { JSDOM } from 'jsdom';
 
-//dotenv.config();
+dotenv.config();
 
 const app: Express = express();
 const port: string | number = process.env.PORT ?? 3000;
@@ -54,7 +56,7 @@ app.get("/calendar", (req: Request, res: Response): void => {
   const gridHeight: number = 12 * cellHeight;
   const startDate: Date = new Date(2024, 0, 1);
 
-  const geoProjection = d3.geoOrthographic()
+  const geoProjection = geoOrthographic()
       .translate([0, 0])
       .scale(10);
 
@@ -100,12 +102,20 @@ app.get("/calendar", (req: Request, res: Response): void => {
       '#212F3C', '#1C2833']  // Early winter, holiday season, snowy landscapes
   ];
 
-  const svg = d3.create("svg")
-      .attr("width", "100%")
-      .attr("height", "100%");
+
+
+  const width = gridWidth;
+  const height = gridHeight + 100;
+
+  const dom = new JSDOM('<!DOCTYPE html><body></body>');
+  const documentBody = d3.select(dom.window.document.body);
+
+  const svg = documentBody.append("svg")
+        .attr("width", width)
+        .attr("height", height);
 
   svg.append("text")
-      .text("2024")
+      .text("2024") 
       .attr("x", 1400)
       .attr("y", 80)
       .attr("font-size", "80px")
@@ -120,7 +130,7 @@ app.get("/calendar", (req: Request, res: Response): void => {
     let weekendIndex = -1;
     for (let col = 0; col < totalColumns; col++) {
       const x = col * cellWidth;
-      const y = row * cellHeight + 100;
+      const y = row * cellHeight + 99;
 
       const date = new Date(new Date().getFullYear(), row, col);
       const day = date.getDate();
@@ -688,8 +698,11 @@ app.get("/calendar", (req: Request, res: Response): void => {
   }
 
   res.setHeader('Content-Type', 'image/svg+xml');
-  
-  res.send(svg);
+
+  svg.attr("xmlns", "http://www.w3.org/2000/svg");
+
+  res.send(documentBody.html());
+
 });
 
 
