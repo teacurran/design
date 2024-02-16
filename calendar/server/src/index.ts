@@ -16,6 +16,37 @@ dotenv.config();
 const app: Express = express();
 const port: string | number = process.env.PORT ?? 3000;
 
+const DEFAULT_CELL_BG: string = 'rgba(255, 255, 255, 0)';
+const WEEKEND_CELL_BG: string = 'rgba(0, 0, 0, 0.1)';
+const BORDER_COLOR: string = 'rgba(0, 0, 0, .5)';
+
+const optHighlightWeekends: boolean = true;
+const optShowDayNames: boolean   = true;
+const optShowWeekendDayNames:boolean = true;
+const optRainbowDays1: boolean = false;
+const optRainbowDays2: boolean = false;
+const optRainbowDays3: boolean = false;
+const optRainbowWeekends: boolean = false;
+const optVermontWeekends: boolean = true;
+const optShowMoonPhases : boolean= true;
+const optFriday13th: boolean = true;
+const optPersonalHolidays: boolean = true;
+const optUSFederalHolidays: boolean = false;
+const optCanadianHolidays: boolean = false
+const optOtherHolidays: boolean = false
+const optJewishHolidays: boolean = false
+const optIslamicHolidays: boolean = false;
+const optCatholicHolidays: boolean = false;
+const optHinduHolidays: boolean = false;
+const optChineseHolidays: boolean = false;
+
+const cellPadding: number = 5;
+const cellWidth: number = 50;
+const cellHeight: number = 75;
+const gridWidth: number = 32 * cellWidth;
+const gridHeight: number = 12 * cellHeight;
+const startDate: Date = new Date(2024, 0, 1);
+
 const getDayName = (date: Date): string => {
   const days: string[] = ['Su', 'M', 'Tu', 'W', 'Th', 'F', 'Sa'];
   return days[date.getDay()];
@@ -26,41 +57,28 @@ const getMonthName = (monthNumber: number): string => {
   return months[monthNumber];
 };
 
+const appendEmoji = async (svg: any, value: string, x: number, y: number): Promise<void> => {
+  const emojiName = emoji.which(value);
+  const notOmojiUrl = notomoji.url(value);
+  console.log(`name: ${emojiName}, url: ${notOmojiUrl}`);
+
+  const fluentFile = await fluent.fromGlyph(value, 'High Contrast');
+  const fluentUrl = `https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@latest/assets${fluentFile}`
+  console.log(`name: ${emojiName}, fluentUrl: ${fluentUrl}`);
+
+  svg.append("image")
+      .attr("xlink:href", fluentUrl)
+      .attr("x", x + 26)
+      .attr("y", y + cellHeight - 24)
+      .attr("width", 20)
+      .attr("height", 20);
+}
+
 app.get("/", (req: Request, res: Response): void => {
   res.send("Express + TypeScript Server");
 });
 
 app.get("/calendar", async (req: Request, res: Response): Promise<void> => {
-  const DEFAULT_CELL_BG: string = 'rgba(255, 255, 255, 0)';
-  const WEEKEND_CELL_BG: string = 'rgba(0, 0, 0, 0.1)';
-  const BORDER_COLOR: string = 'rgba(0, 0, 0, .5)';
-
-  const optHighlightWeekends: boolean = true;
-  const optShowDayNames: boolean   = true;
-  const optShowWeekendDayNames:boolean = true;
-  const optRainbowDays1: boolean = false;
-  const optRainbowDays2: boolean = false;
-  const optRainbowDays3: boolean = false;
-  const optRainbowWeekends: boolean = false;
-  const optVermontWeekends: boolean = true;
-  const optShowMoonPhases : boolean= true;
-  const optFriday13th: boolean = true;
-  const optPersonalHolidays: boolean = true;
-  const optUSFederalHolidays: boolean = false;
-  const optCanadianHolidays: boolean = false
-  const optOtherHolidays: boolean = false
-  const optJewishHolidays: boolean = false
-  const optIslamicHolidays: boolean = false;
-  const optCatholicHolidays: boolean = false;
-  const optHinduHolidays: boolean = false;
-  const optChineseHolidays: boolean = false;
-
-  const cellPadding: number = 5;
-  const cellWidth: number = 50;
-  const cellHeight: number = 75;
-  const gridWidth: number = 32 * cellWidth;
-  const gridHeight: number = 12 * cellHeight;
-  const startDate: Date = new Date(2024, 0, 1);
 
   const geoProjection = geoOrthographic()
       .translate([0, 0])
@@ -275,13 +293,7 @@ app.get("/calendar", async (req: Request, res: Response): Promise<void> => {
 
         if (optFriday13th) {
           if (date.getDay() === 5 && date.getDate() === 13) {
-            svg.append("text")
-                .text('👻')
-                .attr("x", x + 26)
-                .attr("y", y + 64)
-                .attr("font-size", "20px")
-                .attr("font-family", "Helvetica")
-                .attr("font-weight", "bold");
+            await appendEmoji(svg, '👻', x, y);
           }
         }
 
@@ -306,28 +318,7 @@ app.get("/calendar", async (req: Request, res: Response): Promise<void> => {
 
           const holiday = personalHolidays.find(holiday => holiday.date.getTime() === date.getTime());
           if (holiday) {
-            const emojiName = emoji.which(holiday.emoji);
-            const notOmojiUrl = notomoji.url(holiday.emoji);
-            console.log(`name: ${emojiName}, url: ${notOmojiUrl}`);
-
-            const fluentFile = await fluent.fromGlyph(holiday.emoji, 'High Contrast');
-            const fluentUrl = `https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@latest/assets${fluentFile}`
-            console.log(`name: ${emojiName}, fluentUrl: ${fluentUrl}`);
-
-            svg.append("image")
-                .attr("xlink:href", fluentUrl)
-                .attr("x", x + 26)
-                .attr("y", y + cellHeight - 24)
-                .attr("width", 20)
-                .attr("height", 20);
-
-            // svg.append("text")
-            //     .text(holiday.emoji)
-            //     .attr("x", x + 26)
-            //     .attr("y", y + 64)
-            //     .attr("font-size", "20px")
-            //     .attr("font-family", "Helvetica")
-            //     .attr("font-weight", "bold");
+            await appendEmoji(svg, holiday.emoji, x, y);
           }
         }
 
