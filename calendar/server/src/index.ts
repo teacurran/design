@@ -30,7 +30,7 @@ const optRainbowDays3: boolean = false;
 const optRainbowWeekends: boolean = true;
 const optVermontWeekends: boolean = false;
 
-const optShowMoonIllumination: boolean = true;
+const optShowMoonIllumination: boolean = false;
 const optShowMoonPhase: boolean = true;
 
 const optFriday13th: boolean = true;
@@ -295,8 +295,23 @@ app.get("/calendar", async (req: Request, res: Response): Promise<void> => {
                 }
 
                 if (optShowMoonPhase) {
+                    const date = new Date(year, month, day);
+                    const d3Date = d3.timeDay(date);
+                    const moonIllumination = getMoonIllumination(date);
+                    const moonPhase =  Math.round( moonIllumination.phase * 1e3 ) / 1e3;
 
-
+                    console.log(`moonPhase: ${moonPhase}`);
+                    const moonY = y - 46;
+                    const moonX = x - 3;
+                    if (moonPhase <= 0.032) {
+                        await appendEmoji(svg, '🌑', moonX, moonY);
+                    } else if (moonPhase >= 0.230 && moonPhase <= 0.267) {
+                        await appendEmoji(svg, '🌓', moonX, moonY);
+                    } else if (moonPhase >= 0.475 && moonPhase <= 0.52) {
+                        await appendEmoji(svg, '🌕', moonX, moonY);
+                    } else if (moonPhase >= 0.73 && moonPhase <= 0.76) {
+                        await appendEmoji(svg, '🌗', moonX, moonY);
+                    }
                 }
 
                 if (optFriday13th) {
@@ -320,7 +335,7 @@ app.get("/calendar", async (req: Request, res: Response): Promise<void> => {
                         {
                             name: 'Our Anniversary',
                             date: new Date(year, 9, 22),
-                            emoji: '💍'
+                            emoji: '💒'
                         }
                     ];
 
@@ -355,7 +370,7 @@ app.get("/calendar", async (req: Request, res: Response): Promise<void> => {
                         {
                             name: 'Independence Day',
                             date: new Date(year, 6, 4),
-                            emoji: '🇺🇸'
+                            emoji: '🎆'
                         },
                         {
                             name: 'Veterans Day',
@@ -376,13 +391,7 @@ app.get("/calendar", async (req: Request, res: Response): Promise<void> => {
 
                     const holiday = federalHolidays.find(holiday => holiday.date.getTime() === date.getTime());
                     if (holiday) {
-                        // draw.text(function (add) {
-                        //   add.tspan(holiday.emoji).newLine();
-                        // }).move(x + 26, y + 50).font({
-                        //   size: 20,
-                        //   family: 'Helvetica',
-                        //   weight: 'bold'
-                        // });
+                        await appendEmoji(svg, holiday.emoji, x, y);
                     }
                 }
 
@@ -422,13 +431,7 @@ app.get("/calendar", async (req: Request, res: Response): Promise<void> => {
 
                     const holiday = canadianHolidays.find(holiday => holiday.date.getTime() === date.getTime());
                     if (holiday) {
-                        // draw.text(function (add) {
-                        //   add.tspan(holiday.emoji).newLine();
-                        // }).move(x + 26, y + 50).font({
-                        //   size: 20,
-                        //   family: 'Helvetica',
-                        //   weight: 'bold'
-                        // });
+                        await appendEmoji(svg, holiday.emoji, x, y);
                     }
                 }
 
@@ -498,13 +501,7 @@ app.get("/calendar", async (req: Request, res: Response): Promise<void> => {
 
                     const holiday = otherHolidays.find(holiday => holiday.date.getTime() === date.getTime());
                     if (holiday) {
-                        // draw.text(function (add) {
-                        //   add.tspan(holiday.emoji).newLine();
-                        // }).move(x + 26, y + 50).font({
-                        //   size: 20,
-                        //   family: 'Helvetica',
-                        //   weight: 'bold'
-                        // });
+                        await appendEmoji(svg, holiday.emoji, x, y);
                     }
                 }
 
@@ -544,13 +541,7 @@ app.get("/calendar", async (req: Request, res: Response): Promise<void> => {
 
                     const holiday = catholicHolidays.find(holiday => holiday.date.getTime() === date.getTime());
                     if (holiday) {
-                        // draw.text(function (add) {
-                        //   add.tspan(holiday.emoji).newLine();
-                        // }).move(x + 26, y + 50).font({
-                        //   size: 20,
-                        //   family: 'Helvetica',
-                        //   weight: 'bold'
-                        // });
+                        await appendEmoji(svg, holiday.emoji, x, y);
                     }
                 }
 
@@ -585,13 +576,7 @@ app.get("/calendar", async (req: Request, res: Response): Promise<void> => {
 
                     const holiday = jewishHolidays.find(holiday => holiday.date.getTime() === date.getTime());
                     if (holiday) {
-                        // draw.text(function (add) {
-                        //   add.tspan(holiday.emoji).newLine();
-                        // }).move(x + 26, y + 50).font({
-                        //   size: 20,
-                        //   family: 'Helvetica',
-                        //   weight: 'bold'
-                        // });
+                        await appendEmoji(svg, holiday.emoji, x, y);
                     }
                 }
 
@@ -641,13 +626,7 @@ app.get("/calendar", async (req: Request, res: Response): Promise<void> => {
 
                     const holiday = hinduHolidays.find(holiday => holiday.date.getTime() === date.getTime());
                     if (holiday) {
-                        // draw.text(function (add) {
-                        //   add.tspan(holiday.emoji).newLine();
-                        // }).move(x + 26, y + 50).font({
-                        //   size: 20,
-                        //   family: 'Helvetica',
-                        //   weight: 'bold'
-                        // });
+                        await appendEmoji(svg, holiday.emoji, x, y);
                     }
                 }
 
@@ -672,13 +651,7 @@ app.get("/calendar", async (req: Request, res: Response): Promise<void> => {
 
                     const holiday = islamicHolidays.find(holiday => holiday.date.getTime() === date.getTime());
                     if (holiday) {
-                        // draw.text(function (add) {
-                        //   add.tspan(holiday.emoji).newLine();
-                        // }).move(x + 26, y + 50).font({
-                        //   size: 20,
-                        //   family: 'Helvetica',
-                        //   weight: 'bold'
-                        // });
+                        await appendEmoji(svg, holiday.emoji, x, y);
                     }
                 }
 
@@ -703,13 +676,7 @@ app.get("/calendar", async (req: Request, res: Response): Promise<void> => {
 
                     const holiday = chineseHolidays.find(holiday => holiday.date.getTime() === date.getTime());
                     if (holiday) {
-                        // draw.text(function (add) {
-                        //   add.tspan(holiday.emoji).newLine();
-                        // }).move(x + 26, y + 50).font({
-                        //   size: 20,
-                        //   family: 'Helvetica',
-                        //   weight: 'bold'
-                        // });
+                        await appendEmoji(svg, holiday.emoji, x, y);
                     }
                 }
             }
