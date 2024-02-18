@@ -24,6 +24,7 @@ import {
   personalHolidays
 } from "./holidays";
 import DateTempColor from "./DateTempColor";
+import vermontMonthlyColors from "./vermont_weekends";
 
 const notomoji = new Notomoji({data, type: 'all'});
 
@@ -42,8 +43,8 @@ const optShowWeekendDayNames: boolean = true;
 const optRainbowDays1: boolean = false;
 const optRainbowDays2: boolean = false;
 const optRainbowDays3: boolean = false;
-const optRainbowWeekends: boolean = true;
-const optVermontWeekends: boolean = false;
+const optRainbowWeekends: boolean = false;
+const optVermontWeekends: boolean = true;
 
 const optShowMoonIllumination: boolean = false;
 const optShowMoonPhase: boolean = true;
@@ -61,9 +62,9 @@ const optChineseHolidays: boolean = false;
 
 const cellPadding: number = 5;
 const cellWidth: number = 50;
-const cellHeight: number = 75;
+let cellHeight: number = 75;
 const gridWidth: number = 32 * cellWidth;
-const gridHeight: number = 12 * cellHeight;
+let gridHeight: number = 12 * cellHeight;
 const startDate: Date = new Date(2024, 0, 1);
 
 const getDayName = (date: Date): string => {
@@ -76,17 +77,27 @@ const getMonthName = (monthNumber: number): string => {
   return months[monthNumber];
 };
 
-function lerp(value: number, oldRange: [number, number], newRange: [number, number]): number {
-  return (value - oldRange[0]) * (newRange[1] - newRange[0]) / (oldRange[1] - oldRange[0]) + newRange[0];
-}
 function temperatureToColor(temp: number): string {
-  const blue = [0, 0, 255];
-  const red = [255, 0, 0];
+  const temperatureRange = [-10, 110];
+  const coldColor = [175, 238, 238]; // Soft cold tone
+  const warmColor = [255, 99, 71]; // Warm red tone
+
+  // Create interpolation functions for each color channel.
+  const interpolateRed = d3.interpolate(coldColor[0], warmColor[0]);
+  const interpolateGreen = d3.interpolate(coldColor[1], warmColor[1]);
+  const interpolateBlue = d3.interpolate(coldColor[2], warmColor[2]);
+
+  // Scale the temperature to the range [0, 1] for interpolation.
+  const normalizedTemp = (temp - temperatureRange[0]) / (temperatureRange[1] - temperatureRange[0]);
+
+  // Interpolate the color based on the normalized temperature.
   const rgb = [
-    Math.round(lerp(temp, [-10, 110], [blue[0], red[0]])),
-    Math.round(lerp(temp, [-10, 110], [blue[1], red[1]])),
-    Math.round(lerp(temp, [-10, 110], [blue[2], red[2]]))
+    Math.round(interpolateRed(normalizedTemp)),
+    Math.round(interpolateGreen(normalizedTemp)),
+    Math.round(interpolateBlue(normalizedTemp))
   ];
+
+  // Convert the RGB values to a hexadecimal string.
   const hex = rgb.map(value => value.toString(16).padStart(2, '0')).join('');
   return `#${hex}`;
 }
@@ -120,46 +131,6 @@ app.get("/calendar", async (req: Request, res: Response): Promise<void> => {
 
   const geoPath = d3.geoPath(geoProjection);
   const geoHemisphere = d3.geoCircle()();
-
-  const vermontMonthlyColors = [
-    ['#FFFFFF', '#E8F1F2', '#BBD5DA', '#95A5A6',
-      '#727272', '#5E6A71', '#3B444B', '#2C3E50',
-      '#DADFE1', '#ABB7B7'], // Snowy and frosty hues
-    ['#FFFFFF', '#ECECEC', '#D6E6E4', '#C0C5C1',
-      '#9FA9A3', '#7E8C8D', '#616A6B', '#505B62',
-      '#394A51', '#22313F'], // Late winter, hinting at spring
-    ['#E9F7EF', '#D4EFDF', '#A9DFBF', '#7DCEA0',
-      '#52BE80', '#3498DB', '#85C1E9', '#AED6F1',
-      '#D6DBDF', '#85929E'], // Early spring, snow melting, fresh greens
-    ['#EAF2F8', '#D4E6F1', '#AED6F1', '#85C1E9',
-      '#5499C7', '#48C9B0', '#76D7C4', '#A2D9CE',
-      '#EBF5FB', '#B3B6B7'], // Spring, clear skies, blooming flowers
-    ['#E8F6F3', '#D0ECE7', '#A2D9CE', '#73C6B6',
-      '#45B39D', '#58D68D', '#82E0AA', '#ABEBC6',
-      '#D5F5E3', '#FEF9E7'], // Late spring, lush landscapes
-    ['#FDEDEC', '#FADBD8', '#F5B7B1', '#F1948A',
-      '#EC7063', '#E74C3C', '#CD6155', '#A93226',
-      '#922B21', '#7B241C'], // Early summer, warm tones, sunsets
-    ['#F9EBEA', '#F2D7D5', '#E6B0AA', '#D98880',
-      '#CD6155', '#C0392B', '#A93226', '#922B21',
-      '#7B241C', '#641E16'], // Peak summer, warmth, longer days
-    ['#F5CBA7', '#F0B27A', '#EB984E', '#E67E22',
-      '#CA6F1E', '#AF601A', '#935116', '#784212',
-      '#6E2C00', '#566573'], // Late summer, transition to fall
-    ['#FAD7A0', '#F8C471', '#F5B041', '#F39C12',
-      '#D68910', '#B9770E', '#9C640C', '#7E5109',
-      '#6E2C00', '#1A5276'], // Early fall, leaves changing
-    ['#FDEBD0', '#FAD7A0', '#F8C471', '#F5B041',
-      '#F39C12', '#D68910', '#B9770E', '#9C640C',
-      '#7E5109', '#6E2C00'], // Peak fall, vibrant foliage
-    ['#F4F6F7', '#E5E8E8', '#CCD1D1', '#B2BABB',
-      '#99A3A4', '#7F8C8D', '#626567', '#515A5A',
-      '#424949', '#333F42'], // Late fall, transition to winter
-    ['#FBFCFC', '#ECF0F1', '#D0D3D4', '#B3B6B7',
-      '#979A9A', '#808B96', '#566573', '#2C3E50',
-      '#212F3C', '#1C2833']  // Early winter, holiday season, snowy landscapes
-  ];
-
 
   const width = gridWidth;
   const height = gridHeight + 100;
@@ -550,6 +521,8 @@ app.get("/daylight", async (req: Request, res: Response): Promise<void> => {
   const dom = new JSDOM('<!DOCTYPE html><body></body>');
   const documentBody = d3.select(dom.window.document.body);
 
+  cellHeight = 85;
+  gridHeight = 12 * cellHeight;
   const width = gridWidth;
   const height = gridHeight + 100;
 
@@ -637,6 +610,17 @@ app.get("/daylight", async (req: Request, res: Response): Promise<void> => {
       //   }
       // }
 
+      if (optVermontWeekends) {
+        if (isWeekend) {
+          cellBackgroundColor = vermontMonthlyColors[row][weekendIndex];
+
+          // lazy way to make the color lighter
+          cellBackgroundColor = d3.rgb(cellBackgroundColor).brighter(0.1).formatHex();
+
+        }
+      }
+
+
       if (col === 0) {
         // draw.line(x, y + cellHeight, x + cellWidth, y + cellHeight).stroke(BORDER_COLOR);
         svg.append("text")
@@ -650,16 +634,18 @@ app.get("/daylight", async (req: Request, res: Response): Promise<void> => {
       }
 
       if (date.getMonth() === row) {
+
+        const dayName = getDayName(date);
+
         if (col > 0) {
           svg.append("rect")
             .attr("width", cellWidth)
-            .attr("height", cellHeight)
+            .attr("height", cellHeight - 25)
             .attr("x", x)
-            .attr("y", y)
+            .attr("y", y + 20)
             .attr("fill", cellBackgroundColor);
         }
 
-        const dayName = getDayName(date);
 
         svg.append("text")
           .text(col)
@@ -688,13 +674,13 @@ app.get("/daylight", async (req: Request, res: Response): Promise<void> => {
         //   .attr('height', yScale(preSunriseDuration))
         //   .attr('fill', '#c1c1c1');
 
-        svg.append('rect')
-          .attr('x', x)
-          .attr('y', y + yScale(preSunriseDuration))
-          .attr('width', cellWidth - 3)
-          .attr('height', yScale(daylightDuration))
-          .attr('fill', 'none')
-          .attr('stroke', '#dddddd')
+        // svg.append('rect')
+        //   .attr('x', x)
+        //   .attr('y', y + 18)
+        //   .attr('width', cellWidth)
+        //   .attr('height', yScale(daylightDuration))
+        //   .attr('fill', cellBackgroundColor);
+        //   .attr('stroke', '#dddddd')
 
 // Post-sunset
 //         svg.append('rect')
@@ -758,6 +744,17 @@ app.get("/daylight", async (req: Request, res: Response): Promise<void> => {
             .attr("stroke", "#000000")
             .attr("transform", `translate(${moonX}, ${moonY})`);
         }
+
+        if (col > 0) {
+          svg.append("rect")
+            .attr("width", cellWidth)
+            .attr("height", cellHeight - 25)
+            .attr("x", x)
+            .attr("y", y + 20)
+            .attr("stroke", "#c1c1c1")
+            .attr("fill", "none");
+        }
+
       }
     }
   }
