@@ -7,7 +7,6 @@ import {JSDOM} from 'jsdom';
 import * as emoji from 'node-emoji'
 import {Notomoji} from 'svgmoji';
 import * as fluent from 'fluentui-emoji-js';
-import {parse} from 'csv-parse/sync';
 import * as fs from "fs";
 import * as path from "path";
 
@@ -23,8 +22,7 @@ import {
   otherHolidays,
   personalHolidays
 } from "./holidays";
-import DateTempColor from "./DateTempColor";
-import vermontMonthlyColors from "./vermont_weekends";
+import {vermontMonthlyColors, vermontMonthlyColors2} from "./vermont_weekends";
 
 const notomoji = new Notomoji({data, type: 'all'});
 
@@ -37,7 +35,7 @@ const DEFAULT_CELL_BG: string = 'rgba(255, 255, 255, 0)';
 const WEEKEND_CELL_BG: string = 'rgba(0, 0, 0, 0.1)';
 const BORDER_COLOR: string = 'rgba(0, 0, 0, .5)';
 
-const optHighlightWeekends: boolean = true;
+const optHighlightWeekends: boolean = false;
 const optShowDayNames: boolean = true;
 const optShowWeekendDayNames: boolean = true;
 const optRainbowDays1: boolean = false;
@@ -231,7 +229,7 @@ app.get("/calendar", async (req: Request, res: Response): Promise<void> => {
 
       if (optVermontWeekends) {
         if (isWeekend) {
-          cellBackgroundColor = vermontMonthlyColors[row][weekendIndex];
+          cellBackgroundColor = vermontMonthlyColors2[row][weekendIndex];
         }
       }
 
@@ -505,7 +503,7 @@ app.get("/moonmap", async (req: Request, res: Response): Promise<void> => {
         svg.append("circle")
           .attr("r", 20)
           .attr("fill", "none")
-          .attr("stroke", "#000000")
+          .attr("stroke", "#c1c1c1")
           .attr("transform", `translate(${x + 24}, ${y + 42})`);
 
       }
@@ -530,20 +528,20 @@ app.get("/daylight", async (req: Request, res: Response): Promise<void> => {
   const headers = ['date', 'temp', 'color'];
   const fileContent = fs.readFileSync(csvFilePath, {encoding: 'utf-8'});
 
-  let dayColors: DateTempColor[] = parse(fileContent, {
-    delimiter: ',',
-    columns: headers,
-    cast: function (value, context) {
-      if (context.column === 'date') {
-        return new Date(value);
-      } else if (context.column === 'temp') {
-        return parseInt(value);
-      } else {
-        return value;
-      }
-    }
-  });
-  console.log("dayColors", dayColors);
+  // let dayColors: DateTempColor[] = parse(fileContent, {
+  //   delimiter: ',',
+  //   columns: headers,
+  //   cast: function (value, context) {
+  //     if (context.column === 'date') {
+  //       return new Date(value);
+  //     } else if (context.column === 'temp') {
+  //       return parseInt(value);
+  //     } else {
+  //       return value;
+  //     }
+  //   }
+  // });
+  //console.log("dayColors", dayColors);
 
   const svg = documentBody.append("svg")
     .attr("width", width)
@@ -552,7 +550,7 @@ app.get("/daylight", async (req: Request, res: Response): Promise<void> => {
   svg.append("text")
     .text("2024")
     .attr("x", 50)
-    .attr("y", 80)
+    .attr("y", 70)
     .attr("fill", "#a1a1a1")
     .attr("font-size", "80px")
     .attr("font-family", "Helvetica")
@@ -568,7 +566,7 @@ app.get("/daylight", async (req: Request, res: Response): Promise<void> => {
     let moonPhases: string[] = [];
     for (let col = 0; col < totalColumns; col++) {
       const x = col * cellWidth;
-      const y = row * cellHeight + 99;
+      const y = row * cellHeight + 89;
 
       const date = new Date(new Date().getFullYear(), row, col);
       const day = date.getDate();
@@ -612,10 +610,10 @@ app.get("/daylight", async (req: Request, res: Response): Promise<void> => {
 
       if (optVermontWeekends) {
         if (isWeekend) {
-          cellBackgroundColor = vermontMonthlyColors[row][weekendIndex];
+          cellBackgroundColor = vermontMonthlyColors2[row][weekendIndex];
 
           // lazy way to make the color lighter
-          cellBackgroundColor = d3.rgb(cellBackgroundColor).brighter(0.1).formatHex();
+          // cellBackgroundColor = d3.rgb(cellBackgroundColor).brighter(0.1).formatHex();
 
         }
       }
@@ -640,12 +638,11 @@ app.get("/daylight", async (req: Request, res: Response): Promise<void> => {
         if (col > 0) {
           svg.append("rect")
             .attr("width", cellWidth)
-            .attr("height", cellHeight - 25)
+            .attr("height", cellHeight)
             .attr("x", x)
-            .attr("y", y + 20)
+            .attr("y", y)
             .attr("fill", cellBackgroundColor);
         }
-
 
         svg.append("text")
           .text(col)
@@ -727,7 +724,7 @@ app.get("/daylight", async (req: Request, res: Response): Promise<void> => {
         }
         if (showMoon) {
           const moonX = x + 35;
-          const moonY = y + 9;
+          const moonY = y + 12;
           svg.append("circle")
             .attr("r", moonSize)
             .attr("fill", "#c1c1c1")
@@ -748,13 +745,12 @@ app.get("/daylight", async (req: Request, res: Response): Promise<void> => {
         if (col > 0) {
           svg.append("rect")
             .attr("width", cellWidth)
-            .attr("height", cellHeight - 25)
+            .attr("height", cellHeight)
             .attr("x", x)
-            .attr("y", y + 20)
+            .attr("y", y)
             .attr("stroke", "#c1c1c1")
             .attr("fill", "none");
         }
-
       }
     }
   }

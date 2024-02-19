@@ -77,4 +77,102 @@ const vermontMonthlyColors = [
   ]  // Early winter, holiday season, snowy landscapes
 ];
 
-export default vermontMonthlyColors;
+const vermontMonthlyColors2 = [
+  ['#E8F1F2',
+    '#E8F1F2',
+    '#E8F1F2',
+    '#E8F1F2',
+    '#E8F1F2',
+    '#E8F1F2',
+    '#E8F1F2',
+    '#E8F1F2',
+    '#E8F1F2', '#E8F1F2'], // Snowy and frosty hues
+  ['#F0F8FF',
+    '#F0F8FF',
+    '#F0F8FF',
+    '#F0F8FF',
+    '#F0F8FF', '#F0F8FF', '#F0F8FF', '#F0F8FF',
+    '#F0F8FF', '#F0F8FF'],
+  ['#E9F7EF', '#E9F7EF', '#E9F7EF', '#E9F7EF',
+    '#E9F7EF', '#E9F7EF', '#E9F7EF', '#E9F7EF',
+    '#E9F7EF', '#e6d3f8'], // Early spring, snow melting, fresh greens
+  ['#7CFC00', '#c8fc9f', '#c8fc9f', '#c8fc9f',
+    '#c8fc9f', '#c8fc9f', '#c8fc9f', '#c8fc9f',
+    '#c8fc9f', '#c8fc9f'], // Spring, clear skies, blooming flowers
+  ['#82E0AA', '#D0ECE7', '#A2D9CE', '#73C6B6',
+    '#45B39D', '#58D68D', '#82E0AA', '#ABEBC6',
+    '#D5F5E3', '#FEF9E7'], // Late spring, lush landscapes
+  [  '#82E0AA', // Dark Green (Deep shades of maple leaves)
+    '#82E0AA', // Forest Green (Rich, vibrant foliage)
+    '#82E0AA', // Lime Green (Bright, young leaves)
+    '#82E0AA', // Light Green (Soft, sunlit leaves)
+    '#82E0AA', // Dark Sea Green (Underleaf shades)
+    '#82E0AA', // Olive Drab (Dense, shadowed foliage)
+    '#82E0AA', // Lawn Green (Vibrant, fresh growth)
+    '#82E0AA', // Green Yellow (Mixed sunlight and leaf)
+    '#82E0AA', // Yellow Green (Early summer apple leaves)
+    '#82E0AA'  // Lime (Highlighting the vivid, fresh new leaves)
+  ],
+  ['#66CDAA', // Deep Jungle Green (Mature maple leaves)
+    '#66CDAA', // Forest Green (Dense, lush foliage)
+    '#66CDAA', // Dark Green (Thick, mature leaves)
+    '#66CDAA', // Medium Sea Green (Healthy, vibrant leaves)
+    '#66CDAA', // Sea Green (Rich, full foliage)
+    '#66CDAA', // Medium Aquamarine (Light reflecting off leaves)
+    '#66CDAA', // Dark Sea Green (Shaded undergrowth)
+    '#66CDAA', // Light Sea Green (Reflections and shadows on leaves)
+    '#66CDAA', // Lime Green (New growth among mature leaves)
+    '#66CDAA'  // Pale Green (Sun-dappled leaves)
+  ],
+  ['#3CB371', '#3CB371', '#3CB371', '#3CB371',
+    '#3CB371', '#3CB371', '#3CB371', '#3CB371',
+    '#3CB371', '#3CB371'], // Late summer, transition to fall
+  ['#FAD7A0', '#F8C471', '#F5B041', '#F39C12',
+    '#F39C12',
+    '#F39C12',
+    '#F39C12',
+    '#F39C12',
+    '#FFD700',
+    '#FFD700'
+  ],
+  ['#FF4500', // Orange Red (Vibrant early fall foliage)
+    '#FF8C00', // Dark Orange (Rich autumn leaves)
+    '#DAA520', // Goldenrod (Dried, golden leaves)
+    'rgba(110,44,0,0.5)',
+    'rgba(139,69,19,0.5)', // Saddle Brown (Tree trunks and branches)
+    'rgba(160,82,45,0.5)',
+    'rgba(205,133,63,0.5)', // Peru (Late fall foliage)
+    'rgba(222,184,135,0.5)', // Burlywood (Faded leaves and bare trees)
+    '#C0C0C0', // Silver (Cool, overcast autumn skies)
+    '#808080'  // Gray (Bare trees and overcast end of October)
+  ], // Peak fall, vibrant foliage
+  [
+    'rgba(161,161,161,0.30)',
+    'rgba(161,161,161,0.30)',
+    'rgba(161,161,161,0.30)',
+    'rgba(161,161,161,0.30)',
+    'rgba(161,161,161,0.30)',
+    'rgba(161,161,161,0.30)',
+    'rgba(161,161,161,0.30)',
+    'rgba(161,161,161,0.30)',
+    'rgba(161,161,161,0.30)',
+    'rgba(161,161,161,0.30)',
+    'rgba(161,161,161,0.30)',
+    'rgba(161,161,161,0.30)'
+  ], // Late fall, transition to winter
+  [
+    'rgba(161,161,161,0.6)',
+    'rgba(161,161,161,0.6)',
+    'rgba(161,161,161,0.6)',
+    'rgba(161,161,161,0.6)',
+    'rgba(161,161,161,0.6)',
+    'rgba(161,161,161,0.6)',
+    'rgba(161,161,161,0.6)',
+    'rgba(161,161,161,0.6)',
+    'rgba(161,161,161,0.6)',
+    'rgba(161,161,161,0.6)',
+    'rgba(161,161,161,0.6)'
+  ]  // Early winter, holiday season, snowy landscapes
+];
+
+export { vermontMonthlyColors, vermontMonthlyColors2 };
