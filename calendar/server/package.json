@@ -23,6 +23,7 @@
     "fluentui-emoji-js": "^1.1.1",
     "jsdom": "^24.0.0",
     "node-emoji": "^2.1.3",
+    "puppeteer": "^22.1.0",
     "suncalc": "^1.9.0",
     "svgmoji": "^3.2.0"
   },
