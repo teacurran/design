@@ -14,7 +14,7 @@ const vermontMonthlyColors = [
   ['#E8F6F3', '#D0ECE7', '#A2D9CE', '#73C6B6',
     '#45B39D', '#58D68D', '#82E0AA', '#ABEBC6',
     '#D5F5E3', '#FEF9E7'], // Late spring, lush landscapes
-  [  '#006400', // Dark Green (Deep shades of maple leaves)
+  ['#006400', // Dark Green (Deep shades of maple leaves)
     '#228B22', // Forest Green (Rich, vibrant foliage)
     '#32CD32', // Lime Green (Bright, young leaves)
     '#90EE90', // Light Green (Soft, sunlit leaves)
@@ -23,8 +23,8 @@ const vermontMonthlyColors = [
     '#7CFC00', // Lawn Green (Vibrant, fresh growth)
     '#ADFF2F', // Green Yellow (Mixed sunlight and leaf)
     '#9ACD32', // Yellow Green (Early summer apple leaves)
-    '#00FF00'  // Lime (Highlighting the vivid, fresh new leaves)
-      ],
+    '#00FF00' // Lime (Highlighting the vivid, fresh new leaves)
+  ],
   ['#01632C', // Deep Jungle Green (Mature maple leaves)
     '#228B22', // Forest Green (Dense, lush foliage)
     '#006400', // Dark Green (Thick, mature leaves)
@@ -34,7 +34,7 @@ const vermontMonthlyColors = [
     '#8FBC8B', // Dark Sea Green (Shaded undergrowth)
     '#20B2AA', // Light Sea Green (Reflections and shadows on leaves)
     '#32CD32', // Lime Green (New growth among mature leaves)
-    '#98FB98'  // Pale Green (Sun-dappled leaves)
+    '#98FB98' // Pale Green (Sun-dappled leaves)
   ],
   ['#F5CBA7', '#F0B27A', '#EB984E', '#E67E22',
     '#CA6F1E', '#AF601A', '#935116', '#784212',
@@ -51,7 +51,7 @@ const vermontMonthlyColors = [
     '#CD853F', // Peru (Late fall foliage)
     '#DEB887', // Burlywood (Faded leaves and bare trees)
     '#C0C0C0', // Silver (Cool, overcast autumn skies)
-    '#808080'  // Gray (Bare trees and overcast end of October)
+    '#808080' // Gray (Bare trees and overcast end of October)
   ], // Peak fall, vibrant foliage
   ['#f5f5f5',
     '#e5e5e5',
@@ -73,9 +73,9 @@ const vermontMonthlyColors = [
     '#747474',
     '#6e6e6e',
     '#686868',
-    '#626262',
-  ]  // Early winter, holiday season, snowy landscapes
-];
+    '#626262'
+  ] // Early winter, holiday season, snowy landscapes
+]
 
 const vermontMonthlyColors2 = [
   ['#E8F1F2',
@@ -122,7 +122,7 @@ const vermontMonthlyColors2 = [
     '#66CDAA', // Dark Sea Green (Shaded undergrowth)
     '#66CDAA', // Light Sea Green (Reflections and shadows on leaves)
     '#66CDAA', // Lime Green (New growth among mature leaves)
-    '#66CDAA'  // Pale Green (Sun-dappled leaves)
+    '#66CDAA' // Pale Green (Sun-dappled leaves)
   ],
   ['#3CB371',
     '#3CB371',
@@ -164,7 +164,7 @@ const vermontMonthlyColors2 = [
     'rgba(205,133,63,0.5)', // Peru (Late fall foliage)
     'rgba(222,184,135,0.5)', // Burlywood (Faded leaves and bare trees)
     '#C0C0C0', // Silver (Cool, overcast autumn skies)
-    '#808080'  // Gray (Bare trees and overcast end of October)
+    '#808080' // Gray (Bare trees and overcast end of October)
   ], // Peak fall, vibrant foliage
   [
     'rgba(161,161,161,0.30)',
@@ -192,7 +192,7 @@ const vermontMonthlyColors2 = [
     'rgba(161,161,161,0.6)',
     'rgba(161,161,161,0.6)',
     'rgba(161,161,161,0.6)'
-  ]  // Early winter, holiday season, snowy landscapes
-];
+  ] // Early winter, holiday season, snowy landscapes
+]
 
-export { vermontMonthlyColors, vermontMonthlyColors2 };
+export { vermontMonthlyColors, vermontMonthlyColors2 }

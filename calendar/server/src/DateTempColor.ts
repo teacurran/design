@@ -1,4 +1,4 @@
-type DateTempColor = {
+interface DateTempColor {
   date: Date
   temp: number
   color: string
