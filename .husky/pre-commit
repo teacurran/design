@@ -1,0 +1,1 @@
+cd calendar/server && npx eslint "src/**/*.ts" --fix || true
