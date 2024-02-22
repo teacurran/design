@@ -392,6 +392,7 @@ app.get("/calendar", async (req: Request, res: Response): Promise<void> => {
 app.get("/moonmap", async (req: Request, res: Response): Promise<void> => {
   const calendar: Calendar = new Calendar();
   calendar.optRainbowWeekends = true;
+  calendar.optVermontWeekends = true;
   const svgDom = calendar.getSvgAsDocumentDom()
   res.setHeader('Content-Type', 'image/svg+xml');
   res.send(svgDom.html());

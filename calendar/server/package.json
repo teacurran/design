@@ -8,7 +8,7 @@
     "build": "npx tsc",
     "build-local": "npm run env-local && tsc",
     "dev": "npm run lint && tsc -w",
-    "api-dev": "nodemon src/index.ts"
+    "api-dev": "npm install && nodemon src/index.ts"
   },
   "keywords": [],
   "author": "",

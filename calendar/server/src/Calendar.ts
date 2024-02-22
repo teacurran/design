@@ -3,6 +3,7 @@ import * as d3 from "d3";
 import {geoOrthographic} from "d3-geo";
 import * as suncalc from "suncalc";
 import {GeoProjection} from "d3";
+import {vermontMonthlyColors2} from "./vermont_weekends";
 
 class Calendar {
   dom: JSDOM;
@@ -93,6 +94,16 @@ class Calendar {
         const month = date.getMonth()
         const year = date.getFullYear()
 
+        // Set the time to 9:00 PM local time initially
+        date.setHours(21, 0, 0, 0); // 21:00 hours, 0 minutes, 0 seconds, 0 milliseconds
+
+        // Calculate the time zone offset for EST (UTC-5)
+        const estOffset = 5 * 60; // EST offset in minutes
+        const localOffset = date.getTimezoneOffset(); // Local time zone offset in minutes
+        const totalOffset = estOffset - localOffset; // Total offset from local time to EST
+
+        // Adjust the date to EST
+        date.setMinutes(date.getMinutes() + totalOffset);
 
         let isWeekend = false;
         if (date.getDay() == 0 || date.getDay() == 6) {
@@ -127,15 +138,28 @@ class Calendar {
           .attr("font-size", "12px")
           .attr("font-family", "Helvetica");
 
+        const lat = 44.25644;
+        const lng = -72.26793;
+
         const geoProjection: GeoProjection = geoOrthographic()
           .translate([0, 0])
           .scale(20);
+          //.rotate([-lng, -lat]);
 
-        const geoPath = d3.geoPath(geoProjection);
-        const geoHemisphere = d3.geoCircle()();
+        const moonIllumination = suncalc.getMoonIllumination(date)
+        const lightAngle = 180 - moonIllumination.phase * 360
+        const darkAngle = lightAngle + 180
 
-        const moonIllumination = suncalc.getMoonIllumination(date);
-        const moonAngle = 180 - moonIllumination.phase * 360;
+        const { parallacticAngle } = suncalc.getMoonPosition(
+          date,
+          lat,
+          lng
+        );
+        const TAU = Math.PI * 2
+        const rotationZ = ((moonIllumination.angle - parallacticAngle) / TAU) * 360 * -1
+
+        const geoPath = d3.geoPath(geoProjection)
+        const geoHemisphere = d3.geoCircle()()
 
         svg.append("circle")
           .attr("r", 20)
@@ -144,7 +168,7 @@ class Calendar {
 
         svg.append("path")
           .attr("fill", "#FFFFFF")
-          .attr("d", `${geoProjection.rotate([moonAngle, 0]), geoPath(geoHemisphere)}`)
+          .attr("d", `${geoProjection.rotate([lightAngle, 0, rotationZ]), geoPath(geoHemisphere)}`)
           .attr("transform", `translate(${x + 24}, ${y + 42})`);
 
         svg.append("circle")
@@ -178,6 +202,10 @@ class Calendar {
     if (this.optRainbowWeekends && isWeekend) {
       const hue = (date.getDate() / 30) * 360
       backgroundColor = `hsl(${hue}, 100%, 90%)`
+    }
+
+    if (isWeekend && this.optVermontWeekends) {
+      backgroundColor = vermontMonthlyColors2[date.getMonth()][weekendIndex];
     }
 
     return backgroundColor

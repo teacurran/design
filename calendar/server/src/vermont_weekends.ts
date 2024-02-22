@@ -95,24 +95,24 @@ const vermontMonthlyColors2 = [
     '#F0F8FF', '#F0F8FF'],
   ['#E9F7EF', '#E9F7EF', '#E9F7EF', '#E9F7EF',
     '#E9F7EF', '#E9F7EF', '#E9F7EF', '#E9F7EF',
-    '#E9F7EF', '#e6d3f8'], // Early spring, snow melting, fresh greens
+    '#d1a4fd', '#d1a4fd'], // Early spring, snow melting, fresh greens
   ['#7CFC00', '#c8fc9f', '#c8fc9f', '#c8fc9f',
     '#c8fc9f', '#c8fc9f', '#c8fc9f', '#c8fc9f',
     '#c8fc9f', '#c8fc9f'], // Spring, clear skies, blooming flowers
   ['#82E0AA', '#D0ECE7', '#A2D9CE', '#73C6B6',
     '#45B39D', '#58D68D', '#82E0AA', '#ABEBC6',
     '#D5F5E3', '#FEF9E7'], // Late spring, lush landscapes
-  [  '#82E0AA', // Dark Green (Deep shades of maple leaves)
-    '#82E0AA', // Forest Green (Rich, vibrant foliage)
-    '#82E0AA', // Lime Green (Bright, young leaves)
-    '#82E0AA', // Light Green (Soft, sunlit leaves)
-    '#82E0AA', // Dark Sea Green (Underleaf shades)
-    '#82E0AA', // Olive Drab (Dense, shadowed foliage)
-    '#82E0AA', // Lawn Green (Vibrant, fresh growth)
-    '#82E0AA', // Green Yellow (Mixed sunlight and leaf)
-    '#82E0AA', // Yellow Green (Early summer apple leaves)
-    '#82E0AA'  // Lime (Highlighting the vivid, fresh new leaves)
-  ],
+  // [  '#82E0AA', // Dark Green (Deep shades of maple leaves)
+  //   '#82E0AA', // Forest Green (Rich, vibrant foliage)
+  //   '#82E0AA', // Lime Green (Bright, young leaves)
+  //   '#82E0AA', // Light Green (Soft, sunlit leaves)
+  //   '#82E0AA', // Dark Sea Green (Underleaf shades)
+  //   '#82E0AA', // Olive Drab (Dense, shadowed foliage)
+  //   '#82E0AA', // Lawn Green (Vibrant, fresh growth)
+  //   '#82E0AA', // Green Yellow (Mixed sunlight and leaf)
+  //   '#82E0AA', // Yellow Green (Early summer apple leaves)
+  //   '#82E0AA'  // Lime (Highlighting the vivid, fresh new leaves)
+  // ],
   ['#66CDAA', // Deep Jungle Green (Mature maple leaves)
     '#66CDAA', // Forest Green (Dense, lush foliage)
     '#66CDAA', // Dark Green (Thick, mature leaves)
@@ -124,10 +124,30 @@ const vermontMonthlyColors2 = [
     '#66CDAA', // Lime Green (New growth among mature leaves)
     '#66CDAA'  // Pale Green (Sun-dappled leaves)
   ],
-  ['#3CB371', '#3CB371', '#3CB371', '#3CB371',
-    '#3CB371', '#3CB371', '#3CB371', '#3CB371',
-    '#3CB371', '#3CB371'], // Late summer, transition to fall
-  ['#FAD7A0', '#F8C471', '#F5B041', '#F39C12',
+  ['#3CB371',
+    '#3CB371',
+    '#3CB371',
+    '#3CB371',
+    '#3CB371',
+    '#3CB371',
+    '#3CB371',
+    '#3CB371',
+    '#3CB371',
+    '#3CB371'],
+  ['#5bf0ff',
+    '#5bf0ff',
+    '#5bf0ff',
+    '#5bf0ff',
+    '#5bf0ff',
+    '#5bf0ff',
+    '#5bf0ff',
+    '#5bf0ff',
+    '#5bf0ff',
+    '#5bf0ff'],
+  ['#FAD7A0',
+    '#F8C471',
+    '#F5B041',
+    '#F39C12',
     '#F39C12',
     '#F39C12',
     '#F39C12',
