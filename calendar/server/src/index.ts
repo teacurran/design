@@ -117,20 +117,31 @@ app.get("/", (req: Request, res: Response): void => {
   res.send("Express + TypeScript Server");
 });
 
+
+app.get("/calendar2", async (req: Request, res: Response): Promise<void> => {
+  const calendar: Calendar = new Calendar()
+  calendar.optVermontWeekends = true
+  calendar.optShowMoonPhase = true
+  calendar.optShowGrid = true
+  const svgDom: d3.Selection<HTMLElement, unknown, null, undefined> = calendar.getSvgAsDocumentDom()
+  res.setHeader('Content-Type', 'image/svg+xml')
+  res.send(svgDom.html())
+})
+
 app.get("/calendar", async (req: Request, res: Response): Promise<void> => {
 
   const geoProjection = geoOrthographic()
     .translate([0, 0])
-    .scale(10);
+    .scale(10)
 
-  const geoPath = d3.geoPath(geoProjection);
-  const geoHemisphere = d3.geoCircle()();
+  const geoPath = d3.geoPath(geoProjection)
+  const geoHemisphere = d3.geoCircle()()
 
-  const width = gridWidth;
-  const height = gridHeight + 100;
+  const width = gridWidth
+  const height = gridHeight + 100
 
-  const dom = new JSDOM('<!DOCTYPE html><body></body>');
-  const documentBody = d3.select(dom.window.document.body);
+  const dom = new JSDOM('<!DOCTYPE html><body></body>')
+  const documentBody = d3.select(dom.window.document.body)
 
   const svg = documentBody.append("svg")
     .attr("width", width)
