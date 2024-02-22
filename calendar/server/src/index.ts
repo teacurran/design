@@ -5,12 +5,10 @@ import * as d3 from 'd3';
 import {geoOrthographic} from 'd3-geo';
 import {JSDOM} from 'jsdom';
 import * as emoji from 'node-emoji'
-import {Notomoji} from 'svgmoji';
 import * as fluent from 'fluentui-emoji-js';
 import * as fs from "fs";
 import * as path from "path";
 
-import data from '../node_modules/svgmoji/emoji.json';
 import {
   canadianHolidays,
   catholicHolidays,
@@ -23,8 +21,7 @@ import {
   personalHolidays
 } from "./holidays";
 import {vermontMonthlyColors, vermontMonthlyColors2} from "./vermont_weekends";
-
-const notomoji = new Notomoji({data, type: 'all'});
+import Calendar from "./Calendar";
 
 dotenv.config();
 
@@ -102,8 +99,6 @@ function temperatureToColor(temp: number): string {
 
 const appendEmoji = async (svg: any, value: string, x: number, y: number): Promise<void> => {
   const emojiName = emoji.which(value);
-  const notOmojiUrl = notomoji.url(value);
-  console.log(`name: ${emojiName}, url: ${notOmojiUrl}`);
 
   const fluentFile = await fluent.fromGlyph(value, 'High Contrast');
   const fluentUrl = `https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@latest/assets${fluentFile}`
@@ -394,125 +389,10 @@ app.get("/calendar", async (req: Request, res: Response): Promise<void> => {
 });
 
 app.get("/moonmap", async (req: Request, res: Response): Promise<void> => {
-  const dom = new JSDOM('<!DOCTYPE html><body></body>');
-  const documentBody = d3.select(dom.window.document.body);
-
-  const width = gridWidth;
-  const height = gridHeight + 100;
-
-  const svg = documentBody.append("svg")
-    .attr("width", width)
-    .attr("height", height);
-
-  svg.append("text")
-    .text("2024")
-    .attr("x", 50)
-    .attr("y", 80)
-    .attr("fill", "#a1a1a1")
-    .attr("font-size", "80px")
-    .attr("font-family", "Helvetica")
-    .attr("font-weight", "bold");
-
-  const totalColumns = 32;
-  const totalRows = 12;
-  const maxDistance = Math.sqrt(Math.pow(totalRows - 1, 2) + Math.pow(totalColumns - 1, 2));
-
-  for (let row = 0; row < totalRows; row++) {
-    let weekendIndex = -1;
-    for (let col = 0; col < totalColumns; col++) {
-      const x = col * cellWidth;
-      const y = row * cellHeight + 99;
-
-      const date = new Date(new Date().getFullYear(), row, col);
-      const day = date.getDate();
-      const month = date.getMonth();
-      const year = date.getFullYear();
-
-      let cellBackgroundColor = DEFAULT_CELL_BG
-
-      let isWeekend = false;
-      if (date.getDay() == 0 || date.getDay() == 6) {
-        isWeekend = true;
-        weekendIndex++;
-      }
-
-      if (optHighlightWeekends && date.getMonth() === row) {
-        if (date.getDay() == 0 || date.getDay() == 6) {
-          cellBackgroundColor = WEEKEND_CELL_BG
-        }
-      }
-
-      if (optRainbowWeekends) {
-        if (date.getDay() == 0 || date.getDay() == 6) {
-          const hue = (col / (30)) * 360;
-          cellBackgroundColor = `hsl(${hue}, 100%, 90%)`;
-        }
-      }
-
-      if (col === 0) {
-        // draw.line(x, y + cellHeight, x + cellWidth, y + cellHeight).stroke(BORDER_COLOR);
-        svg.append("text")
-          .text(getMonthName(row))
-          .attr("x", x)
-          .attr("y", y + 50)
-          .attr("fill", "#a1a1a1")
-          .attr("font-size", "20px")
-          .attr("font-family", "Helvetica")
-          .attr("font-weight", "bold");
-      }
-
-      if (date.getMonth() === row) {
-        if (col > 0) {
-          svg.append("rect")
-            .attr("width", cellWidth)
-            .attr("height", cellHeight)
-            .attr("x", x)
-            .attr("y", y)
-            .attr("fill", cellBackgroundColor);
-        }
-
-        const dayName = getDayName(date);
-
-        svg.append("text")
-          .text(col)
-          .attr("x", x + 5)
-          .attr("y", y + 14)
-          .attr("font-size", "12px")
-          .attr("font-family", "Helvetica");
-
-        const geoProjection = geoOrthographic()
-          .translate([0, 0])
-          .scale(20);
-
-        const geoPath = d3.geoPath(geoProjection);
-        const geoHemisphere = d3.geoCircle()();
-
-        const moonIllumination = suncalc.getMoonIllumination(date);
-        const moonAngle = 180 - moonIllumination.phase * 360;
-
-        svg.append("circle")
-          .attr("r", 20)
-          .attr("fill", "#c1c1c1")
-          .attr("transform", `translate(${x + 24}, ${y + 42})`);
-
-        svg.append("path")
-          .attr("fill", "#FFFFFF")
-          .attr("d", `${geoProjection.rotate([moonAngle, 0]), geoPath(geoHemisphere)}`)
-          .attr("transform", `translate(${x + 24}, ${y + 42})`);
-
-        svg.append("circle")
-          .attr("r", 20)
-          .attr("fill", "none")
-          .attr("stroke", "#c1c1c1")
-          .attr("transform", `translate(${x + 24}, ${y + 42})`);
-
-      }
-    }
-  }
-
+  const calendar: Calendar = new Calendar();
+  const svgDom = calendar.getSvgAsDocumentDom()
   res.setHeader('Content-Type', 'image/svg+xml');
-  svg.attr("xmlns", "http://www.w3.org/2000/svg");
-  res.send(documentBody.html());
+  res.send(svgDom.html());
 });
 
 app.get("/daylight", async (req: Request, res: Response): Promise<void> => {
