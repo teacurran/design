@@ -9,15 +9,14 @@ class Calendar {
   dom: JSDOM
   documentBody: d3.Selection<HTMLElement, unknown, null, undefined>
 
-  cellPadding: number = 5
   cellWidth: number = 50
   cellHeight: number = 75
+  cellPadding: number = 5
   gridWidth: number = 32 * this.cellWidth
   gridHeight: number = 12 * this.cellHeight
 
   cellBackgroundColor: string = 'rgba(255, 255, 255, 0)'
   weekendBackgroundColor: string = 'rgba(0, 0, 0, 0.1)'
-  borderColor: string = 'rgba(0, 0, 0, .5)'
 
   // start on the first day of the current year
   startDate: Date = new Date(new Date().getFullYear(), 0, 1)
@@ -34,10 +33,11 @@ class Calendar {
   monthNameFontSize: string = '20px'
   monthNameFontFamily: string = 'Helvetica'
   monthNameFontWeight: string = 'bold'
+  rotateMonthNames: boolean = false
 
   optHighlightWeekends: boolean = false
-  optShowDayNames: boolean = true
-  optShowWeekendDayNames: boolean = true
+  optShowDayNames: boolean = false
+  optShowWeekendDayNames: boolean = false
   optRainbowDays1: boolean = false
   optRainbowDays2: boolean = false
   optRainbowDays3: boolean = false
@@ -48,6 +48,7 @@ class Calendar {
 
   optShowGrid: boolean = false
   gridStroke: string = '#c1c1c1'
+  gridBorderWidth: number = 2
 
   constructor () {
     this.dom = new JSDOM('<!DOCTYPE html><body></body>')
@@ -140,6 +141,9 @@ class Calendar {
           .attr('font-size', '12px')
           .attr('font-family', 'Helvetica')
 
+
+        this.appendDayName(svg, x, y, date)
+
         if (this.optShowMoonIllumination) {
           this.appendMoon(svg, date, x, y)
         }
@@ -161,13 +165,15 @@ class Calendar {
     }
 
     if (this.optShowGrid) {
+      const borderRightOffset: number = this.gridBorderWidth > 1 ? -1 : 0
       svg.append('rect')
-        .attr('width', this.cellWidth * 31 - 1)
-        .attr('height', this.cellHeight * 12)
+        .attr('width', this.cellWidth * 31)
+        .attr('height', this.cellHeight * 12 + 2)
+        .attr('stroke-location', 'inside')
         .attr('x', this.cellWidth)
-        .attr('y', this.headerHeight)
+        .attr('y', this.headerHeight - 1)
         .attr('stroke', this.gridStroke)
-        .attr('stroke-width', 2)
+        .attr('stroke-width', 1)
         .attr('fill', 'none')
     }
 
@@ -184,7 +190,52 @@ class Calendar {
   }
 
   getBackgroundColor = (date: Date, isWeekend: boolean, weekendIndex: number): string => {
+    const dayNum = date.getDate()
     let backgroundColor = this.cellBackgroundColor
+
+    if (this.optRainbowDays1) {
+      const hue = date.getDay() * 30
+      backgroundColor = `hsl(${hue}, 100%, 90%)`
+    }
+
+    if (this.optRainbowDays2) {
+      const hue = (dayNum / (30)) * 360
+
+      // Assuming saturation and lightness are constant to keep the example simple
+      const saturation = 100 // 100% for vibrant colors
+      const lightness = 50 // 50% is a balanced lightness for visibility
+
+      // Construct the HSL color string
+      backgroundColor = `hsl(${hue}, ${saturation}%, ${lightness}%)`
+    }
+
+    if (this.optRainbowDays3) {
+      const maxDistance = Math.sqrt(Math.pow(12, 2) + Math.pow(31, 2))
+
+      // Calculate Euclidean distance from the bottom right corner
+      const distance = Math.sqrt(Math.pow(12 - date.getMonth(), 2) + Math.pow(30 - dayNum, 2))
+
+      // Normalize distance
+      const normalizedDistance = distance / maxDistance
+
+      // Adjust hue based on distance (you can experiment with this part)
+      const hue = normalizedDistance * 360
+
+      // Adjust lightness from 50% at the nearest point to 10% at the farthest to create a radial effect
+      // You can adjust the range of lightness based on your desired effect
+      // const lightness = 50 - (normalizedDistance * 40); // Ranges from 10% to 50%
+
+      // Modify lightness adjustment to ensure colors remain light across the gradient
+      // Consider keeping lightness above a minimum threshold that avoids the colors becoming too dark
+      const lightnessMin = 80 // Minimum lightness value to avoid dark colors
+      const lightnessMax = 80 // Maximum lightness value for vibrant colors
+      const lightness = lightnessMin + (1 - normalizedDistance) * (lightnessMax - lightnessMin)
+
+      // Saturation can remain constant or be adjusted similarly
+      const saturation = 100 // Keeping saturation constant for vibrant colors
+
+      backgroundColor = `hsl(${hue}, ${saturation}%, ${lightness}%)`
+    }
 
     if (this.optHighlightWeekends && isWeekend) {
       backgroundColor = this.weekendBackgroundColor
@@ -204,7 +255,7 @@ class Calendar {
 
   appendMonthCell = (svg: d3.Selection<SVGSVGElement, unknown, null, undefined>, row: number, x: number, y: number): void => {
     // draw.line(x, y + cellHeight, x + cellWidth, y + cellHeight).stroke(BORDER_COLOR);
-    svg.append('text')
+    const textObj = svg.append('text')
       .text(this.getMonthName(row))
       .attr('x', x)
       .attr('y', y + 50)
@@ -212,6 +263,28 @@ class Calendar {
       .attr('font-size', this.monthNameFontSize)
       .attr('font-family', this.monthNameFontFamily)
       .attr('font-weight', this.monthNameFontWeight)
+
+    if (this.rotateMonthNames) {
+      textObj.attr('transform', 'rotate(-25,' + x + ',' + (y + 40) + ')')
+    }
+  }
+
+  appendDayName = (svg: d3.Selection<SVGSVGElement, unknown, null, undefined>, x: number, y: number, date: Date): void => {
+    let showDay = this.optShowDayNames
+    if (date.getDay() == 0 || date.getDay() == 6) {
+      showDay = this.optShowWeekendDayNames
+    }
+
+    if (showDay) {
+      const dayName = this.getDayName(date)
+      svg.append('text')
+        .text(dayName)
+        .attr('x', x + this.cellPadding)
+        .attr('y', y + 64)
+        .attr('font-size', '12px')
+        .attr('font-family', 'Helvetica')
+        .attr('font-weight', 'bold')
+    }
   }
 
   appendMoon = (svg: d3.Selection<SVGSVGElement, unknown, null, undefined>, date: Date, x: number, y: number): void => {
