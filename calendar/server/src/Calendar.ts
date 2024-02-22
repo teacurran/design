@@ -47,7 +47,6 @@ class Calendar {
   optShowMoonIllumination: boolean = false;
   optShowMoonPhase: boolean = true;
 
-
   constructor() {
     this.dom = new JSDOM('<!DOCTYPE html><body></body>')
     this.documentBody = d3.select(this.dom.window.document.body)
@@ -138,44 +137,13 @@ class Calendar {
           .attr("font-size", "12px")
           .attr("font-family", "Helvetica");
 
-        const lat = 44.25644;
-        const lng = -72.26793;
+        if (this.optShowMoonIllumination) {
+          this.appendMoon(svg, date, x, y)
+        }
 
-        const geoProjection: GeoProjection = geoOrthographic()
-          .translate([0, 0])
-          .scale(20);
-          //.rotate([-lng, -lat]);
-
-        const moonIllumination = suncalc.getMoonIllumination(date)
-        const lightAngle = 180 - moonIllumination.phase * 360
-        const darkAngle = lightAngle + 180
-
-        const { parallacticAngle } = suncalc.getMoonPosition(
-          date,
-          lat,
-          lng
-        );
-        const TAU = Math.PI * 2
-        const rotationZ = ((moonIllumination.angle - parallacticAngle) / TAU) * 360 * -1
-
-        const geoPath = d3.geoPath(geoProjection)
-        const geoHemisphere = d3.geoCircle()()
-
-        svg.append("circle")
-          .attr("r", 20)
-          .attr("fill", "#c1c1c1")
-          .attr("transform", `translate(${x + 24}, ${y + 42})`);
-
-        svg.append("path")
-          .attr("fill", "#FFFFFF")
-          .attr("d", `${geoProjection.rotate([lightAngle, 0, rotationZ]), geoPath(geoHemisphere)}`)
-          .attr("transform", `translate(${x + 24}, ${y + 42})`);
-
-        svg.append("circle")
-          .attr("r", 20)
-          .attr("fill", "none")
-          .attr("stroke", "#c1c1c1")
-          .attr("transform", `translate(${x + 24}, ${y + 42})`);
+        if (this.optShowMoonPhase) {
+          //this.appendMoonPhase(svg, date, x, y)
+        }
 
       }
     }
@@ -221,6 +189,46 @@ class Calendar {
       .attr("font-size", this.monthNameFontSize)
       .attr("font-family", this.monthNameFontFamily)
       .attr("font-weight", this.monthNameFontWeight)
+  }
+
+  appendMoon = (svg: d3.Selection<SVGSVGElement, unknown, null, undefined>, date: Date, x: number, y: number): void => {
+    const lat = 44.25644;
+    const lng = -72.26793;
+
+    const geoProjection: GeoProjection = geoOrthographic()
+      .translate([0, 0])
+      .scale(20);
+
+    const moonIllumination = suncalc.getMoonIllumination(date)
+    const lightAngle = 180 - moonIllumination.phase * 360
+    const darkAngle = lightAngle + 180
+
+    const { parallacticAngle } = suncalc.getMoonPosition(
+      date,
+      lat,
+      lng
+    );
+    const TAU = Math.PI * 2
+    const rotationZ = ((moonIllumination.angle - parallacticAngle) / TAU) * 360 * -1
+
+    const geoPath = d3.geoPath(geoProjection)
+    const geoHemisphere = d3.geoCircle()()
+
+    svg.append("circle")
+      .attr("r", 20)
+      .attr("fill", "#c1c1c1")
+      .attr("transform", `translate(${x + 24}, ${y + 42})`);
+
+    svg.append("path")
+      .attr("fill", "#FFFFFF")
+      .attr("d", `${geoProjection.rotate([lightAngle, 0, rotationZ]), geoPath(geoHemisphere)}`)
+      .attr("transform", `translate(${x + 24}, ${y + 42})`);
+
+    svg.append("circle")
+      .attr("r", 20)
+      .attr("fill", "none")
+      .attr("stroke", "#c1c1c1")
+      .attr("transform", `translate(${x + 24}, ${y + 42})`);
   }
 
 }
