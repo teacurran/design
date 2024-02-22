@@ -1,13 +1,14 @@
-import express, {Express, Request, Response} from "express";
-import dotenv from "dotenv";
-import * as suncalc from "suncalc";
-import * as d3 from 'd3';
-import {geoOrthographic} from 'd3-geo';
-import {JSDOM} from 'jsdom';
+import express, {Express, Request, Response} from "express"
+import dotenv from "dotenv"
+import * as suncalc from "suncalc"
+import * as d3 from 'd3'
+import {geoOrthographic} from 'd3-geo'
+import {JSDOM} from 'jsdom'
 import * as emoji from 'node-emoji'
-import * as fluent from 'fluentui-emoji-js';
-import * as fs from "fs";
-import * as path from "path";
+import * as fluent from 'fluentui-emoji-js'
+import * as fs from "fs"
+import * as path from "path"
+import * as puppeteer from "puppeteer"
 
 import {
   canadianHolidays,
@@ -390,10 +391,32 @@ app.get("/calendar", async (req: Request, res: Response): Promise<void> => {
 
 app.get("/moonmap", async (req: Request, res: Response): Promise<void> => {
   const calendar: Calendar = new Calendar();
+  calendar.optRainbowWeekends = true;
   const svgDom = calendar.getSvgAsDocumentDom()
   res.setHeader('Content-Type', 'image/svg+xml');
   res.send(svgDom.html());
-});
+})
+
+app.get("/moonmap.pdf", async (req: Request, res: Response): Promise<void> => {
+  const calendar: Calendar = new Calendar();
+  calendar.optRainbowWeekends = true;
+  const svgDom = calendar.getSvgAsDocumentDom()
+
+  const browser = await puppeteer.launch({headless: true});
+  const page = await browser.newPage();
+  await page.setContent(svgDom.html())
+  const pdf = await page.pdf({format: "A1", landscape: true, scale: 2});
+
+  res.contentType("application/pdf");
+  res.setHeader(
+    "Content-Disposition",
+    "attachment; filename=invoice.pdf"
+  );
+
+  res.send(pdf)
+
+})
+
 
 app.get("/daylight", async (req: Request, res: Response): Promise<void> => {
   const dom = new JSDOM('<!DOCTYPE html><body></body>');
