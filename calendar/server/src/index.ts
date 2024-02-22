@@ -68,7 +68,7 @@ app.get('/', (req: Request, res: Response): void => {
 
 app.get('/calendar2', async (req: Request, res: Response): Promise<void> => {
   const calendar: Calendar = new Calendar()
-  //calendar.optVermontWeekends = true
+  // calendar.optVermontWeekends = true
   calendar.optShowMoonPhase = true
   calendar.optVermontWeekends = true
   calendar.optShowGrid = true

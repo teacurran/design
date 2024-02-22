@@ -141,7 +141,6 @@ class Calendar {
           .attr('font-size', '12px')
           .attr('font-family', 'Helvetica')
 
-
         this.appendDayName(svg, x, y, date)
 
         if (this.optShowMoonIllumination) {
