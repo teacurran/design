@@ -36,16 +36,19 @@ class Calendar {
   monthNameFontFamily: string = "Helvetica"
   monthNameFontWeight: string = "bold"
 
-  optHighlightWeekends: boolean = false;
-  optShowDayNames: boolean = true;
-  optShowWeekendDayNames: boolean = true;
-  optRainbowDays1: boolean = false;
-  optRainbowDays2: boolean = false;
-  optRainbowDays3: boolean = false;
-  optRainbowWeekends: boolean = false;
-  optVermontWeekends: boolean = true;
-  optShowMoonIllumination: boolean = false;
-  optShowMoonPhase: boolean = true;
+  optHighlightWeekends: boolean = false
+  optShowDayNames: boolean = true
+  optShowWeekendDayNames: boolean = true
+  optRainbowDays1: boolean = false
+  optRainbowDays2: boolean = false
+  optRainbowDays3: boolean = false
+  optRainbowWeekends: boolean = false
+  optVermontWeekends: boolean = false
+  optShowMoonIllumination: boolean = false
+  optShowMoonPhase: boolean = false
+
+  optShowGrid: boolean = false
+  gridStroke: string = "#c1c1c1"
 
   constructor() {
     this.dom = new JSDOM('<!DOCTYPE html><body></body>')
@@ -85,6 +88,7 @@ class Calendar {
 
     for (let row = 0; row < totalRows; row++) {
       let weekendIndex = -1;
+      let moonPhases: string[] = [];
       for (let day = 0; day < totalColumns; day++) {
         const x = day * this.cellWidth
         const y = row * this.cellHeight + 99
@@ -127,7 +131,7 @@ class Calendar {
           .attr("height", this.cellHeight)
           .attr("x", x)
           .attr("y", y)
-          .attr("fill", cellBackgroundColor);
+          .attr("fill", cellBackgroundColor)
 
         // day number
         svg.append("text")
@@ -135,18 +139,39 @@ class Calendar {
           .attr("x", x + 5)
           .attr("y", y + 14)
           .attr("font-size", "12px")
-          .attr("font-family", "Helvetica");
+          .attr("font-family", "Helvetica")
 
         if (this.optShowMoonIllumination) {
           this.appendMoon(svg, date, x, y)
         }
 
         if (this.optShowMoonPhase) {
-          //this.appendMoonPhase(svg, date, x, y)
+          this.appendMoonPhase(svg, date, x, y, moonPhases)
         }
 
+        if (this.optShowGrid) {
+          svg.append("rect")
+            .attr("width", this.cellWidth)
+            .attr("height", this.cellHeight)
+            .attr("x", x)
+            .attr("y", y)
+            .attr("stroke", this.gridStroke)
+            .attr("fill", "none");
+        }
       }
     }
+
+    if (this.optShowGrid) {
+      svg.append("rect")
+        .attr("width", this.cellWidth * 31 - 1)
+        .attr("height", this.cellHeight * 12)
+        .attr("x", this.cellWidth)
+        .attr("y", this.headerHeight)
+        .attr("stroke", this.gridStroke)
+        .attr("stroke-width", 2)
+        .attr("fill", "none")
+    }
+
 
     return svg;
   }
@@ -231,6 +256,61 @@ class Calendar {
       .attr("transform", `translate(${x + 24}, ${y + 42})`);
   }
 
+  appendMoonPhase = (svg: d3.Selection<SVGSVGElement, unknown, null, undefined>, date: Date, x: number, y: number, moonPhases: string[]): void => {
+    const moonSize = 7;
+
+    const geoProjection = geoOrthographic()
+      .translate([0, 0])
+      .scale(moonSize);
+
+    const geoPath = d3.geoPath(geoProjection);
+    const geoHemisphere = d3.geoCircle()();
+
+    const moonIllumination = suncalc.getMoonIllumination(date);
+    const moonAngle = 180 - moonIllumination.phase * 360;
+
+    const moonPhase = Math.round(moonIllumination.phase * 1e3) / 1e3;
+    let moonPhaseName: string | undefined;
+
+    const moonY = y - 46;
+    const moonX = x - 3;
+    if (moonPhase <= 0.032) {
+      moonPhaseName = 'new moon';
+    } else if (moonPhase >= 0.22 && moonPhase <= 0.3) {
+      moonPhaseName = 'first quarter';
+    } else if (moonPhase >= 0.475 && moonPhase <= 0.52) {
+      moonPhaseName = 'full moon';
+    } else if (moonPhase >= 0.73 && moonPhase <= 0.76) {
+      moonPhaseName = 'last quarter';
+    }
+
+    let showMoon: boolean = false;
+    if (moonPhaseName) {
+      if (!moonPhases.includes(moonPhaseName)) {
+        moonPhases.push(moonPhaseName);
+        showMoon = true;
+      }
+    }
+    if (showMoon) {
+      const moonX = x + 35;
+      const moonY = y + 12;
+      svg.append("circle")
+        .attr("r", moonSize)
+        .attr("fill", "#c1c1c1")
+        .attr("transform", `translate(${moonX}, ${moonY})`);
+
+      svg.append("path")
+        .attr("fill", "#FFFFFF")
+        .attr("d", `${geoProjection.rotate([moonAngle, 0]), geoPath(geoHemisphere)}`)
+        .attr("transform", `translate(${moonX}, ${moonY})`);
+
+      svg.append("circle")
+        .attr("r", moonSize)
+        .attr("fill", "none")
+        .attr("stroke", "#000000")
+        .attr("transform", `translate(${moonX}, ${moonY})`);
+    }
+  }
 }
 
 export default Calendar
