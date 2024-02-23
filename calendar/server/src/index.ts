@@ -6,6 +6,8 @@ import { JSDOM } from 'jsdom'
 import * as emoji from 'node-emoji'
 import * as fluent from 'fluentui-emoji-js'
 import * as puppeteer from 'puppeteer'
+import * as Joi from "joi"
+import {ContainerTypes, createValidator, ValidatedRequest, ValidatedRequestSchema} from "express-joi-validation"
 
 import {
   canadianHolidays,
@@ -23,6 +25,8 @@ import Calendar from './Calendar'
 dotenv.config()
 
 const app: Express = express()
+const validator = createValidator()
+
 const port: string | number = process.env.PORT ?? 3000
 
 const optFriday13th: boolean = true
@@ -60,20 +64,39 @@ app.get('/', (req: Request, res: Response): void => {
   res.send('Express + TypeScript Server')
 })
 
-app.get('/calendar2', async (req: Request, res: Response): Promise<void> => {
+const calendarParams = Joi.object({
+  showGrid: Joi.boolean().optional().default(true),
+  vermontWeekends: Joi.boolean().optional().default(false),
+  showMoonPhases: Joi.boolean().optional().default(false),
+  showDayNames: Joi.boolean().optional().default(false),
+  hideWeekendDayNames: Joi.boolean().optional().default(false)
+})
+export interface CalendarRequest extends ValidatedRequestSchema {
+  [ContainerTypes.Query]: {
+    showGrid: boolean,
+    vermontWeekends: boolean,
+    showMoonPhases: boolean,
+    showDayNames: boolean,
+    hideWeekendDayNames: boolean
+  }
+}
+
+app.get('/calendar2',
+  validator.query(calendarParams),
+  async (req: ValidatedRequest<CalendarRequest>, res: Response): Promise<void> => {
   const calendar: Calendar = new Calendar()
   // calendar.optVermontWeekends = true
-  calendar.optShowMoonPhase = true
-  calendar.optVermontWeekends = true
-  calendar.optShowGrid = true
+  calendar.optShowMoonPhase = req.query.showMoonPhases
+  calendar.optVermontWeekends = req.query.vermontWeekends
+  calendar.optShowGrid = req.query.showGrid
   calendar.gridStroke = 'black'
-  calendar.gridBorderWidth = 10
   calendar.yearFill = 'black'
   calendar.yearX = 1400
   calendar.rotateMonthNames = true
   calendar.monthNameFill = 'black'
   calendar.optRainbowDays3 = false
-  calendar.optShowDayNames = true
+  calendar.optShowDayNames = req.query.showDayNames
+  calendar.hideWeekendDayNames = req.query.hideWeekendDayNames
   const svgDom: d3.Selection<HTMLElement, unknown, null, undefined> = calendar.getSvgAsDocumentDom()
   res.setHeader('Content-Type', 'image/svg+xml')
   res.send(svgDom.html())

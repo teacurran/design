@@ -37,7 +37,7 @@ class Calendar {
 
   optHighlightWeekends: boolean = false
   optShowDayNames: boolean = false
-  optShowWeekendDayNames: boolean = false
+  hideWeekendDayNames: boolean = false
   optRainbowDays1: boolean = false
   optRainbowDays2: boolean = false
   optRainbowDays3: boolean = false
@@ -48,7 +48,6 @@ class Calendar {
 
   optShowGrid: boolean = false
   gridStroke: string = '#c1c1c1'
-  gridBorderWidth: number = 2
 
   constructor () {
     this.dom = new JSDOM('<!DOCTYPE html><body></body>')
@@ -272,8 +271,8 @@ class Calendar {
   appendDayName = (svg: d3.Selection<SVGSVGElement, unknown, null, undefined>, x: number, y: number, date: Date): void => {
     let showDay = this.optShowDayNames
     const day = date.getDay()
-    if (day === 0 || day === 6) {
-      showDay = this.optShowWeekendDayNames
+    if (this.hideWeekendDayNames && (day === 0 || day === 6)) {
+      showDay = false
     }
 
     if (showDay) {
