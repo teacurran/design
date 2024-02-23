@@ -6,8 +6,8 @@ import { JSDOM } from 'jsdom'
 import * as emoji from 'node-emoji'
 import * as fluent from 'fluentui-emoji-js'
 import * as puppeteer from 'puppeteer'
-import * as Joi from "joi"
-import {ContainerTypes, createValidator, ValidatedRequest, ValidatedRequestSchema} from "express-joi-validation"
+import * as Joi from 'joi'
+import { type ContainerTypes, createValidator, type ValidatedRequest, type ValidatedRequestSchema } from 'express-joi-validation'
 
 import {
   canadianHolidays,
@@ -73,10 +73,10 @@ const calendarParams = Joi.object({
 })
 export interface CalendarRequest extends ValidatedRequestSchema {
   [ContainerTypes.Query]: {
-    showGrid: boolean,
-    vermontWeekends: boolean,
-    showMoonPhases: boolean,
-    showDayNames: boolean,
+    showGrid: boolean
+    vermontWeekends: boolean
+    showMoonPhases: boolean
+    showDayNames: boolean
     hideWeekendDayNames: boolean
   }
 }
@@ -84,23 +84,23 @@ export interface CalendarRequest extends ValidatedRequestSchema {
 app.get('/calendar2',
   validator.query(calendarParams),
   async (req: ValidatedRequest<CalendarRequest>, res: Response): Promise<void> => {
-  const calendar: Calendar = new Calendar()
-  // calendar.optVermontWeekends = true
-  calendar.optShowMoonPhase = req.query.showMoonPhases
-  calendar.optVermontWeekends = req.query.vermontWeekends
-  calendar.optShowGrid = req.query.showGrid
-  calendar.gridStroke = 'black'
-  calendar.yearFill = 'black'
-  calendar.yearX = 1400
-  calendar.rotateMonthNames = true
-  calendar.monthNameFill = 'black'
-  calendar.optRainbowDays3 = false
-  calendar.optShowDayNames = req.query.showDayNames
-  calendar.hideWeekendDayNames = req.query.hideWeekendDayNames
-  const svgDom: d3.Selection<HTMLElement, unknown, null, undefined> = calendar.getSvgAsDocumentDom()
-  res.setHeader('Content-Type', 'image/svg+xml')
-  res.send(svgDom.html())
-})
+    const calendar: Calendar = new Calendar()
+    // calendar.optVermontWeekends = true
+    calendar.optShowMoonPhase = req.query.showMoonPhases
+    calendar.optVermontWeekends = req.query.vermontWeekends
+    calendar.optShowGrid = req.query.showGrid
+    calendar.gridStroke = 'black'
+    calendar.yearFill = 'black'
+    calendar.yearX = 1400
+    calendar.rotateMonthNames = true
+    calendar.monthNameFill = 'black'
+    calendar.optRainbowDays3 = false
+    calendar.optShowDayNames = req.query.showDayNames
+    calendar.hideWeekendDayNames = req.query.hideWeekendDayNames
+    const svgDom: d3.Selection<HTMLElement, unknown, null, undefined> = calendar.getSvgAsDocumentDom()
+    res.setHeader('Content-Type', 'image/svg+xml')
+    res.send(svgDom.html())
+  })
 
 app.get('/calendar', async (req: Request, res: Response): Promise<void> => {
   const geoProjection = geoOrthographic()
