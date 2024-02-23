@@ -1,6 +1,4 @@
 declare module 'fluentui-emoji-js' {
-  import * as fs from 'fs/promises'
-  import * as path from 'path'
 
   const emojiFolder: string
   const emojiDataFile: string

@@ -25,11 +25,6 @@ dotenv.config()
 const app: Express = express()
 const port: string | number = process.env.PORT ?? 3000
 
-const DEFAULT_CELL_BG: string = 'rgba(255, 255, 255, 0)'
-const WEEKEND_CELL_BG: string = 'rgba(0, 0, 0, 0.1)'
-
-const optHighlightWeekends: boolean = false
-
 const optFriday13th: boolean = true
 const optPersonalHolidays: boolean = true
 const optUSFederalHolidays: boolean = false
@@ -45,7 +40,6 @@ const cellWidth: number = 50
 const cellHeight: number = 75
 const gridWidth: number = 32 * cellWidth
 const gridHeight: number = 12 * cellHeight
-const startDate: Date = new Date(2024, 0, 1)
 
 const appendEmoji = async (svg: any, value: string, x: number, y: number): Promise<void> => {
   const emojiName = emoji.which(value)
@@ -90,9 +84,6 @@ app.get('/calendar', async (req: Request, res: Response): Promise<void> => {
     .translate([0, 0])
     .scale(10)
 
-  const geoPath = d3.geoPath(geoProjection)
-  const geoHemisphere = d3.geoCircle()()
-
   const width = gridWidth
   const height = gridHeight + 100
 
@@ -113,32 +104,13 @@ app.get('/calendar', async (req: Request, res: Response): Promise<void> => {
 
   const totalColumns = 32
   const totalRows = 12
-  const maxDistance = Math.sqrt(Math.pow(totalRows - 1, 2) + Math.pow(totalColumns - 1, 2))
 
   for (let row = 0; row < totalRows; row++) {
-    let weekendIndex = -1
     for (let col = 0; col < totalColumns; col++) {
       const x = col * cellWidth
       const y = row * cellHeight + 99
 
       const date = new Date(new Date().getFullYear(), row, col)
-      const day = date.getDate()
-      const month = date.getMonth()
-      const year = date.getFullYear()
-
-      let cellBackgroundColor = DEFAULT_CELL_BG
-
-      let isWeekend = false
-      if (date.getDay() == 0 || date.getDay() == 6) {
-        isWeekend = true
-        weekendIndex++
-      }
-
-      if (optHighlightWeekends && date.getMonth() === row) {
-        if (date.getDay() == 0 || date.getDay() == 6) {
-          cellBackgroundColor = WEEKEND_CELL_BG
-        }
-      }
 
       // if the month different than row then it's the next month and should be blank
       if (date.getMonth() === row) {

@@ -68,23 +68,25 @@ class Calendar {
   getSvg = (): d3.Selection<SVGSVGElement, unknown, null, undefined> => {
     const width = this.gridWidth
     const height = this.gridHeight + this.headerHeight
+    const totalColumns = 32
+    const totalRows = 12
+
+    const year = this.startDate.getFullYear()
 
     const svg = this.documentBody.append('svg')
       .attr('width', width)
       .attr('height', height)
     svg.attr('xmlns', 'http://www.w3.org/2000/svg')
 
+    // year header
     svg.append('text')
-      .text(this.startDate.getFullYear())
+      .text(year)
       .attr('x', this.yearX)
       .attr('y', this.yearY)
       .attr('fill', this.yearFill)
       .attr('font-size', this.yearFontSize)
       .attr('font-family', this.yearFontFamily)
       .attr('font-weight', this.yearFontWeight)
-
-    const totalColumns = 32
-    const totalRows = 12
 
     for (let row = 0; row < totalRows; row++) {
       let weekendIndex = -1
@@ -93,9 +95,9 @@ class Calendar {
         const x = day * this.cellWidth
         const y = row * this.cellHeight + 99
 
-        const date = new Date(new Date().getFullYear(), row, day)
+        const date = new Date(year, row, day)
         const month = date.getMonth()
-        const year = date.getFullYear()
+        const dayOfWeek = date.getDay()
 
         // Set the time to 9:00 PM local time initially
         date.setHours(21, 0, 0, 0) // 21:00 hours, 0 minutes, 0 seconds, 0 milliseconds
@@ -109,23 +111,22 @@ class Calendar {
         date.setMinutes(date.getMinutes() + totalOffset)
 
         let isWeekend = false
-        if (date.getDay() == 0 || date.getDay() == 6) {
+        if (dayOfWeek === 0 || dayOfWeek === 6) {
           isWeekend = true
           weekendIndex++
         }
-
-        const cellBackgroundColor: string = this.getBackgroundColor(date, isWeekend, weekendIndex)
 
         if (day === 0) {
           this.appendMonthCell(svg, row, x, y)
           continue
         }
 
-        if (date.getMonth() != row) {
+        if (month !== row) {
           continue
         }
 
         // cell background
+        const cellBackgroundColor: string = this.getBackgroundColor(date, isWeekend, weekendIndex)
         svg.append('rect')
           .attr('width', this.cellWidth)
           .attr('height', this.cellHeight)
@@ -136,7 +137,7 @@ class Calendar {
         // day number
         svg.append('text')
           .text(day)
-          .attr('x', x + 5)
+          .attr('x', x + this.cellPadding)
           .attr('y', y + 14)
           .attr('font-size', '12px')
           .attr('font-family', 'Helvetica')
@@ -164,7 +165,6 @@ class Calendar {
     }
 
     if (this.optShowGrid) {
-      const borderRightOffset: number = this.gridBorderWidth > 1 ? -1 : 0
       svg.append('rect')
         .attr('width', this.cellWidth * 31)
         .attr('height', this.cellHeight * 12 + 2)
@@ -253,6 +253,7 @@ class Calendar {
   }
 
   appendMonthCell = (svg: d3.Selection<SVGSVGElement, unknown, null, undefined>, row: number, x: number, y: number): void => {
+    // NOSONAR
     // draw.line(x, y + cellHeight, x + cellWidth, y + cellHeight).stroke(BORDER_COLOR);
     const textObj = svg.append('text')
       .text(this.getMonthName(row))
@@ -270,7 +271,8 @@ class Calendar {
 
   appendDayName = (svg: d3.Selection<SVGSVGElement, unknown, null, undefined>, x: number, y: number, date: Date): void => {
     let showDay = this.optShowDayNames
-    if (date.getDay() == 0 || date.getDay() == 6) {
+    const day = date.getDay()
+    if (day === 0 || day === 6) {
       showDay = this.optShowWeekendDayNames
     }
 
@@ -296,7 +298,6 @@ class Calendar {
 
     const moonIllumination = suncalc.getMoonIllumination(date)
     const lightAngle = 180 - moonIllumination.phase * 360
-    const darkAngle = lightAngle + 180
 
     const { parallacticAngle } = suncalc.getMoonPosition(
       date,
@@ -314,6 +315,8 @@ class Calendar {
       .attr('fill', '#c1c1c1')
       .attr('transform', `translate(${x + 24}, ${y + 42})`)
 
+    // noinspection CommaExpressionJS
+    // NOSONAR
     svg.append('path')
       .attr('fill', '#FFFFFF')
       .attr('d', `${geoProjection.rotate([lightAngle, 0, rotationZ]), geoPath(geoHemisphere)}`)
@@ -342,8 +345,6 @@ class Calendar {
     const moonPhase = Math.round(moonIllumination.phase * 1e3) / 1e3
     let moonPhaseName: string | undefined
 
-    const moonY = y - 46
-    const moonX = x - 3
     if (moonPhase <= 0.032) {
       moonPhaseName = 'new moon'
     } else if (moonPhase >= 0.22 && moonPhase <= 0.3) {
@@ -369,6 +370,10 @@ class Calendar {
         .attr('fill', '#c1c1c1')
         .attr('transform', `translate(${moonX}, ${moonY})`)
 
+      geoProjection.rotate([moonAngle, 0])
+
+      // noinspection CommaExpressionJS
+      // NOSONAR
       svg.append('path')
         .attr('fill', '#FFFFFF')
         .attr('d', `${geoProjection.rotate([moonAngle, 0]), geoPath(geoHemisphere)}`)
