@@ -81,7 +81,7 @@ export interface CalendarRequest extends ValidatedRequestSchema {
   }
 }
 
-app.get('/calendar2',
+app.get('/calendar',
   validator.query(calendarParams),
   async (req: ValidatedRequest<CalendarRequest>, res: Response): Promise<void> => {
     const calendar: Calendar = new Calendar()
@@ -102,7 +102,7 @@ app.get('/calendar2',
     res.send(svgDom.html())
   })
 
-app.get('/calendar', async (req: Request, res: Response): Promise<void> => {
+app.get('/calendar2', async (req: Request, res: Response): Promise<void> => {
   const geoProjection = geoOrthographic()
     .translate([0, 0])
     .scale(10)

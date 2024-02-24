@@ -10,8 +10,7 @@
     "dev": "npm run eslint && tsc -w",
     "lint": "npx eslint 'src/**/*.ts'",
     "lint-fix": "npx eslint 'src/**/*.ts' --fix",
-    "api-dev": "npm install && nodemon src/index.ts",
-    "prepare": "husky"
+    "api-dev": "npm install && nodemon src/index.ts"
   },
   "keywords": [],
   "author": "",
