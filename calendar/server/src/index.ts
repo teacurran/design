@@ -27,6 +27,13 @@ dotenv.config()
 const app: Express = express()
 const validator = createValidator()
 
+// allow CORS from anywhere
+app.use((req: Request, res: Response, next: () => void): void => {
+  res.header('Access-Control-Allow-Origin', '*')
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept')
+  next()
+})
+
 const port: string | number = process.env.PORT ?? 3000
 
 const optFriday13th: boolean = true

@@ -4,7 +4,7 @@ services:
   client:
     image: client
     build:
-      context: ./client   
+      context: ./client
     working_dir: /app
     command: npm start
     volumes:
@@ -13,13 +13,14 @@ services:
 
     environment:
       - NODE_ENV=development
+      - PORT=3401
     ports:
-      - "3401:3000"
+      - "3401:3401"
 
   server:
     image: server
     build:
-      context: ./server   
+      context: ./server
     working_dir: /app
     command: npm run api-dev
     volumes:
