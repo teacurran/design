@@ -75,7 +75,9 @@ class Calendar {
     const svg = this.documentBody.append('svg')
       .attr('width', width)
       .attr('height', height)
-    svg.attr('xmlns', 'http://www.w3.org/2000/svg')
+      .attr('xmlns', 'http://www.w3.org/2000/svg')
+      .attr('viewBox', `0 0 ${width} ${height}`)
+      .attr('preserveAspectRatio', 'xMidYMid meet')
 
     // year header
     svg.append('text')

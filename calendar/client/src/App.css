@@ -2,3 +2,19 @@
   text-align: center;
 }
 
+.leftMenu {
+    padding: 10px;
+}
+
+.mainContent {
+    padding: 10px 10px 50px 20px;
+    vertical-align: top;
+}
+
+.mainContent div {
+}
+
+.mainContent svg {
+    width: 100%;
+    height: auto;
+}

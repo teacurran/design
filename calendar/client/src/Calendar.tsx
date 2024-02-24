@@ -22,18 +22,19 @@ function Calendar() {
     return (
         <div className="calendar-frame">
             <Splitter style={{height: '100%'}}>
-                <SplitterPanel className="flex align-items-top justify-content-left">
+                <SplitterPanel className="leftMenu flex align-items-top justify-content-left" size={10}>
                     <Accordion activeIndex={0}>
                         <AccordionTab header="options">
-                            <Checkbox inputId="ingredient2" name="pizza" value="Mushroom" onChange={(e) => setShowMoonPhases(e.checked)}
-                                        checked={showMoonPhases ?? false}
+                            <Checkbox inputId="showMoonPhases"
+                                      onChange={(e) => setShowMoonPhases(e.checked)}
+                                      checked={showMoonPhases ?? false}
                             />
-
+                            <label htmlFor="showMoonPhases" className="ml-2">Show moon phases</label>
                         </AccordionTab>
                     </Accordion>
 
                 </SplitterPanel>
-                <SplitterPanel className="flex align-items-center justify-content-center">
+                <SplitterPanel className="mainContent flex align-items-center justify-content-center">
                     <div dangerouslySetInnerHTML={{__html: svg}}/>
                 </SplitterPanel>
             </Splitter>
