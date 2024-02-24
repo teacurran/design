@@ -1,26 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import { PrimeReactProvider, PrimeReactContext } from 'primereact/api';
 
-import logo from './logo.svg';
+import "primereact/resources/themes/lara-light-cyan/theme.css";
+
+
 import './App.css';
+import Calendar from "./Calendar";
 
 function App() {
-    const [svg, setSvg] = useState('');
-
-    useEffect(() => {
-        fetch('http://localhost:3400/calendar')
-            .then((response) => response.text())
-            .then((data) => {
-                setSvg(data);
-            })
-            .catch((error) => {
-                console.error('Error fetching SVG:', error);
-            });
-    }, []);
 
   return (
-    <div className="App">
-        <div dangerouslySetInnerHTML={{__html: svg}}/>
-    </div>
+      <PrimeReactProvider>
+        <Calendar />
+      </PrimeReactProvider>
   );
 }
 
