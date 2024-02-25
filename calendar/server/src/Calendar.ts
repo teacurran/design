@@ -111,6 +111,11 @@ class Calendar {
         // Adjust the date to EST
         date.setMinutes(date.getMinutes() + totalOffset)
 
+        // Convert the date to EST string
+        const estDateString = date.toLocaleString("en-US", {timeZone: "America/New_York"});
+
+        const estDate = new Date(estDateString);
+
         let isWeekend = false
         if (dayOfWeek === 0 || dayOfWeek === 6) {
           isWeekend = true
@@ -127,7 +132,7 @@ class Calendar {
         }
 
         // cell background
-        const cellBackgroundColor: string = this.getBackgroundColor(date, isWeekend, weekendIndex)
+        const cellBackgroundColor: string = this.getBackgroundColor(estDate, isWeekend, weekendIndex)
         svg.append('rect')
           .attr('width', this.cellWidth)
           .attr('height', this.cellHeight)
@@ -143,14 +148,14 @@ class Calendar {
           .attr('font-size', '12px')
           .attr('font-family', 'Helvetica')
 
-        this.appendDayName(svg, x, y, date)
+        this.appendDayName(svg, x, y, estDate)
 
         if (this.optShowMoonIllumination) {
-          this.appendMoon(svg, date, x, y)
+          this.appendMoon(svg, estDate, x, y)
         }
 
         if (this.optShowMoonPhase) {
-          this.appendMoonPhase(svg, date, x, y, moonPhases)
+          this.appendMoonPhase(svg, estDate, x, y, moonPhases)
         }
 
         if (this.optShowGrid) {
