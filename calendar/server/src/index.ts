@@ -1,8 +1,8 @@
-import express, {type Express, type Request, type Response} from 'express'
+import express, { type Express, type Request, type Response } from 'express'
 import dotenv from 'dotenv'
 import * as d3 from 'd3'
-import {geoOrthographic} from 'd3-geo'
-import {JSDOM} from 'jsdom'
+import { geoOrthographic } from 'd3-geo'
+import { JSDOM } from 'jsdom'
 import * as emoji from 'node-emoji'
 import * as fluent from 'fluentui-emoji-js'
 import * as puppeteer from 'puppeteer'
@@ -114,12 +114,11 @@ app.get('/calendar',
     calendar.hideWeekendDayNames = req.query.hideWeekendDayNames
     const svgDom: d3.Selection<HTMLElement, unknown, null, undefined> = calendar.getSvgAsDocumentDom()
 
-
     if (req.query.format === 'pdf') {
-      const browser = await puppeteer.launch({headless: true, args: ['--no-sandbox', '--disable-setuid-sandbox']})
+      const browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox', '--disable-setuid-sandbox'] })
       const page = await browser.newPage()
       await page.setContent(svgDom.html())
-      const pdf = await page.pdf({format: 'A1', landscape: true, scale: 2})
+      const pdf = await page.pdf({ format: 'A1', landscape: true, scale: 2 })
 
       // set the filename with todays date
       const filename = `calendar-${new Date().toISOString().split('T')[0]}.pdf`
@@ -266,10 +265,10 @@ app.get('/moonmap.pdf', async (req: Request, res: Response): Promise<void> => {
   calendar.optRainbowWeekends = true
   const svgDom = calendar.getSvgAsDocumentDom()
 
-  const browser = await puppeteer.launch({headless: true})
+  const browser = await puppeteer.launch({ headless: true })
   const page = await browser.newPage()
   await page.setContent(svgDom.html())
-  const pdf = await page.pdf({format: 'A1', landscape: true, scale: 2})
+  const pdf = await page.pdf({ format: 'A1', landscape: true, scale: 2 })
 
   res.contentType('application/pdf')
   res.setHeader(
