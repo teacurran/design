@@ -50,6 +50,10 @@ function Calendar() {
 
   const themes = [
     {
+      label: 'None',
+      value: ''
+    },
+    {
       label: 'Vermont Weekends',
       value: 'vermontWeekends'
     },
