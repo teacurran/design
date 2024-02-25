@@ -114,10 +114,16 @@ app.get('/calendar',
     calendar.hideWeekendDayNames = req.query.hideWeekendDayNames
     const svgDom: d3.Selection<HTMLElement, unknown, null, undefined> = calendar.getSvgAsDocumentDom()
 
-    if (req.query.format === 'pdf') {
-      const browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox', '--disable-setuid-sandbox'] })
-      const page = await browser.newPage()
+    let browser: puppeteer.Browser
+    let page: puppeteer.Page | undefined
+
+    if (req.query.format === 'pdf' || req.query.format === 'png') {
+      browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox', '--disable-setuid-sandbox'] })
+      page = await browser.newPage()
       await page.setContent(svgDom.html())
+    }
+
+    if (req.query.format === 'pdf' && page != undefined ) {
       const pdf = await page.pdf({ format: 'A1', landscape: true, scale: 2 })
 
       // set the filename with todays date
@@ -132,6 +138,26 @@ app.get('/calendar',
       res.send(pdf)
       return
     }
+
+    if (req.query.format === 'png' && page != undefined) {
+      const png = await page.screenshot({
+        type: 'png',
+        fullPage: true
+      })
+
+      // set the filename with todays date
+      const filename = `calendar-${new Date().toISOString().split('T')[0]}.png`
+
+      res.contentType('image/png')
+      res.setHeader(
+        'Content-Disposition',
+        `attachment; filename=${filename}`
+      )
+
+      res.send(png)
+      return
+    }
+
 
     res.setHeader('Content-Type', 'image/svg+xml')
     res.send(svgDom.html())

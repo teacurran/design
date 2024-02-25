@@ -7,7 +7,6 @@ import {Divider} from "primereact/divider";
 
 function Calendar() {
   const [url, setUrl] = useState('')
-  const [queryString, setQueryString] = useState('')
   const [svg, setSvg] = useState('')
 
   const [showMoonPhases, setShowMoonPhases] = useState<boolean>(false)
@@ -21,7 +20,6 @@ function Calendar() {
     queryString += `?showMoonPhases=${showMoonPhases}`
     queryString += `&showGrid=${showGrid}`
 
-    setQueryString(queryString)
     setUrl(`${url}${queryString}`)
 
   }, [showMoonPhases, showGrid]);
@@ -63,9 +61,17 @@ function Calendar() {
               </div>
             </AccordionTab>
             <AccordionTab header="export">
-              <Button label="download PNG" icon="pi pi-image"/>
+              <a href={`${url}&format=png`} download="calendar.pdf" className="p-button font-bold">
+                <span className="pi pi-image"></span>{''}
+                &nbsp;&nbsp;PNG&nbsp;&nbsp;
+                <span className="pi pi-download"></span>
+              </a>
               <Divider/>
-              <a href={`${url}&format=pdf`} download="calendar.pdf" target="_blank">download PDF</a>
+              <a href={`${url}&format=pdf`} download="calendar.pdf" className="p-button font-bold">
+                <span className="pi pi-file-pdf"></span>{''}
+                &nbsp;&nbsp;PDF&nbsp;&nbsp;
+                <span className="pi pi-download"></span>
+              </a>
             </AccordionTab>
           </Accordion>
 

@@ -11,10 +11,11 @@
     vertical-align: top;
 }
 
-.mainContent div {
-}
-
 .mainContent svg {
     width: 100%;
     height: auto;
+}
+
+.p-button {
+  text-decoration: none;
 }
