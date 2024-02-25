@@ -81,8 +81,12 @@ const calendarParams = Joi.object({
   showGrid: Joi.boolean().optional().default(true),
   vermontWeekends: Joi.boolean().optional().default(false),
   showMoonPhases: Joi.boolean().optional().default(false),
+  showMoonIllunination: Joi.boolean().optional().default(false),
   showDayNames: Joi.boolean().optional().default(false),
-  hideWeekendDayNames: Joi.boolean().optional().default(false)
+  hideWeekendDayNames: Joi.boolean().optional().default(false),
+  theme: Joi.string().optional().default('vermontWeekends')
+    .allow(null, '', 'vermontWeekends', 'rainbowWeekends', 'rainbowDays1', 'rainbowDays2', 'rainbowDays3'),
+  rotateMonthNames: Joi.boolean().optional().default(true)
 })
 
 export interface CalendarRequest extends ValidatedRequestSchema {
@@ -91,8 +95,11 @@ export interface CalendarRequest extends ValidatedRequestSchema {
     showGrid: boolean
     vermontWeekends: boolean
     showMoonPhases: boolean
+    showMoonIllunination: boolean
     showDayNames: boolean
     hideWeekendDayNames: boolean
+    theme: string
+    rotateMonthNames: boolean
   }
 }
 
@@ -107,11 +114,25 @@ app.get('/calendar',
     calendar.gridStroke = 'black'
     calendar.yearFill = 'black'
     calendar.yearX = 1400
-    calendar.rotateMonthNames = true
+    calendar.rotateMonthNames = req.query.rotateMonthNames
     calendar.monthNameFill = 'black'
-    calendar.optRainbowDays3 = false
     calendar.optShowDayNames = req.query.showDayNames
     calendar.hideWeekendDayNames = req.query.hideWeekendDayNames
+    calendar.optShowMoonIllumination = req.query.showMoonIllunination
+
+    const theme = req.query.theme
+    if (theme === 'vermontWeekends') {
+      calendar.optVermontWeekends = true
+    } else if (theme === 'rainbowWeekends') {
+      calendar.optRainbowWeekends = true
+    } else if (theme === 'rainbowDays1') {
+      calendar.optRainbowDays1 = true
+    } else if (theme === 'rainbowDays2') {
+      calendar.optRainbowDays2 = true
+    } else if (theme === 'rainbowDays3') {
+      calendar.optRainbowDays3 = true
+    }
+
     const svgDom: d3.Selection<HTMLElement, unknown, null, undefined> = calendar.getSvgAsDocumentDom()
 
     let browser: puppeteer.Browser

@@ -6,6 +6,16 @@
     padding: 10px;
 }
 
+.leftMenu .p-accordion-content ul {
+  list-style-type: none;
+  margin-block-start: 0;
+  padding-inline-start: 0;
+}
+
+.leftMenu .p-accordion-content ul li {
+  padding-bottom: 10px;
+}
+
 .mainContent {
     padding: 10px 10px 50px 20px;
     vertical-align: top;

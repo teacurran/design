@@ -95,10 +95,10 @@ const vermontMonthlyColors2 = [
     '#F0F8FF', '#F0F8FF'],
   ['#E9F7EF', '#E9F7EF', '#E9F7EF', '#E9F7EF',
     '#E9F7EF', '#E9F7EF', '#E9F7EF', '#E9F7EF',
-    '#d1a4fd', '#d1a4fd'], // Early spring, snow melting, fresh greens
+    '#d1a4fd', '#d1a4fd'],
   ['#7CFC00', '#c8fc9f', '#c8fc9f', '#c8fc9f',
     '#c8fc9f', '#c8fc9f', '#c8fc9f', '#c8fc9f',
-    '#c8fc9f', '#c8fc9f'], // Spring, clear skies, blooming flowers
+    '#c8fc9f', '#d1a4fd'],
   ['#82E0AA', '#D0ECE7', '#A2D9CE', '#73C6B6',
     '#45B39D', '#58D68D', '#82E0AA', '#ABEBC6',
     '#D5F5E3', '#FEF9E7'], // Late spring, lush landscapes
