@@ -123,7 +123,7 @@ app.get('/calendar',
       await page.setContent(svgDom.html())
     }
 
-    if (req.query.format === 'pdf' && page != undefined ) {
+    if (req.query.format === 'pdf' && page != undefined) {
       const pdf = await page.pdf({ format: 'A1', landscape: true, scale: 2 })
 
       // set the filename with todays date
@@ -157,7 +157,6 @@ app.get('/calendar',
       res.send(png)
       return
     }
-
 
     res.setHeader('Content-Type', 'image/svg+xml')
     res.send(svgDom.html())
