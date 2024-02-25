@@ -4,6 +4,11 @@ RUN mkdir -p /app
 
 WORKDIR /app
 
+RUN apk add chromium
+
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
+    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+
 COPY ./package.json ./
 COPY ./package-lock.json ./
 RUN npm install

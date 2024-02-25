@@ -1,13 +1,18 @@
-import express, { type Express, type Request, type Response } from 'express'
+import express, {type Express, type Request, type Response} from 'express'
 import dotenv from 'dotenv'
 import * as d3 from 'd3'
-import { geoOrthographic } from 'd3-geo'
-import { JSDOM } from 'jsdom'
+import {geoOrthographic} from 'd3-geo'
+import {JSDOM} from 'jsdom'
 import * as emoji from 'node-emoji'
 import * as fluent from 'fluentui-emoji-js'
 import * as puppeteer from 'puppeteer'
 import * as Joi from 'joi'
-import { type ContainerTypes, createValidator, type ValidatedRequest, type ValidatedRequestSchema } from 'express-joi-validation'
+import {
+  type ContainerTypes,
+  createValidator,
+  type ValidatedRequest,
+  type ValidatedRequestSchema
+} from 'express-joi-validation'
 
 import {
   canadianHolidays,
@@ -72,14 +77,17 @@ app.get('/', (req: Request, res: Response): void => {
 })
 
 const calendarParams = Joi.object({
+  format: Joi.string().optional().default('svg').allow(null, 'svg', 'pdf'),
   showGrid: Joi.boolean().optional().default(true),
   vermontWeekends: Joi.boolean().optional().default(false),
   showMoonPhases: Joi.boolean().optional().default(false),
   showDayNames: Joi.boolean().optional().default(false),
   hideWeekendDayNames: Joi.boolean().optional().default(false)
 })
+
 export interface CalendarRequest extends ValidatedRequestSchema {
   [ContainerTypes.Query]: {
+    format: string
     showGrid: boolean
     vermontWeekends: boolean
     showMoonPhases: boolean
@@ -105,6 +113,27 @@ app.get('/calendar',
     calendar.optShowDayNames = req.query.showDayNames
     calendar.hideWeekendDayNames = req.query.hideWeekendDayNames
     const svgDom: d3.Selection<HTMLElement, unknown, null, undefined> = calendar.getSvgAsDocumentDom()
+
+
+    if (req.query.format === 'pdf') {
+      const browser = await puppeteer.launch({headless: true, args: ['--no-sandbox', '--disable-setuid-sandbox']})
+      const page = await browser.newPage()
+      await page.setContent(svgDom.html())
+      const pdf = await page.pdf({format: 'A1', landscape: true, scale: 2})
+
+      // set the filename with todays date
+      const filename = `calendar-${new Date().toISOString().split('T')[0]}.pdf`
+
+      res.contentType('application/pdf')
+      res.setHeader(
+        'Content-Disposition',
+        `attachment; filename=${filename}`
+      )
+
+      res.send(pdf)
+      return
+    }
+
     res.setHeader('Content-Type', 'image/svg+xml')
     res.send(svgDom.html())
   })
@@ -237,10 +266,10 @@ app.get('/moonmap.pdf', async (req: Request, res: Response): Promise<void> => {
   calendar.optRainbowWeekends = true
   const svgDom = calendar.getSvgAsDocumentDom()
 
-  const browser = await puppeteer.launch({ headless: true })
+  const browser = await puppeteer.launch({headless: true})
   const page = await browser.newPage()
   await page.setContent(svgDom.html())
-  const pdf = await page.pdf({ format: 'A1', landscape: true, scale: 2 })
+  const pdf = await page.pdf({format: 'A1', landscape: true, scale: 2})
 
   res.contentType('application/pdf')
   res.setHeader(
