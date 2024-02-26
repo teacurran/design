@@ -388,7 +388,7 @@ class Calendar {
       svg.append('circle')
         .attr('r', moonSize)
         .attr('fill', 'none')
-        .attr('stroke', '#000000')
+        .attr('stroke', '#c1c1c1')
         .attr('transform', `translate(${moonX}, ${moonY})`)
     }
   }
