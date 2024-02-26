@@ -5,6 +5,9 @@ resource "aws_subnet" "subnet1" {
   cidr_block              = cidrsubnet(aws_vpc.main.cidr_block, 8, 1)
   map_public_ip_on_launch = true
   availability_zone       = "us-east-1a"
+  tags = merge(local.tags, {
+    Name = "public-subnet-1"
+  })
 }
 
 resource "aws_subnet" "subnet2" {
@@ -12,6 +15,9 @@ resource "aws_subnet" "subnet2" {
   cidr_block              = cidrsubnet(aws_vpc.main.cidr_block, 8, 2)
   map_public_ip_on_launch = true
   availability_zone       = "us-east-1b"
+  tags = merge(local.tags, {
+    Name = "public-subnet-2"
+  })
 }
 
 resource "aws_internet_gateway" "internet_gateway" {
