@@ -2,7 +2,7 @@ locals {
   config = {
     defaults = {
       site = "calendar"
-      domain_name = "calendar.mostlycats.com"
+      domain_name = "calendar.mostlycats.org"
     }
 
     dev = {

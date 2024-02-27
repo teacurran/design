@@ -1,5 +1,5 @@
 resource "aws_lb" "calendar" {
-  name               = "calendar-mostlycats-com"
+  name               = replace(local.domain_name, ".", "-")
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.web_traffic.id]

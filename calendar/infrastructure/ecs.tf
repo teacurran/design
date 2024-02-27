@@ -1,3 +1,3 @@
 resource "aws_ecs_cluster" "calendar" {
-  name = "calendar.mostlycats.com"
+  name = replace(local.domain_name, ".", "-")
 }

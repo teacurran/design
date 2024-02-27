@@ -22,9 +22,10 @@ resource "aws_subnet" "subnet2" {
 
 resource "aws_internet_gateway" "internet_gateway" {
   vpc_id = aws_vpc.main.id
-  tags = {
-    Name = "internet_gateway"
-  }
+  tags   = merge(local.tags, {
+      Name = "internet_gateway"
+    }
+  )
 }
 
 resource "aws_route_table" "route_table" {
@@ -33,6 +34,10 @@ resource "aws_route_table" "route_table" {
     cidr_block = "0.0.0.0/0"
     gateway_id = aws_internet_gateway.internet_gateway.id
   }
+  tags   = merge(local.tags, {
+      Name = "public-egress"
+    }
+  )
 }
 
 resource "aws_route_table_association" "subnet_route" {

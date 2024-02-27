@@ -17,6 +17,10 @@ resource "aws_security_group" "allow_all" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
+  tags   = merge(local.tags, {
+    Name = "all-web-traffic"
+  })
 }
 
 resource "aws_security_group" "web_traffic" {
@@ -46,4 +50,8 @@ resource "aws_security_group" "web_traffic" {
     cidr_blocks = ["0.0.0.0/0"]
     description = "Allow all outbound traffic"
   }
+
+  tags   = merge(local.tags, {
+    Name = "ecs-web-traffic"
+  })
 }

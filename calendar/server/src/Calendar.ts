@@ -112,9 +112,9 @@ class Calendar {
         date.setMinutes(date.getMinutes() + totalOffset)
 
         // Convert the date to EST string
-        const estDateString = date.toLocaleString("en-US", {timeZone: "America/New_York"});
+        const estDateString = date.toLocaleString('en-US', { timeZone: 'America/New_York' })
 
-        const estDate = new Date(estDateString);
+        const estDate = new Date(estDateString)
 
         let isWeekend = false
         if (dayOfWeek === 0 || dayOfWeek === 6) {
