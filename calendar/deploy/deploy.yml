@@ -1,0 +1,33 @@
+---
+- name: calendar.mostlycats.org
+  hosts: 127.0.0.1
+  gather_facts:
+  connection: local
+  vars:
+    app_name: "calendar.mostlycats.org"
+    git_hash: "{{ git_hash_cmd_result.stdout }}"
+    task_execution_role_arn: "arn:aws:iam::529513974030:role/ecsTaskExecutionRole"
+    ecr_image_name: "{{ app_name }}"
+    task_name: "api"
+    env: "production"
+
+  tasks:
+    - name: Compute git hash
+      command: "git rev-parse HEAD"
+      register: git_hash_cmd_result
+      tags: git
+
+    - name: Get the current caller identity facts
+      aws_caller_info:
+      register: caller_info
+
+    - name: Create ECS files directory {{item}}
+      file:
+        path: ./build/
+        state: directory
+
+    - name: Create ECS task definition
+      template: src=templates/ecs_task_definition.json.j2
+        dest=./build/ecs_task_definition.json
+      tags: config
+

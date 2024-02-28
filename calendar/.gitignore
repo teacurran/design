@@ -83,3 +83,5 @@ dist
 .dynamodb/
 
 .env
+
+deploy/build

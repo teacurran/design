@@ -1,0 +1,47 @@
+{
+  "requiresCompatibilities": [
+    "FARGATE"
+  ],
+  "family": "{{app_name}}_{{task_name}}_{{env}}",
+  "networkMode": "awsvpc",
+  "executionRoleArn": "{{task_execution_role_arn}}",
+  "cpu": "512",
+  "memory": "2048",
+  "healthCheckGracePeriodSeconds": 90,
+  "containerDefinitions": [{
+    "name": "{{app_name}}_{{task_name}}_{{env}}",
+    "image": "{{ecr_image_name}}",
+    "cpu": 512,
+    "memory": 2048,
+    "essential": true,
+    "portMappings": [
+      {
+        "hostPort": 9000,
+        "containerPort": 9000,
+        "protocol": "tcp"
+      }
+    ],
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-create-group": "true",
+        "awslogs-group": "{{app_name}}-{{env}}-{{task_name}}",
+        "awslogs-region": "us-west-2",
+        "awslogs-stream-prefix": "{{app_name}}-{{env}}"
+      }
+    },
+    "environment": [
+      {
+        "name" : "IS_RUNNING_ON_ECS",
+        "value" : "TRUE"
+      }
+    ],
+    "ulimits": [
+      {
+        "name": "nofile",
+        "softLimit": 65535,
+        "hardLimit": 65535
+      }
+    ],
+  }]
+}
