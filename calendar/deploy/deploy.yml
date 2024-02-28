@@ -4,7 +4,7 @@
   gather_facts:
   connection: local
   vars:
-    app_name: "calendar.mostlycats.org"
+    app_name: "calendar"
     app_version: "1.0"
     git_hash: "{{ git_hash_cmd_result.stdout }}"
     task_execution_role_arn: "arn:aws:iam::860331263758:role/calendar-ecs-execution-task-role"
