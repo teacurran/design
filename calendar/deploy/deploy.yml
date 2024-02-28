@@ -18,8 +18,8 @@
     task_name: "api"
     env: "production"
     subnets:
-      - "subnet-0a2b5a9ffe6944395"
-      - "subnet-07e55c664736ddff6"
+      - "subnet-01cbf0d39e5db2894"
+      - "subnet-0e3c68e42c2a46984"
 
   tasks:
     - name: Compute git hash
@@ -121,11 +121,11 @@
       ecs_service:
         state: present
         name: "{{app_name}}_{{task_name}}_{{env}}"
-        cluster: "calendar-msotlycats-org"
+        cluster: "calendar-mostlycats-org"
         launch_type: FARGATE
         force_new_deployment: true
         network_configuration:
-          subnets: subnets
+          subnets: "{{subnets}}"
           security_groups:
             - "sg-08a99c8c2bde0af35"
         task_definition: "{{app_name}}_{{task_name}}_{{env}}"
@@ -134,7 +134,7 @@
           minimum_healthy_percent: 100
           maximum_percent: 200
         load_balancers:
-          - targetGroupArn: "arn:aws:elasticloadbalancing:us-east-1:860331263758:targetgroup/calendar/b47cadc855d52b43"
+          - targetGroupArn: "arn:aws:elasticloadbalancing:us-east-1:860331263758:targetgroup/calendar/c3857bce011b2524"
             containerName: "{{app_name}}_{{task_name}}_{{env}}"
             containerPort: 3000
         delay: 30
