@@ -7,10 +7,9 @@
   "executionRoleArn": "{{task_execution_role_arn}}",
   "cpu": "512",
   "memory": "2048",
-  "healthCheckGracePeriodSeconds": 90,
   "containerDefinitions": [{
     "name": "{{app_name}}_{{task_name}}_{{env}}",
-    "image": "{{ecr_image_name}}",
+    "image": "{{docker_image_tag}}",
     "cpu": 512,
     "memory": 2048,
     "essential": true,
@@ -42,6 +41,6 @@
         "softLimit": 65535,
         "hardLimit": 65535
       }
-    ],
+    ]
   }]
 }

@@ -14,6 +14,7 @@ locals {
     }
   }
 
+  app_name = "calendar"
   environment = terraform.workspace
   deployment = merge(local.config.defaults, local.config[terraform.workspace])
   base_domain_name = "${local.deployment.base_domain_name}"

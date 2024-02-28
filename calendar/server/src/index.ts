@@ -1,8 +1,8 @@
-import express, { type Express, type Request, type Response } from 'express'
+import express, {type Express, type Request, type Response} from 'express'
 import dotenv from 'dotenv'
 import * as d3 from 'd3'
-import { geoOrthographic } from 'd3-geo'
-import { JSDOM } from 'jsdom'
+import {geoOrthographic} from 'd3-geo'
+import {JSDOM} from 'jsdom'
 import * as emoji from 'node-emoji'
 import * as fluent from 'fluentui-emoji-js'
 import * as puppeteer from 'puppeteer'
@@ -26,6 +26,7 @@ import {
   personalHolidays
 } from './holidays'
 import Calendar from './Calendar'
+import * as fs from "fs";
 
 dotenv.config()
 
@@ -139,13 +140,13 @@ app.get('/calendar',
     let page: puppeteer.Page | undefined
 
     if (req.query.format === 'pdf' || req.query.format === 'png') {
-      browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox', '--disable-setuid-sandbox'] })
+      browser = await puppeteer.launch({headless: true, args: ['--no-sandbox', '--disable-setuid-sandbox']})
       page = await browser.newPage()
       await page.setContent(svgDom.html())
     }
 
     if (req.query.format === 'pdf' && page != undefined) {
-      const pdf = await page.pdf({ format: 'A1', landscape: true, scale: 2 })
+      const pdf = await page.pdf({format: 'A1', landscape: true, scale: 2})
 
       // set the filename with todays date
       const filename = `calendar-${new Date().toISOString().split('T')[0]}.pdf`
@@ -311,10 +312,10 @@ app.get('/moonmap.pdf', async (req: Request, res: Response): Promise<void> => {
   calendar.optRainbowWeekends = true
   const svgDom = calendar.getSvgAsDocumentDom()
 
-  const browser = await puppeteer.launch({ headless: true })
+  const browser = await puppeteer.launch({headless: true})
   const page = await browser.newPage()
   await page.setContent(svgDom.html())
-  const pdf = await page.pdf({ format: 'A1', landscape: true, scale: 2 })
+  const pdf = await page.pdf({format: 'A1', landscape: true, scale: 2})
 
   res.contentType('application/pdf')
   res.setHeader(
@@ -338,3 +339,22 @@ app.get('/daylight', async (req: Request, res: Response): Promise<void> => {
 app.listen(port, () => {
   console.log(`[server]: Server is running at http://localhost:${port}`)
 })
+
+app.get("/_ah/warmup", (req: Request, res: Response) => {
+  res.sendStatus(204)
+})
+
+app.get("/status", (req: Request, res: Response) => {
+    let revision: string
+    try {
+      revision = fs.readFileSync('REVISION').toString().trim()
+    } catch (err) {
+      revision = fs.readFileSync('.git/HEAD').toString().trim();
+      if (revision.indexOf(':') != -1) {
+        revision = fs.readFileSync('.git/' + revision.substring(5)).toString().trim();
+      }
+
+      res.send(revision)
+    }
+  }
+)

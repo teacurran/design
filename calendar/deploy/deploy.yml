@@ -5,11 +5,21 @@
   connection: local
   vars:
     app_name: "calendar.mostlycats.org"
+    app_version: "1.0"
     git_hash: "{{ git_hash_cmd_result.stdout }}"
-    task_execution_role_arn: "arn:aws:iam::529513974030:role/ecsTaskExecutionRole"
+    task_execution_role_arn: "arn:aws:iam::860331263758:role/calendar-ecs-execution-task-role"
+    aws_account_id: "860331263758"
+    aws_region: "us-east-1"
+    ecr_hostname: "{{ aws_account_id }}.dkr.ecr.{{ aws_region }}.amazonaws.com"
+    ecr_repository: "{{ ecr_hostname }}/{{ app_name }}"
+    docker_image_tag: "{{ ecr_repository }}:{{ app_version }}"
     ecr_image_name: "{{ app_name }}"
+    docker_file_name: "Dockefile"
     task_name: "api"
     env: "production"
+    subnets:
+      - "subnet-0a2b5a9ffe6944395"
+      - "subnet-07e55c664736ddff6"
 
   tasks:
     - name: Compute git hash
@@ -31,3 +41,101 @@
         dest=./build/ecs_task_definition.json
       tags: config
 
+    - name: Login to ECR
+      shell: "aws ecr get-login-password --region {{aws_region | quote}} | docker login --username AWS --password-stdin {{ecr_hostname}}"
+      tags: ecr
+
+    - name: Create ECR repository
+      ecs_ecr: name={{app_name}}
+      tags: ecr
+
+    - name: Remove old buildx instance if it exists
+      command: docker buildx rm calendar-multi-arch-builder
+      ignore_errors: true
+      tags:
+        - docker
+
+    - name: Create a new buildx instance
+      command: docker buildx create --use --name calendar-multi-arch-builder --driver docker-container
+      tags:
+        - docker
+
+    - name: Inspect Docker builder
+      command: docker buildx inspect --bootstrap
+      register: docker_buildx_inspect_result
+      tags:
+        - docker
+
+    - debug: msg="{{ docker_buildx_inspect_result.stdout }}"
+
+    - debug: msg="docker buildx build --platform linux/arm64,linux/amd64 -t {{ecr_hostname}}/{{docker_image_tag}} --push -f Dockerfile ."
+
+    - name: Build Docker image - docker buildx build --platform linux/arm64,linux/amd64 -t {{docker_image_tag}} -f {{docker_file_name}} .
+      command: |
+        docker buildx build
+        --push
+        --platform linux/arm64,linux/amd64
+        -t {{ ecr_repository }}
+        -t {{ docker_image_tag }}
+        .
+      args:
+        chdir: ../server/
+      tags:
+        - docker
+
+    - name: tag ARM64 build
+      command: |
+        docker buildx build
+        --push
+        --platform linux/arm64
+        --tag {{docker_image_tag}}-arm64
+        .
+      args:
+        chdir: ../server/
+      tags: upload
+
+    - name: tag AMD64 build
+      command: |
+        docker buildx build
+        --push
+        --platform linux/amd64
+        --tag {{docker_image_tag}}-amd64
+        .
+      args:
+        chdir: ../server/
+      tags: upload
+
+    - name: Remove buildx instance
+      command: docker buildx rm calendar-multi-arch-builder
+      tags:
+        - docker
+
+    - name: Register ECS task definition
+      command: "aws ecs register-task-definition --cli-input-json file://ecs_task_definition.json"
+      args:
+        chdir: ./build
+      register: register_task_result
+      tags: config
+
+    - name: Create ECS web service
+      ecs_service:
+        state: present
+        name: "{{app_name}}_{{task_name}}_{{env}}"
+        cluster: "calendar-msotlycats-org"
+        launch_type: FARGATE
+        force_new_deployment: true
+        network_configuration:
+          subnets: subnets
+          security_groups:
+            - "sg-08a99c8c2bde0af35"
+        task_definition: "{{app_name}}_{{task_name}}_{{env}}"
+        desired_count: "1"
+        deployment_configuration:
+          minimum_healthy_percent: 100
+          maximum_percent: 200
+        load_balancers:
+          - targetGroupArn: "arn:aws:elasticloadbalancing:us-east-1:860331263758:targetgroup/calendar/b47cadc855d52b43"
+            containerName: "{{app_name}}_{{task_name}}_{{env}}"
+            containerPort: 3000
+        delay: 30
+        health_check_grace_period_seconds: 30
