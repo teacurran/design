@@ -10,7 +10,6 @@ services:
     volumes:
       - ./client:/app
       - /app/node_modules
-
     environment:
       - NODE_ENV=development
       - PORT=3401

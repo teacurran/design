@@ -1,5 +1,5 @@
 ---
-- name: calendar.mostlycats.org
+- name: Calendar
   hosts: 127.0.0.1
   gather_facts:
   connection: local
