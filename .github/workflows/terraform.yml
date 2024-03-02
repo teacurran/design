@@ -15,7 +15,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
       - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.6.2
 
       - name: Terraform fmt
         id: fmt
