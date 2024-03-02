@@ -17,6 +17,19 @@ services:
     ports:
       - "3401:3401"
 
+  client-build:
+    image: client
+    build:
+      context: ./client
+    working_dir: /app
+    command: npm run build
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=production
+    profiles: [ci]
+
   server:
     image: server
     build:
