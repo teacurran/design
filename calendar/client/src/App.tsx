@@ -1,21 +1,21 @@
-import React from 'react';
-import { PrimeReactProvider, PrimeReactContext } from 'primereact/api';
+import React from "react"
+import { PrimeReactProvider, PrimeReactContext } from "primereact/api"
 
-import 'primeflex/primeflex.css';
-import "primereact/resources/themes/lara-light-cyan/theme.css";
-import 'primeicons/primeicons.css';
+import "primeflex/primeflex.css"
+import "primereact/resources/themes/lara-light-cyan/theme.css"
+import "primeicons/primeicons.css"
 
 
-import './App.css';
-import Calendar from "./Calendar";
+import "./App.css"
+import Calendar from "./Calendar"
 
 function App() {
 
-  return (
-      <PrimeReactProvider>
-        <Calendar />
-      </PrimeReactProvider>
-  );
+    return (
+        <PrimeReactProvider>
+            <Calendar />
+        </PrimeReactProvider>
+    )
 }
 
-export default App;
+export default App

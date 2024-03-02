@@ -7,8 +7,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "lint": "npx eslint 'src/**/*.ts'",
-    "lint-fix": "npx eslint 'src/**/*.ts' --fix"
+    "lint": "npx eslint 'src/**/*.{ts,tsx}'",
+    "lint-fix": "npx eslint 'src/**/*.{ts,tsx}' --fix"
   },
   "dependencies": {
     "@testing-library/jest-dom": "^5.17.0",
