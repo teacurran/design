@@ -25,7 +25,7 @@ jobs:
         run: docker compose build
 
       - name: Build the front end
-        run: REACT_APP_API_URL=/api docker compose run client sh -c "npm run build"
+        run: docker compose run client sh -c "npm run build"
 
 #      - name: Install AWS CLI
 #        run: |

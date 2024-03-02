@@ -13,6 +13,7 @@ services:
     environment:
       - NODE_ENV=development
       - PORT=3401
+      - REACT_APP_API_URL=http://localhost:3400
     ports:
       - "3401:3401"
 
