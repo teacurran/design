@@ -1,8 +1,6 @@
 name: Terraform plan
 
-on:
-  push:
-    branches: [ * ]
+on: [push]
 
 defaults:
   run:
@@ -17,7 +15,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-
       - uses: hashicorp/setup-terraform@v3
 
       - name: Terraform fmt
