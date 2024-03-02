@@ -4,6 +4,7 @@ import {Accordion, AccordionTab} from 'primereact/accordion';
 import {Checkbox} from 'primereact/checkbox';
 import {Divider} from "primereact/divider";
 import { Dropdown } from 'primereact/dropdown';
+import {API_URL} from "./constants";
 
 function Calendar() {
   const [url, setUrl] = useState('')
@@ -18,7 +19,7 @@ function Calendar() {
   const [rotateMonthNames, setRotateMonthNames] = useState<boolean>(true)
 
   useEffect(() => {
-    let url = 'http://localhost:3400/calendar'
+    let url = API_URL + '/calendar'
 
     let queryString = ''
     queryString += `?showMoonPhases=${showMoonPhases}`
