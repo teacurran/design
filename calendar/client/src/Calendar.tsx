@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react"
+import {useEffect, useState} from "react"
 import {Splitter, SplitterPanel} from "primereact/splitter"
 import {Accordion, AccordionTab} from "primereact/accordion"
 import {Checkbox} from "primereact/checkbox"
@@ -44,10 +44,6 @@ function Calendar() {
                 console.error("Error fetching SVG:", error)
             })
     }, [url])
-
-    const downloadPdf = () => {
-        window.location.href = `${url}&format=pdf`
-    }
 
     const themes = [
         {
@@ -157,7 +153,7 @@ function Calendar() {
             </Splitter>
         </div>
     )
-    
+
 }
 
 export default Calendar

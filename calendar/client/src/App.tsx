@@ -1,5 +1,4 @@
-import React from "react"
-import { PrimeReactProvider, PrimeReactContext } from "primereact/api"
+import { PrimeReactProvider } from "primereact/api"
 
 import "primeflex/primeflex.css"
 import "primereact/resources/themes/lara-light-cyan/theme.css"
