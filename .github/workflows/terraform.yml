@@ -24,6 +24,11 @@ jobs:
         with:
           terraform_version: 1.6.2
 
+      - name: Terraform workspace
+        id: workspace
+        run: terraform workspace select production
+        continue-on-error: false
+
       - name: Terraform fmt
         id: fmt
         run: terraform fmt -check
