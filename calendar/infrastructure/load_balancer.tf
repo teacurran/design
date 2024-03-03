@@ -7,6 +7,12 @@ resource "aws_lb" "calendar" {
 
   enable_deletion_protection = true
 
+  access_logs {
+    enabled = true
+    bucket = "aws-observability-logs-1ea61370"
+    prefix = "elasticloadbalancing"
+  }
+
   tags = {
     Environment = "production"
   }
