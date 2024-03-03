@@ -28,11 +28,13 @@ import {
 } from './holidays'
 import Calendar from './Calendar'
 import * as fs from 'fs'
+import { type Span, trace } from "@opentelemetry/api";
 
 dotenv.config()
 
 const app: Express = express()
 const validator = createValidator()
+const tracer = trace.getTracer('API')
 
 // allow CORS from anywhere
 app.use((req: Request, res: Response, next: () => void): void => {
@@ -146,20 +148,23 @@ app.get('/calendar',
       let browser: puppeteer.Browser
       let page: puppeteer.Page | undefined
       if (req.query.optimize) {
-        const result = optimize(svg, {
-          multipass: true,
-          plugins: [
-            {
-              name: 'preset-default',
-              params: {
-                overrides: {
-                  removeViewBox: false
+        tracer.startActiveSpan('optimize', (span: Span) => {
+          const result = optimize(svg, {
+            multipass: true,
+            plugins: [
+              {
+                name: 'preset-default',
+                params: {
+                  overrides: {
+                    removeViewBox: false
+                  }
                 }
               }
-            }
-          ]
+            ]
+          })
+          svg = result.data
+          span.end()
         })
-        svg = result.data
       }
 
       if (req.query.format === 'pdf' || req.query.format === 'png') {

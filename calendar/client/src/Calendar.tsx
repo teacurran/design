@@ -1,11 +1,11 @@
-import {useEffect, useState} from "react"
-import {Splitter, SplitterPanel} from "primereact/splitter"
-import {Accordion, AccordionTab} from "primereact/accordion"
-import {Checkbox} from "primereact/checkbox"
-import {Divider} from "primereact/divider"
-import {Dropdown} from "primereact/dropdown"
-import {API_URL} from "./constants"
-import {classNames} from "primereact/utils"
+import { useEffect, useState } from "react"
+import { Splitter, SplitterPanel } from "primereact/splitter"
+import { Accordion, AccordionTab } from "primereact/accordion"
+import { Checkbox } from "primereact/checkbox"
+import { Divider } from "primereact/divider"
+import { Dropdown } from "primereact/dropdown"
+import { API_URL } from "./constants"
+import { classNames } from "primereact/utils"
 
 function Calendar() {
   const [url, setUrl] = useState("")
@@ -20,6 +20,7 @@ function Calendar() {
   const [hideWeekendDayNames, setHideWeekendDayNames] = useState<boolean>(false)
   const [theme, setTheme] = useState("")
   const [rotateMonthNames, setRotateMonthNames] = useState<boolean>(true)
+  const [optimize, setOptimize] = useState<boolean>(false)
 
   useEffect(() => {
     const url = API_URL + "/calendar"
@@ -32,11 +33,11 @@ function Calendar() {
     queryString += `&hideWeekendDayNames=${hideWeekendDayNames}`
     queryString += `&theme=${theme}`
     queryString += `&rotateMonthNames=${rotateMonthNames}`
-    queryString += "&optimize=true"
+    queryString += `&optimize=${optimize}`
 
     setUrl(`${url}${queryString}`)
 
-  }, [showMoonPhases, showMoonIllunination, showGrid, showDayNames, hideWeekendDayNames, theme, rotateMonthNames])
+  }, [showMoonPhases, showMoonIllunination, showGrid, showDayNames, hideWeekendDayNames, theme, rotateMonthNames, optimize])
 
   useEffect(() => {
     fetch(url)
@@ -84,7 +85,7 @@ function Calendar() {
 
   return (
     <div className="calendar-frame">
-      <Splitter style={{height: "100%"}}>
+      <Splitter style={{ height: "100%" }}>
         <SplitterPanel className="leftMenu flex align-items-top justify-content-left" size={10}>
           <Accordion activeIndex={0} multiple={true}>
             <AccordionTab header="options">
@@ -133,6 +134,13 @@ function Calendar() {
                   <label htmlFor="hideWeekendDayNames" className="ml-2">hide weekend names</label>
                 </li>
 
+                <li><Checkbox inputId="optimize"
+                              onChange={(e) => setOptimize(e.checked ?? true)}
+                              checked={optimize ?? true}
+                />
+                  <label htmlFor="optimize" className="ml-2">optimize SVG</label>
+                </li>
+
                 <li>
                   <Dropdown value={theme} onChange={(e) => setTheme(e.value)} options={themes}>
                     <option value="vermontWeekends">Vermont Weekends</option>
@@ -158,8 +166,9 @@ function Calendar() {
 
         </SplitterPanel>
         <SplitterPanel className="mainContent flex align-items-center justify-content-center cal-svg-container">
-          <div dangerouslySetInnerHTML={{__html: svg}}/>
-          <div className={classNames({"cal-hidden": !svgIsArriving, "cal-fade-in": svgIsArriving})} dangerouslySetInnerHTML={{__html: arrivingSvg}}/>
+          <div dangerouslySetInnerHTML={{ __html: svg }}/>
+          <div className={classNames({ "cal-hidden": !svgIsArriving, "cal-fade-in": svgIsArriving })}
+               dangerouslySetInnerHTML={{ __html: arrivingSvg }}/>
         </SplitterPanel>
       </Splitter>
     </div>
