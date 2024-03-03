@@ -28,7 +28,7 @@ import {
 } from './holidays'
 import Calendar from './Calendar'
 import * as fs from 'fs'
-import { type Span, trace } from "@opentelemetry/api";
+import { type Span, trace } from '@opentelemetry/api'
 
 dotenv.config()
 

@@ -1,6 +1,5 @@
 import { JSDOM } from 'jsdom'
 import * as d3 from 'd3'
-import { type GeoProjection } from 'd3'
 import { geoOrthographic } from 'd3-geo'
 import * as suncalc from 'suncalc'
 import { vermontMonthlyColors2 } from './vermont_weekends'
@@ -52,9 +51,11 @@ class Calendar {
   optShowGrid: boolean = false
   gridStroke: string = '#c1c1c1'
 
+  maxDistance = Math.sqrt(Math.pow(12, 2) + Math.pow(31, 2))
+
   geoProjection = geoOrthographic()
 
-  constructor () {
+  constructor() {
     this.dom = new JSDOM('<!DOCTYPE html><body></body>')
     this.documentBody = d3.select(this.dom.window.document.body)
   }
@@ -200,68 +201,54 @@ class Calendar {
   }
 
   getBackgroundColor = (date: Date, isWeekend: boolean, weekendIndex: number): string => {
-    const dayNum = date.getDate()
-    let backgroundColor = this.cellBackgroundColor
+    const dayNum = date.getDate();
+    let backgroundColor = this.cellBackgroundColor;
 
     if (this.optRainbowDays1) {
-      const hue = date.getDay() * 30
-      backgroundColor = `hsl(${hue}, 100%, 90%)`
+      const hue = date.getDay() * 30;
+      backgroundColor = `hsl(${hue}, 100%, 90%)`;
     }
 
-    if (this.optRainbowDays2) {
-      const hue = (dayNum / (30)) * 360
+    if (this.optRainbowDays2 || this.optRainbowDays3) {
+      // Calculate hue once and store it in a variable
+      const hue = (dayNum / (30)) * 360;
 
-      // Assuming saturation and lightness are constant to keep the example simple
-      const saturation = 100 // 100% for vibrant colors
-      const lightness = 50 // 50% is a balanced lightness for visibility
+      if (this.optRainbowDays2) {
+        const saturation = 100;
+        const lightness = 50;
+        backgroundColor = `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+      }
 
-      // Construct the HSL color string
-      backgroundColor = `hsl(${hue}, ${saturation}%, ${lightness}%)`
+      if (this.optRainbowDays3) {
+        // Use the pre-calculated maxDistance
+        const distance = Math.sqrt(Math.pow(12 - date.getMonth(), 2) + Math.pow(30 - dayNum, 2));
+        const normalizedDistance = distance / this.maxDistance;
+        const lightnessMin = 80;
+        const lightnessMax = 80;
+        const lightness = lightnessMin + (1 - normalizedDistance) * (lightnessMax - lightnessMin);
+        const saturation = 100;
+        backgroundColor = `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+      }
     }
 
-    if (this.optRainbowDays3) {
-      const maxDistance = Math.sqrt(Math.pow(12, 2) + Math.pow(31, 2))
+    if (isWeekend) {
+      if (this.optHighlightWeekends) {
+        backgroundColor = this.weekendBackgroundColor;
+      }
 
-      // Calculate Euclidean distance from the bottom right corner
-      const distance = Math.sqrt(Math.pow(12 - date.getMonth(), 2) + Math.pow(30 - dayNum, 2))
+      if (this.optRainbowWeekends) {
+        const hue = (date.getDate() / 30) * 360;
+        backgroundColor = `hsl(${hue}, 100%, 90%)`;
+      }
 
-      // Normalize distance
-      const normalizedDistance = distance / maxDistance
-
-      // Adjust hue based on distance (you can experiment with this part)
-      const hue = normalizedDistance * 360
-
-      // Adjust lightness from 50% at the nearest point to 10% at the farthest to create a radial effect
-      // You can adjust the range of lightness based on your desired effect
-      // const lightness = 50 - (normalizedDistance * 40); // Ranges from 10% to 50%
-
-      // Modify lightness adjustment to ensure colors remain light across the gradient
-      // Consider keeping lightness above a minimum threshold that avoids the colors becoming too dark
-      const lightnessMin = 80 // Minimum lightness value to avoid dark colors
-      const lightnessMax = 80 // Maximum lightness value for vibrant colors
-      const lightness = lightnessMin + (1 - normalizedDistance) * (lightnessMax - lightnessMin)
-
-      // Saturation can remain constant or be adjusted similarly
-      const saturation = 100 // Keeping saturation constant for vibrant colors
-
-      backgroundColor = `hsl(${hue}, ${saturation}%, ${lightness}%)`
+      if (this.optVermontWeekends) {
+        backgroundColor = vermontMonthlyColors2[date.getMonth()][weekendIndex];
+      }
     }
 
-    if (this.optHighlightWeekends && isWeekend) {
-      backgroundColor = this.weekendBackgroundColor
-    }
-
-    if (this.optRainbowWeekends && isWeekend) {
-      const hue = (date.getDate() / 30) * 360
-      backgroundColor = `hsl(${hue}, 100%, 90%)`
-    }
-
-    if (isWeekend && this.optVermontWeekends) {
-      backgroundColor = vermontMonthlyColors2[date.getMonth()][weekendIndex]
-    }
-
-    return backgroundColor
+    return backgroundColor;
   }
+
 
   appendMonthCell = (svg: d3.Selection<SVGSVGElement, unknown, null, undefined>, row: number, x: number, y: number): void => {
     // NOSONAR
@@ -311,8 +298,7 @@ class Calendar {
     const lat = 44.25644
     const lng = -72.26793
 
-    const geoProjection: GeoProjection = geoOrthographic()
-      .translate([0, 0])
+    this.geoProjection.translate([0, 0])
       .scale(20)
 
     const moonIllumination = suncalc.getMoonIllumination(date)
@@ -326,7 +312,7 @@ class Calendar {
     const TAU = Math.PI * 2
     const rotationZ = ((moonIllumination.angle - parallacticAngle) / TAU) * 360 * -1
 
-    const geoPath = d3.geoPath(geoProjection)
+    const geoPath = d3.geoPath(this.geoProjection)
     const geoHemisphere = d3.geoCircle()()
 
     svg.append('circle')
@@ -338,7 +324,7 @@ class Calendar {
     // NOSONAR
     svg.append('path')
       .attr('fill', '#FFFFFF')
-      .attr('d', `${geoProjection.rotate([lightAngle, 0, rotationZ]), geoPath(geoHemisphere)}`)
+      .attr('d', `${this.geoProjection.rotate([lightAngle, 0, rotationZ]), geoPath(geoHemisphere)}`)
       .attr('transform', `translate(${x + 24}, ${y + 42})`)
 
     svg.append('circle')
@@ -360,7 +346,7 @@ class Calendar {
     const moonSize = 7
 
     this.geoProjection.translate([0, 0])
-    .scale(moonSize)
+      .scale(moonSize)
 
     const geoPath = d3.geoPath(this.geoProjection)
     const geoHemisphere = d3.geoCircle()()
