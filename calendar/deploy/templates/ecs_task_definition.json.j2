@@ -33,6 +33,10 @@
       {
         "name" : "IS_RUNNING_ON_ECS",
         "value" : "TRUE"
+      },
+      {
+        "name" : "OTEL_RESOURCE_ATTRIBUTES",
+        "value" : "service.name={{app_name}},application={{app_name}},env={{env}},deployment.environment={{env}}"
       }
     ],
     "ulimits": [
