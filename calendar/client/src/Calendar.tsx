@@ -5,10 +5,13 @@ import {Checkbox} from "primereact/checkbox"
 import {Divider} from "primereact/divider"
 import {Dropdown} from "primereact/dropdown"
 import {API_URL} from "./constants"
+import {classNames} from "primereact/utils"
 
 function Calendar() {
   const [url, setUrl] = useState("")
   const [svg, setSvg] = useState("")
+  const [arrivingSvg, setArrivingSvg] = useState("")
+  const [svgIsArriving, setSvgIsArriving] = useState(false)
 
   const [showMoonPhases, setShowMoonPhases] = useState<boolean>(false)
   const [showMoonIllunination, setShowMoonIllunination] = useState<boolean>(false)
@@ -39,7 +42,13 @@ function Calendar() {
     fetch(url)
       .then((response) => response.text())
       .then((data) => {
-        setSvg(data)
+        setArrivingSvg(data)
+        setSvgIsArriving(true)
+
+        setTimeout(() => {
+          setSvg(data)
+          setSvgIsArriving(false)
+        }, 500)
       })
       .catch((error) => {
         console.error("Error fetching SVG:", error)
@@ -148,9 +157,9 @@ function Calendar() {
           </Accordion>
 
         </SplitterPanel>
-        <SplitterPanel className="mainContent flex align-items-center justify-content-center">
+        <SplitterPanel className="mainContent flex align-items-center justify-content-center cal-svg-container">
           <div dangerouslySetInnerHTML={{__html: svg}}/>
-          <div dangerouslySetInnerHTML={{__html: loadingSvg}}/>
+          <div className={classNames({"cal-hidden": !svgIsArriving, "cal-fade-in": svgIsArriving})} dangerouslySetInnerHTML={{__html: arrivingSvg}}/>
         </SplitterPanel>
       </Splitter>
     </div>

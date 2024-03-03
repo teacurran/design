@@ -29,3 +29,27 @@
 .p-button {
   text-decoration: none;
 }
+
+.cal-fade-in {
+  transition: opacity 0.5s;
+  opacity: 1;
+}
+
+.cal-hidden {
+  transition: opacity 0.5s;
+  opacity: 0;
+}
+
+.cal-svg-container {
+  position: relative;
+}
+
+.cal-svg-container div {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.cal-svg-container svg {
+  background-color: white;
+}
