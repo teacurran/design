@@ -1,4 +1,4 @@
-name: Build and Deploy
+name: FE deploy
 
 on:
   push:
