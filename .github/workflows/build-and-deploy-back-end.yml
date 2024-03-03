@@ -27,7 +27,8 @@ jobs:
           python-version: '3.x'
 
       - name: Install Ansible
-        run: pip install ansible
+        run: pip install -r requirements.txt
+        working-directory: ./calendar/deploy
 
       - name: Run Ansible script
         run: ansible-playbook deploy.yml
