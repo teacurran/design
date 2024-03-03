@@ -157,7 +157,7 @@ app.get('/calendar',
               }
             }
           }
-        ],
+        ]
       })
       svg = result.data
     }
