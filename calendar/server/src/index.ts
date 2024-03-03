@@ -148,7 +148,7 @@ app.get('/calendar',
       await page.setContent(svgDom.html())
     }
 
-    if (req.query.format === 'pdf' && page != undefined) {
+    if (req.query.format === 'pdf' && page !== undefined) {
       const pdf = await page.pdf({ format: 'A1', landscape: true, scale: 2 })
 
       // set the filename with todays date
@@ -164,7 +164,7 @@ app.get('/calendar',
       return
     }
 
-    if (req.query.format === 'png' && page != undefined) {
+    if (req.query.format === 'png' && page !== undefined) {
       const png = await page.screenshot({
         type: 'png',
         fullPage: true

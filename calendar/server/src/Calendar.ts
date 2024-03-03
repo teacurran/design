@@ -362,7 +362,7 @@ class Calendar {
     }
 
     let showMoon: boolean = false
-    if (moonPhaseName) {
+    if (moonPhaseName != undefined) {
       if (!moonPhases.includes(moonPhaseName)) {
         moonPhases.push(moonPhaseName)
         showMoon = true
