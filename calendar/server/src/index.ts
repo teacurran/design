@@ -222,7 +222,7 @@ app.get('/calendar2', async (req: Request, res: Response): Promise<void> => {
 
       // if the month different than row then it's the next month and should be blank
       if (date.getMonth() === row) {
-        if (optFriday13th) {
+        if (optFriday13th !== undefined) {
           if (date.getDay() === 5 && date.getDate() === 13) {
             await appendEmoji(svg, '👻', x, y)
           }
@@ -230,61 +230,61 @@ app.get('/calendar2', async (req: Request, res: Response): Promise<void> => {
 
         if (optPersonalHolidays) {
           const holiday = personalHolidays.find(holiday => holiday.date.getTime() === date.getTime())
-          if (holiday) {
+          if (holiday !== undefined) {
             await appendEmoji(svg, holiday.emoji, x, y)
           }
         }
 
-        if (optUSFederalHolidays) {
+        if (optUSFederalHolidays !== undefined) {
           const holiday = federalHolidays.find(holiday => holiday.date.getTime() === date.getTime())
           if (holiday) {
             await appendEmoji(svg, holiday.emoji, x, y)
           }
         }
 
-        if (optCanadianHolidays) {
+        if (optCanadianHolidays !== undefined) {
           const holiday = canadianHolidays.find(holiday => holiday.date.getTime() === date.getTime())
           if (holiday) {
             await appendEmoji(svg, holiday.emoji, x, y)
           }
         }
 
-        if (optOtherHolidays) {
+        if (optOtherHolidays !== undefined) {
           const holiday = otherHolidays.find(holiday => holiday.date.getTime() === date.getTime())
           if (holiday) {
             await appendEmoji(svg, holiday.emoji, x, y)
           }
         }
 
-        if (optCatholicHolidays) {
+        if (optCatholicHolidays !== undefined) {
           const holiday = catholicHolidays.find(holiday => holiday.date.getTime() === date.getTime())
           if (holiday) {
             await appendEmoji(svg, holiday.emoji, x, y)
           }
         }
 
-        if (optJewishHolidays) {
+        if (optJewishHolidays !== undefined) {
           const holiday = jewishHolidays.find(holiday => holiday.date.getTime() === date.getTime())
           if (holiday) {
             await appendEmoji(svg, holiday.emoji, x, y)
           }
         }
 
-        if (optHinduHolidays) {
+        if (optHinduHolidays !== undefined) {
           const holiday = hinduHolidays.find(holiday => holiday.date.getTime() === date.getTime())
           if (holiday) {
             await appendEmoji(svg, holiday.emoji, x, y)
           }
         }
 
-        if (optIslamicHolidays) {
+        if (optIslamicHolidays !== undefined) {
           const holiday = islamicHolidays.find(holiday => holiday.date.getTime() === date.getTime())
           if (holiday) {
             await appendEmoji(svg, holiday.emoji, x, y)
           }
         }
 
-        if (optChineseHolidays) {
+        if (optChineseHolidays !== undefined) {
           const holiday = chineseHolidays.find(holiday => holiday.date.getTime() === date.getTime())
           if (holiday) {
             await appendEmoji(svg, holiday.emoji, x, y)
