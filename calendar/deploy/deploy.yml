@@ -122,7 +122,7 @@
         state: present
         name: "{{app_name}}_{{task_name}}_{{env}}"
         cluster: "calendar-mostlycats-org"
-        launch_type: FARGATE
+        launch_type: FARGATE..
         force_new_deployment: true
         network_configuration:
           subnets: "{{subnets}}"

@@ -29,6 +29,7 @@ function Calendar() {
         queryString += `&hideWeekendDayNames=${hideWeekendDayNames}`
         queryString += `&theme=${theme}`
         queryString += `&rotateMonthNames=${rotateMonthNames}`
+        queryString += "&optimize=true"
 
         setUrl(`${url}${queryString}`)
 

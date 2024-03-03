@@ -14,6 +14,7 @@ import {
   type ValidatedRequest,
   type ValidatedRequestSchema
 } from 'express-joi-validation'
+import { optimize } from 'svgo'
 
 import {
   canadianHolidays,
@@ -90,7 +91,8 @@ const calendarParams = Joi.object({
   hideWeekendDayNames: Joi.boolean().optional().default(false),
   theme: Joi.string().optional().default('vermontWeekends')
     .allow(null, '', 'vermontWeekends', 'rainbowWeekends', 'rainbowDays1', 'rainbowDays2', 'rainbowDays3'),
-  rotateMonthNames: Joi.boolean().optional().default(true)
+  rotateMonthNames: Joi.boolean().optional().default(true),
+  optimize: Joi.boolean().optional().default(false)
 })
 
 export interface CalendarRequest extends ValidatedRequestSchema {
@@ -104,6 +106,7 @@ export interface CalendarRequest extends ValidatedRequestSchema {
     hideWeekendDayNames: boolean
     theme: string
     rotateMonthNames: boolean
+    optimize: boolean
   }
 }
 
@@ -138,14 +141,31 @@ app.get('/calendar',
     }
 
     const svgDom: d3.Selection<HTMLElement, unknown, null, undefined> = calendar.getSvgAsDocumentDom()
+    let svg = svgDom.html()
 
     let browser: puppeteer.Browser
     let page: puppeteer.Page | undefined
+    if (req.query.optimize) {
+      const result = optimize(svg, {
+        multipass: true,
+        plugins: [
+          {
+            name: 'preset-default',
+            params: {
+              overrides: {
+                removeViewBox: false
+              }
+            }
+          }
+        ],
+      })
+      svg = result.data
+    }
 
     if (req.query.format === 'pdf' || req.query.format === 'png') {
       browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox', '--disable-setuid-sandbox'] })
       page = await browser.newPage()
-      await page.setContent(svgDom.html())
+      await page.setContent(svg)
     }
 
     if (req.query.format === 'pdf' && page !== undefined) {
@@ -184,7 +204,8 @@ app.get('/calendar',
     }
 
     res.setHeader('Content-Type', 'image/svg+xml')
-    res.send(svgDom.html())
+
+    res.send(svg)
   })
 
 app.get('/calendar2', async (req: Request, res: Response): Promise<void> => {
