@@ -1,6 +1,6 @@
 import express, { type Express, type Request, type Response } from 'express'
 import dotenv from 'dotenv'
-import * as compression from 'compression'
+import compression from 'compression'
 import * as d3 from 'd3'
 import { geoOrthographic } from 'd3-geo'
 import { JSDOM } from 'jsdom'
