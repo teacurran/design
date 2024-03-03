@@ -42,5 +42,43 @@
         "hardLimit": 65535
       }
     ]
-  }]
+  }, {
+      "name": "otel-collector",
+      "image": "public.ecr.aws/aws-observability/aws-otel-collector:latest",
+      "cpu": 128,
+      "memory": 256,
+      "portMappings": [
+        {
+          "containerPort": 4317,
+          "hostPort": 4317,
+          "protocol": "tcp"
+        },
+        {
+          "containerPort": 4318,
+          "hostPort": 4318,
+          "protocol": "tcp"
+        }
+      ],
+      "essential": true,
+      "environment": [],
+      "mountPoints": [],
+      "volumesFrom": [],
+      "secrets": [
+        {
+          "name": "AOT_CONFIG_CONTENT",
+          "valueFrom": "arn:aws:ssm:us-east-1:860331263758:parameter/otel-collector"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-create-group": "true",
+          "awslogs-group": "{{env}}/{{app_name}}/{{task_name}}",
+          "awslogs-region": "us-east-1",
+          "awslogs-stream-prefix": "{{env}}-{{app_name}}"
+        }
+      }
+    }
+
+  ]
 }

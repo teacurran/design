@@ -19,4 +19,4 @@ COPY . /app
 RUN npm run build
 
 EXPOSE 3000 9229
-CMD [ "npm", "run", "api-dev"]
+CMD [ "npm", "run", "serve"]

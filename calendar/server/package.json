@@ -10,12 +10,19 @@
     "dev": "npm run eslint && tsc -w",
     "lint": "npx eslint 'src/**/*.ts'",
     "lint-fix": "npx eslint 'src/**/*.ts' --fix",
-    "api-dev": "npm install && nodemon src/index.ts"
+    "api-dev": "npm install && nodemon src/index.ts",
+    "serve": "npm install && ts-node --require ./src/instrumentation.ts src/index.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@opentelemetry/api": "^1.7.0",
+    "@opentelemetry/auto-instrumentations-node": "^0.41.1",
+    "@opentelemetry/exporter-metrics-otlp-proto": "^0.49.1",
+    "@opentelemetry/sdk-metrics": "^1.22.0",
+    "@opentelemetry/sdk-node": "^0.49.1",
+    "@opentelemetry/sdk-trace-node": "^1.22.0",
     "compression": "^1.7.4",
     "csv-parse": "^5.5.3",
     "d3": "^6.7.0",
