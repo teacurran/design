@@ -52,10 +52,11 @@ class Calendar {
   gridStroke: string = '#c1c1c1'
 
   maxDistance = Math.sqrt(Math.pow(12, 2) + Math.pow(31, 2))
+  TAU = Math.PI * 2
 
   geoProjection = geoOrthographic()
 
-  constructor() {
+  constructor () {
     this.dom = new JSDOM('<!DOCTYPE html><body></body>')
     this.documentBody = d3.select(this.dom.window.document.body)
   }
@@ -201,54 +202,53 @@ class Calendar {
   }
 
   getBackgroundColor = (date: Date, isWeekend: boolean, weekendIndex: number): string => {
-    const dayNum = date.getDate();
-    let backgroundColor = this.cellBackgroundColor;
+    const dayNum = date.getDate()
+    let backgroundColor = this.cellBackgroundColor
 
     if (this.optRainbowDays1) {
-      const hue = date.getDay() * 30;
-      backgroundColor = `hsl(${hue}, 100%, 90%)`;
+      const hue = date.getDay() * 30
+      backgroundColor = `hsl(${hue}, 100%, 90%)`
     }
 
     if (this.optRainbowDays2 || this.optRainbowDays3) {
       // Calculate hue once and store it in a variable
-      const hue = (dayNum / (30)) * 360;
+      const hue = (dayNum / (30)) * 360
 
       if (this.optRainbowDays2) {
-        const saturation = 100;
-        const lightness = 50;
-        backgroundColor = `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+        const saturation = 100
+        const lightness = 50
+        backgroundColor = `hsl(${hue}, ${saturation}%, ${lightness}%)`
       }
 
       if (this.optRainbowDays3) {
         // Use the pre-calculated maxDistance
-        const distance = Math.sqrt(Math.pow(12 - date.getMonth(), 2) + Math.pow(30 - dayNum, 2));
-        const normalizedDistance = distance / this.maxDistance;
-        const lightnessMin = 80;
-        const lightnessMax = 80;
-        const lightness = lightnessMin + (1 - normalizedDistance) * (lightnessMax - lightnessMin);
-        const saturation = 100;
-        backgroundColor = `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+        const distance = Math.sqrt(Math.pow(12 - date.getMonth(), 2) + Math.pow(30 - dayNum, 2))
+        const normalizedDistance = distance / this.maxDistance
+        const lightnessMin = 80
+        const lightnessMax = 80
+        const lightness = lightnessMin + (1 - normalizedDistance) * (lightnessMax - lightnessMin)
+        const saturation = 100
+        backgroundColor = `hsl(${hue}, ${saturation}%, ${lightness}%)`
       }
     }
 
     if (isWeekend) {
       if (this.optHighlightWeekends) {
-        backgroundColor = this.weekendBackgroundColor;
+        backgroundColor = this.weekendBackgroundColor
       }
 
       if (this.optRainbowWeekends) {
-        const hue = (date.getDate() / 30) * 360;
-        backgroundColor = `hsl(${hue}, 100%, 90%)`;
+        const hue = (date.getDate() / 30) * 360
+        backgroundColor = `hsl(${hue}, 100%, 90%)`
       }
 
       if (this.optVermontWeekends) {
-        backgroundColor = vermontMonthlyColors2[date.getMonth()][weekendIndex];
+        backgroundColor = vermontMonthlyColors2[date.getMonth()][weekendIndex]
       }
     }
 
-    return backgroundColor;
+    return backgroundColor
   }
-
 
   appendMonthCell = (svg: d3.Selection<SVGSVGElement, unknown, null, undefined>, row: number, x: number, y: number): void => {
     // NOSONAR
@@ -309,8 +309,7 @@ class Calendar {
       lat,
       lng
     )
-    const TAU = Math.PI * 2
-    const rotationZ = ((moonIllumination.angle - parallacticAngle) / TAU) * 360 * -1
+    const rotationZ = ((moonIllumination.angle - parallacticAngle) / this.TAU) * 360 * -1
 
     const geoPath = d3.geoPath(this.geoProjection)
     const geoHemisphere = d3.geoCircle()()
