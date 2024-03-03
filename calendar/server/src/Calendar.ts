@@ -1,11 +1,14 @@
 import { JSDOM } from 'jsdom'
 import * as d3 from 'd3'
+import { type GeoProjection } from 'd3'
 import { geoOrthographic } from 'd3-geo'
 import * as suncalc from 'suncalc'
-import { type GeoProjection } from 'd3'
 import { vermontMonthlyColors2 } from './vermont_weekends'
+import { Span, trace } from "@opentelemetry/api";
 
 class Calendar {
+  tracer = trace.getTracer('Calendar');
+
   dom: JSDOM
   documentBody: d3.Selection<HTMLElement, unknown, null, undefined>
 
@@ -49,7 +52,7 @@ class Calendar {
   optShowGrid: boolean = false
   gridStroke: string = '#c1c1c1'
 
-  constructor () {
+  constructor() {
     this.dom = new JSDOM('<!DOCTYPE html><body></body>')
     this.documentBody = d3.select(this.dom.window.document.body)
   }
@@ -294,7 +297,15 @@ class Calendar {
     }
   }
 
+  // traced version of append moon function
   appendMoon = (svg: d3.Selection<SVGSVGElement, unknown, null, undefined>, date: Date, x: number, y: number): void => {
+    return this.tracer.startActiveSpan('appendMoon', (span: Span) => {
+      this._appendMoon(svg, date, x, y)
+      span.end()
+    })
+  }
+
+  _appendMoon = (svg: d3.Selection<SVGSVGElement, unknown, null, undefined>, date: Date, x: number, y: number): void => {
     const lat = 44.25644
     const lng = -72.26793
 
@@ -335,7 +346,15 @@ class Calendar {
       .attr('transform', `translate(${x + 24}, ${y + 42})`)
   }
 
+  // traced version of append moon phase function
   appendMoonPhase = (svg: d3.Selection<SVGSVGElement, unknown, null, undefined>, date: Date, x: number, y: number, moonPhases: string[]): void => {
+    return this.tracer.startActiveSpan('appendMoonPhase', (span: Span) => {
+      this._appendMoonPhase(svg, date, x, y, moonPhases)
+      span.end()
+    })
+  }
+
+  _appendMoonPhase = (svg: d3.Selection<SVGSVGElement, unknown, null, undefined>, date: Date, x: number, y: number, moonPhases: string[]): void => {
     const moonSize = 7
 
     const geoProjection = geoOrthographic()
