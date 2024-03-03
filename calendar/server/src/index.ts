@@ -1,5 +1,6 @@
 import express, { type Express, type Request, type Response } from 'express'
 import dotenv from 'dotenv'
+import * as compression from 'compression'
 import * as d3 from 'd3'
 import { geoOrthographic } from 'd3-geo'
 import { JSDOM } from 'jsdom'
@@ -39,6 +40,8 @@ app.use((req: Request, res: Response, next: () => void): void => {
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept')
   next()
 })
+
+app.use(compression())
 
 const port: string | number = process.env.PORT ?? 3000
 
