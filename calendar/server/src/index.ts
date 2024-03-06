@@ -14,7 +14,7 @@ import {
   type ValidatedRequestSchema
 } from 'express-joi-validation'
 import { optimize } from 'svgo'
-import { createHTTPServer } from '@trpc/server/adapters/standalone';
+import { createHTTPServer } from '@trpc/server/adapters/standalone'
 
 import {
   canadianHolidays,
@@ -30,7 +30,7 @@ import {
 import { getDefaultCalendar, getSvgAsDocumentDom } from './calendar'
 import * as fs from 'fs'
 import { type Span, trace } from '@opentelemetry/api'
-import { calendarRouter } from "./calendar-rpc";
+import { calendarRouter } from './calendar-rpc'
 
 dotenv.config()
 
@@ -49,19 +49,19 @@ app.use(compression())
 
 const port: string | number = process.env.PORT ?? 3000
 
-const optFriday13th: boolean = true
-const optPersonalHolidays: boolean = true
-const optUSFederalHolidays: boolean = false
-const optCanadianHolidays: boolean = false
-const optOtherHolidays: boolean = false
-const optJewishHolidays: boolean = false
-const optIslamicHolidays: boolean = false
-const optCatholicHolidays: boolean = false
-const optHinduHolidays: boolean = false
-const optChineseHolidays: boolean = false
+const optFriday13th = true
+const optPersonalHolidays = true
+const optUSFederalHolidays = false
+const optCanadianHolidays = false
+const optOtherHolidays = false
+const optJewishHolidays = false
+const optIslamicHolidays = false
+const optCatholicHolidays = false
+const optHinduHolidays = false
+const optChineseHolidays = false
 
-const cellWidth: number = 50
-const cellHeight: number = 75
+const cellWidth = 50
+const cellHeight = 75
 const gridWidth: number = 32 * cellWidth
 const gridHeight: number = 12 * cellHeight
 
@@ -349,8 +349,7 @@ app.get('/status', (req: Request, res: Response) => {
 })
 
 const server = createHTTPServer({
-  router: calendarRouter,
-});
+  router: calendarRouter
+})
 
-server.listen(3000);
-
+server.listen(3000)

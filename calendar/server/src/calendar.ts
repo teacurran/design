@@ -4,7 +4,7 @@ import { geoOrthographic } from 'd3-geo'
 import * as suncalc from 'suncalc'
 import { vermontMonthlyColors2 } from './vermont_weekends'
 import { type Span, trace } from '@opentelemetry/api'
-import { z } from 'zod';
+import { z } from 'zod'
 
 const CalendarSchema = z.object({
   cellBackgroundColor: z.string().default('white'),
@@ -35,7 +35,7 @@ const CalendarSchema = z.object({
   optShowGrid: z.boolean().default(false),
   gridStroke: z.string().default('black'),
   lat: z.number().default(0),
-  lng: z.number().default(0),
+  lng: z.number().default(0)
 })
 
 type Calendar = z.infer<typeof CalendarSchema>
@@ -50,12 +50,12 @@ const moonPhaseGeoProjection = geoOrthographic().translate([0, 0])
 const TAU = Math.PI * 2
 const maxDistance = Math.sqrt(Math.pow(12, 2) + Math.pow(31, 2))
 
-const cellWidth: number = 50
-const cellHeight: number = 75
-const cellPadding: number = 5
+const cellWidth = 50
+const cellHeight = 75
+const cellPadding = 5
 
-const cellBackgroundColor: string = 'rgba(255, 255, 255, 0)'
-const weekendBackgroundColor: string = 'rgba(0, 0, 0, 0.1)'
+const cellBackgroundColor = 'rgba(255, 255, 255, 0)'
+const weekendBackgroundColor = 'rgba(0, 0, 0, 0.1)'
 
 // start on the first day of the current year
 const startDate: Date = new Date(new Date().getFullYear(), 0, 1)
@@ -345,7 +345,7 @@ const _appendMoonPhase = (svg: d3.Selection<SVGSVGElement, unknown, null, undefi
     moonPhaseName = 'last quarter'
   }
 
-  let showMoon: boolean = false
+  let showMoon = false
   if (moonPhaseName !== undefined) {
     if (!moonPhases.includes(moonPhaseName)) {
       moonPhases.push(moonPhaseName)
@@ -376,7 +376,6 @@ const _appendMoonPhase = (svg: d3.Selection<SVGSVGElement, unknown, null, undefi
       .attr('transform', `translate(${moonX}, ${moonY})`)
   }
 }
-
 
 const getSvgAsDocumentDom = (calendar: Calendar): d3.Selection<HTMLElement, unknown, null, undefined> => {
   const dom = new JSDOM('<!DOCTYPE html><body></body>')
