@@ -4,42 +4,43 @@ import { geoOrthographic } from 'd3-geo'
 import * as suncalc from 'suncalc'
 import { vermontMonthlyColors2 } from './vermont_weekends'
 import { type Span, trace } from '@opentelemetry/api'
+import { z } from 'zod';
 
-type Calendar = {
-  cellBackgroundColor: string,
-  weekendBackgroundColor: string,
-  startDate: Date,
-  headerHeight: number,
-  yearX: number,
-  yearY: number,
-  yearFill: string,
-  yearFontSize: string,
-  yearFontFamily: string,
-  yearFontWeight: string,
-  monthNameFill: string,
-  monthNameFontSize: string,
-  monthNameFontFamily: string,
-  monthNameFontWeight: string,
-  rotateMonthNames: boolean,
-  optHighlightWeekends: boolean,
-  optShowDayNames: boolean,
-  hideWeekendDayNames: boolean,
-  optRainbowDays1: boolean,
-  optRainbowDays2: boolean,
-  optRainbowDays3: boolean,
-  optRainbowWeekends: boolean,
-  optVermontWeekends: boolean,
-  optShowMoonIllumination: boolean,
-  optShowMoonPhase: boolean,
-  optShowGrid: boolean,
-  gridStroke: string,
-  lat: number,
-  lng: number,
-}
+const CalendarSchema = z.object({
+  cellBackgroundColor: z.string().default('white'),
+  weekendBackgroundColor: z.string().default('grey'),
+  startDate: z.date().default(new Date()),
+  headerHeight: z.number().default(100),
+  yearX: z.number().default(0),
+  yearY: z.number().default(0),
+  yearFill: z.string().default('black'),
+  yearFontSize: z.string().default('12px'),
+  yearFontFamily: z.string().default('Arial'),
+  yearFontWeight: z.string().default('normal'),
+  monthNameFill: z.string().default('black'),
+  monthNameFontSize: z.string().default('12px'),
+  monthNameFontFamily: z.string().default('Arial'),
+  monthNameFontWeight: z.string().default('normal'),
+  rotateMonthNames: z.boolean().default(false),
+  optHighlightWeekends: z.boolean().default(false),
+  optShowDayNames: z.boolean().default(false),
+  hideWeekendDayNames: z.boolean().default(false),
+  optRainbowDays1: z.boolean().default(false),
+  optRainbowDays2: z.boolean().default(false),
+  optRainbowDays3: z.boolean().default(false),
+  optRainbowWeekends: z.boolean().default(false),
+  optVermontWeekends: z.boolean().default(false),
+  optShowMoonIllumination: z.boolean().default(false),
+  optShowMoonPhase: z.boolean().default(false),
+  optShowGrid: z.boolean().default(false),
+  gridStroke: z.string().default('black'),
+  lat: z.number().default(0),
+  lng: z.number().default(0),
+})
+
+type Calendar = z.infer<typeof CalendarSchema>
 
 const tracer = trace.getTracer('Calendar')
-const dom = new JSDOM('<!DOCTYPE html><body></body>')
-const documentBody = d3.select(dom.window.document.body)
 const geoProjection = geoOrthographic().translate([0, 0]).scale(20)
 const geoPath = d3.geoPath(geoProjection)
 const geoHemisphere = d3.geoCircle()()
@@ -72,7 +73,7 @@ const getMonthName = (monthNumber: number): string => {
   return months[monthNumber]
 }
 
-const getSvg = (calendar: Calendar): d3.Selection<SVGSVGElement, unknown, null, undefined> => {
+const generateSvg = (documentBody: d3.Selection<HTMLElement, unknown, null, undefined>, calendar: Calendar): d3.Selection<SVGSVGElement, unknown, null, undefined> => {
   const width = gridWidth
   const height = gridHeight + calendar.headerHeight
   const totalColumns = 32
@@ -376,17 +377,15 @@ const _appendMoonPhase = (svg: d3.Selection<SVGSVGElement, unknown, null, undefi
   }
 }
 
-const getSvgAsDocument = (): JSDOM => {
-  return dom
-}
 
 const getSvgAsDocumentDom = (calendar: Calendar): d3.Selection<HTMLElement, unknown, null, undefined> => {
-  getSvg(calendar)
+  const dom = new JSDOM('<!DOCTYPE html><body></body>')
+  const documentBody = d3.select(dom.window.document.body)
+  generateSvg(documentBody, calendar)
   return documentBody
 }
 
 const getDefaultCalendar = (): Calendar => {
-
   return {
     headerHeight: 100,
     yearX: 50,
@@ -419,13 +418,13 @@ const getDefaultCalendar = (): Calendar => {
     lng: -72.26793,
     cellBackgroundColor,
     weekendBackgroundColor,
-    startDate,
+    startDate
   }
 }
 
-  export {
-    Calendar,
-    getSvgAsDocument,
-    getSvgAsDocumentDom,
-    getDefaultCalendar
-  }
+export {
+  type Calendar,
+  CalendarSchema,
+  getSvgAsDocumentDom,
+  getDefaultCalendar
+}

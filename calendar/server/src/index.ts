@@ -14,6 +14,7 @@ import {
   type ValidatedRequestSchema
 } from 'express-joi-validation'
 import { optimize } from 'svgo'
+import { createHTTPServer } from '@trpc/server/adapters/standalone';
 
 import {
   canadianHolidays,
@@ -26,9 +27,10 @@ import {
   otherHolidays,
   personalHolidays
 } from './holidays'
-import { Calendar, getDefaultCalendar, getSvgAsDocumentDom } from './calendar'
+import { getDefaultCalendar, getSvgAsDocumentDom } from './calendar'
 import * as fs from 'fs'
 import { type Span, trace } from '@opentelemetry/api'
+import { calendarRouter } from "./calendar-rpc";
 
 dotenv.config()
 
@@ -345,3 +347,10 @@ app.get('/status', (req: Request, res: Response) => {
     res.send(revision)
   }
 })
+
+const server = createHTTPServer({
+  router: calendarRouter,
+});
+
+server.listen(3000);
+
