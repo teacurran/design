@@ -26,7 +26,7 @@ import {
   otherHolidays,
   personalHolidays
 } from './holidays'
-import Calendar from './Calendar'
+import { Calendar, getDefaultCalendar, getSvgAsDocumentDom } from './calendar'
 import * as fs from 'fs'
 import { type Span, trace } from '@opentelemetry/api'
 
@@ -115,7 +115,8 @@ app.get('/calendar',
   validator.query(calendarParams),
   async (req: ValidatedRequest<CalendarRequest>, res: Response) => {
     try {
-      const calendar: Calendar = new Calendar()
+      const calendar = getDefaultCalendar()
+
       // calendar.optVermontWeekends = true
       calendar.optShowMoonPhase = req.query.showMoonPhases
       calendar.optVermontWeekends = req.query.vermontWeekends
@@ -142,7 +143,7 @@ app.get('/calendar',
         calendar.optRainbowDays3 = true
       }
 
-      const svgDom: d3.Selection<HTMLElement, unknown, null, undefined> = calendar.getSvgAsDocumentDom()
+      const svgDom: d3.Selection<HTMLElement, unknown, null, undefined> = getSvgAsDocumentDom(calendar)
       let svg = svgDom.html()
 
       let browser: puppeteer.Browser

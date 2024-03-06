@@ -166,9 +166,9 @@ function Calendar() {
 
         </SplitterPanel>
         <SplitterPanel className="mainContent flex align-items-center justify-content-center cal-svg-container">
-          <div dangerouslySetInnerHTML={{ __html: svg }}/>
-          <div className={classNames({ "cal-hidden": !svgIsArriving, "cal-fade-in": svgIsArriving })}
-               dangerouslySetInnerHTML={{ __html: arrivingSvg }}/>
+          [[<div dangerouslySetInnerHTML={{ __html: svg }}/>]]
+          [;[<div className={classNames({ "cal-hidden": !svgIsArriving, "cal-fade-in": svgIsArriving })}
+               dangerouslySetInnerHTML={{ __html: arrivingSvg }}/>];]
         </SplitterPanel>
       </Splitter>
     </div>
