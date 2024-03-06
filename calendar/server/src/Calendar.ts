@@ -54,7 +54,17 @@ class Calendar {
   maxDistance = Math.sqrt(Math.pow(12, 2) + Math.pow(31, 2))
   TAU = Math.PI * 2
 
-  geoProjection = geoOrthographic()
+  lat = 44.25644
+  lng = -72.26793
+
+  geoProjection = geoOrthographic().translate([0, 0])
+    .scale(20)
+  geoPath = d3.geoPath(this.geoProjection)
+  geoHemisphere = d3.geoCircle()()
+
+  moonPhaseSize = 7
+  moonPhaseGeoProjection = geoOrthographic().translate([0, 0])
+    .scale(this.moonPhaseSize)
 
   constructor () {
     this.dom = new JSDOM('<!DOCTYPE html><body></body>')
@@ -295,24 +305,15 @@ class Calendar {
   }
 
   _appendMoon = (svg: d3.Selection<SVGSVGElement, unknown, null, undefined>, date: Date, x: number, y: number): void => {
-    const lat = 44.25644
-    const lng = -72.26793
-
-    this.geoProjection.translate([0, 0])
-      .scale(20)
-
     const moonIllumination = suncalc.getMoonIllumination(date)
     const lightAngle = 180 - moonIllumination.phase * 360
 
     const { parallacticAngle } = suncalc.getMoonPosition(
       date,
-      lat,
-      lng
+      this.lat,
+      this.lng
     )
     const rotationZ = ((moonIllumination.angle - parallacticAngle) / this.TAU) * 360 * -1
-
-    const geoPath = d3.geoPath(this.geoProjection)
-    const geoHemisphere = d3.geoCircle()()
 
     svg.append('circle')
       .attr('r', 20)
@@ -323,7 +324,7 @@ class Calendar {
     // NOSONAR
     svg.append('path')
       .attr('fill', '#FFFFFF')
-      .attr('d', `${this.geoProjection.rotate([lightAngle, 0, rotationZ]), geoPath(geoHemisphere)}`)
+      .attr('d', `${this.geoProjection.rotate([lightAngle, 0, rotationZ]), this.geoPath(this.geoHemisphere)}`)
       .attr('transform', `translate(${x + 24}, ${y + 42})`)
 
     svg.append('circle')
@@ -342,12 +343,7 @@ class Calendar {
   }
 
   _appendMoonPhase = (svg: d3.Selection<SVGSVGElement, unknown, null, undefined>, date: Date, x: number, y: number, moonPhases: string[]): void => {
-    const moonSize = 7
-
-    this.geoProjection.translate([0, 0])
-      .scale(moonSize)
-
-    const geoPath = d3.geoPath(this.geoProjection)
+    const geoPath = d3.geoPath(this.moonPhaseGeoProjection)
     const geoHemisphere = d3.geoCircle()()
 
     const moonIllumination = suncalc.getMoonIllumination(date)
@@ -377,7 +373,7 @@ class Calendar {
       const moonX = x + 35
       const moonY = y + 12
       svg.append('circle')
-        .attr('r', moonSize)
+        .attr('r', this.moonPhaseSize)
         .attr('fill', '#c1c1c1')
         .attr('transform', `translate(${moonX}, ${moonY})`)
 
@@ -391,7 +387,7 @@ class Calendar {
         .attr('transform', `translate(${moonX}, ${moonY})`)
 
       svg.append('circle')
-        .attr('r', moonSize)
+        .attr('r', this.moonPhaseSize)
         .attr('fill', 'none')
         .attr('stroke', '#c1c1c1')
         .attr('transform', `translate(${moonX}, ${moonY})`)
