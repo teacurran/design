@@ -1,50 +1,46 @@
 version: "3.9"
 
 services:
-  client:
-    image: client
-    build:
-      context: ./client
-    working_dir: /app
-    command: npm start
-    volumes:
-      - ./client:/app
-      - /app/node_modules
-    environment:
-      - NODE_ENV=development
-      - PORT=3401
-      - REACT_APP_API_URL=http://localhost:3400
-    ports:
-      - "3401:3401"
+#  client:
+#    image: client
+#    build:
+#      context: ./client
+#    working_dir: /app
+#    command: npm start
+#    volumes:
+#      - ./client:/app
+#      - /app/node_modules
+#    environment:
+#      - NODE_ENV=development
+#      - PORT=3401
+#      - REACT_APP_API_URL=http://localhost:3400
+#    ports:
+#      - "3401:3401"
+#
+#  client-build:
+#    image: client
+#    build:
+#      context: ./client
+#    working_dir: /app
+#    command: npm run build
+#    volumes:
+#      - ./client:/app
+#      - /app/node_modules
+#    environment:
+#      - NODE_ENV=production
+#    profiles: [ci]
 
-  client-build:
-    image: client
-    build:
-      context: ./client
-    working_dir: /app
-    command: npm run build
-    volumes:
-      - ./client:/app
-      - /app/node_modules
+  main-db:
+    image: postgres:16
+    restart: always
     environment:
-      - NODE_ENV=production
-    profiles: [ci]
-
-  server:
-    image: server
-    build:
-      context: ./app
-    working_dir: /app
-    command: npm run api-dev
+      POSTGRES_USER: calendar
+      POSTGRES_PASSWORD: calendar
+      POSTGRES_DB: calendar
     volumes:
-      - ./app:/app
-      - /app/node_modules
-    environment:
-      - NODE_ENV=development
-      - OTEL_EXPORTER_OTLP_TRACES_ENDPOINT=http://jaeger:4318/v1/traces
-      - OTEL_RESOURCE_ATTRIBUTES=service.name=calendar-server,env=docker-compose
+      - main_db:/var/lib/postgresql/data
     ports:
-      - "3400:3000"
+      - "5532:5432"
 
   jaeger:
     image: jaegertracing/all-in-one:latest
@@ -54,9 +50,48 @@ services:
       COLLECTOR_OTLP_ENABLED: "true"
       LOG_LEVEL: debug
 
+  server:
+    image: server
+    depends_on: [main-db]
+    build:
+      context: ./app
+    working_dir: /app
+    command: sh -c "/wait && npm run migrate-dev && npm run db-seed && npm run next dev"
+    volumes:
+      - ./app:/app
+    environment:
+      NODE_ENV: development
+      OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: http://jaeger:4318/v1/traces
+      OTEL_RESOURCE_ATTRIBUTES=service.name: calendar-server,env=docker-compose
+      DATABASE_URL: "postgresql://calendar:calendar@main-db:5432/calendar?schema=public"
+      WAIT_HOSTS: main-db:5432
+    ports:
+      - "3400:3000"
+
+  prisma-studio:
+    image: server
+    depends_on: [main-db]
+    build:
+      context: ./app
+    working_dir: /app
+    command: sh -c "/wait && npm run prisma-studio"
+    volumes:
+      - ./app:/app
+    environment:
+      NODE_ENV: development
+      OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: http://jaeger:4318/v1/traces
+      OTEL_RESOURCE_ATTRIBUTES=service.name: calendar-server,env=docker-compose
+      DATABASE_URL: "postgresql://calendar:calendar@main-db:5432/calendar?schema=public"
+      WAIT_HOSTS: main-db:5432
+    ports:
+      - "5555:5555"
+
+
   #prometheus:
   #  image: prom/prometheus:latest
   #  container_name: prometheus
   #  ports:
   #    - "9090:9090"
 
+volumes:
+  main_db:
