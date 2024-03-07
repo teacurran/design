@@ -10,6 +10,8 @@ ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
 
 COPY --from=ghcr.io/ufoscout/docker-compose-wait:latest /wait /wait
 
+RUN npm install --global tsx
+
 COPY ./package.json ./
 COPY ./package-lock.json ./
 RUN npm install

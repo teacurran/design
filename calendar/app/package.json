@@ -102,6 +102,7 @@
     "npm-run-all": "4.1.0",
     "prisma": "5.10.2",
     "ts-node": "^10.9.2",
+    "tsx": "^4.7.1",
     "typescript": "^5.3.3"
   },
   "publishConfig": {
