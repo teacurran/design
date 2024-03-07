@@ -56,7 +56,7 @@ services:
     build:
       context: ./app
     working_dir: /app
-    command: sh -c "/wait && npm run migrate-dev && npm run db-seed && npm run next dev"
+    command: sh -c "/wait && npm run dx:next"
     volumes:
       - ./app:/app
     environment:
