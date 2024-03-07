@@ -1,0 +1,19 @@
+// docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider = "postgres"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Calendar {
+  id        Int      @id @default(autoincrement())
+  text      String
+  completed Boolean @default(value: false)
+
+  createdAt DateTime @unique @default(now())
+  updatedAt DateTime @unique @default(now())
+}

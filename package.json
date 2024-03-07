@@ -19,5 +19,8 @@
   "homepage": "https://github.com/teacurran/design#readme",
   "devDependencies": {
     "husky": "^9.0.11"
+  },
+  "dependencies": {
+    "next-i18next": "^15.2.0"
   }
 }

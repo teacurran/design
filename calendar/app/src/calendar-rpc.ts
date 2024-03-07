@@ -1,4 +1,4 @@
-import { router, publicProcedure } from './trpc'
+import { router, publicProcedure } from './server/trpc'
 import { CalendarSchema, getSvgAsDocumentDom } from './calendar'
 import type * as d3 from 'd3'
 
