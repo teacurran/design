@@ -33,11 +33,11 @@ services:
   server:
     image: server
     build:
-      context: ./server
+      context: ./app
     working_dir: /app
     command: npm run api-dev
     volumes:
-      - ./server:/app
+      - ./app:/app
       - /app/node_modules
     environment:
       - NODE_ENV=development
