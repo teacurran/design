@@ -12,7 +12,7 @@ export const calendarRouter = router({
   add: baseProcedure
     .input(
       z.object({
-        id: z.string().optional(),
+        id: z.number().optional(),
         text: z.string().min(1),
       }),
     )
@@ -25,7 +25,7 @@ export const calendarRouter = router({
   edit: baseProcedure
     .input(
       z.object({
-        id: z.string().uuid(),
+        id: z.number(),
         data: z.object({
           completed: z.boolean().optional(),
           text: z.string().min(1).optional(),
@@ -48,7 +48,7 @@ export const calendarRouter = router({
       });
     }),
   delete: baseProcedure
-    .input(z.string().uuid())
+    .input(z.number())
     .mutation(async ({ ctx, input: id }) => {
       await ctx.calendar.delete({ where: { id } });
       return id;

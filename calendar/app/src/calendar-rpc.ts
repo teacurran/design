@@ -1,9 +1,9 @@
-import { router, publicProcedure } from './server/trpc'
+import { router, baseProcedure } from './server/trpc'
 import { CalendarSchema, getSvgAsDocumentDom } from './calendar'
 import type * as d3 from 'd3'
 
 export const calendarRouter = router({
-  postCreate: publicProcedure
+  postCreate: baseProcedure
     .input(CalendarSchema)
     .mutation((opts) => {
       const { input } = opts
@@ -12,7 +12,7 @@ export const calendarRouter = router({
       const svg = svgDom.html()
       return svg
     }),
-  postList: publicProcedure.query(() => {
+  postList: baseProcedure.query(() => {
     return []
   })
 })

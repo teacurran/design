@@ -5,6 +5,7 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { createInnerTRPCContext } from './context'
 import type { AppRouter } from './routers/_app'
 import { appRouter } from './routers/_app'
+import superjson from "superjson";
 
 export async function ssgInit<TParams extends { locale?: string }>(
   opts: GetStaticPropsContext<TParams>,
@@ -19,6 +20,7 @@ export async function ssgInit<TParams extends { locale?: string }>(
       locale,
       i18n: _i18n,
     }),
+    transformer: superjson,
   });
 
   // Prefetch i18n everytime

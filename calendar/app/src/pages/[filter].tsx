@@ -2,7 +2,6 @@ import { useIsMutating } from '@tanstack/react-query'
 import type { inferProcedureOutput } from '@trpc/server'
 import clsx from 'clsx'
 import type {
-  GetStaticPaths,
   GetStaticPropsContext,
   InferGetStaticPropsType,
 } from 'next'
@@ -18,25 +17,24 @@ import type { AppRouter } from '~/server/routers/_app'
 import { ssgInit } from '~/server/ssg-init'
 import { trpc } from '~/utils/trpc'
 import { useClickOutside } from '~/utils/use-click-outside'
-import { Calendar } from ".prisma/client"
 
-type Task = inferProcedureOutput<AppRouter['calendar']['all']>[number];
+type Calendar = inferProcedureOutput<AppRouter['calendar']['all']>[number];
 
-function ListItem(props: { task: Task }) {
-  const { task } = props;
+function ListItem(props: { calendar: Calendar  }) {
+  const { calendar } = props;
 
   const [editing, setEditing] = useState(false);
   const wrapperRef = useRef(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const utils = trpc.useUtils();
-  const [text, setText] = useState(task.text);
+  const [text, setText] = useState(calendar.text);
 
   useEffect(() => {
-    setText(task.text);
-  }, [task.text]);
+    setText(calendar.text);
+  }, [calendar.text]);
 
-  const editTask = trpc.calendar.edit.useMutation({
+  const editCalendar = trpc.calendar.edit.useMutation({
     async onMutate({ id, data }) {
       await utils.calendar.all.cancel();
       const allTasks = utils.calendar.all.getData();
@@ -45,8 +43,8 @@ function ListItem(props: { task: Task }) {
       }
       utils.calendar.all.setData(
         undefined,
-        allTasks.map((t: Task) =>
-          t.id === id
+        allTasks.map((t: Calendar) =>
+          t.id === Number(id)
             ? {
               ...t,
               ...data,
@@ -56,7 +54,7 @@ function ListItem(props: { task: Task }) {
       );
     },
   });
-  const deleteTask = trpc.calendar.delete.useMutation({
+  const deleteCalendar = trpc.calendar.delete.useMutation({
     async onMutate() {
       await utils.calendar.all.cancel();
       const allTasks = utils.calendar.all.getData();
@@ -65,7 +63,7 @@ function ListItem(props: { task: Task }) {
       }
       utils.calendar.all.setData(
         undefined,
-        allTasks.filter((t: Task) => t.id != task.id),
+        allTasks.filter((t: Calendar) => t.id != calendar.id),
       );
     },
   });
@@ -74,8 +72,8 @@ function ListItem(props: { task: Task }) {
     ref: wrapperRef,
     enabled: editing,
     callback() {
-      editTask.mutate({
-        id: task.id,
+      editCalendar.mutate({
+        id: calendar.id,
         data: { text },
       });
       setEditing(false);
@@ -84,19 +82,19 @@ function ListItem(props: { task: Task }) {
 
   return (
     <li
-      key={task.id}
-      className={clsx(editing && 'editing', task.completed && 'completed')}
+      key={calendar.id}
+      className={clsx(editing && 'editing', calendar.completed && 'completed')}
       ref={wrapperRef}
     >
       <div className="view">
         <input
           className="toggle"
           type="checkbox"
-          checked={task.completed}
+          checked={calendar.completed}
           onChange={(e) => {
             const checked = e.currentTarget.checked;
-            editTask.mutate({
-              id: task.id,
+            editCalendar.mutate({
+              id: calendar.id,
               data: { completed: checked },
             });
           }}
@@ -113,7 +111,7 @@ function ListItem(props: { task: Task }) {
         <button
           className="destroy"
           onClick={() => {
-            deleteTask.mutate(task.id);
+            deleteCalendar.mutate(calendar.id);
           }}
         />
       </div>
@@ -127,8 +125,8 @@ function ListItem(props: { task: Task }) {
         }}
         onKeyPress={(e) => {
           if (e.key === 'Enter') {
-            editTask.mutate({
-              id: task.id,
+            editCalendar.mutate({
+              id: calendar.id,
               data: { text },
             });
             setEditing(false);
@@ -146,26 +144,27 @@ export default function TodosPage(props: PageProps) {
    * This data will be hydrated from the `prefetch` in `getStaticProps`. This means that the page
    * will be rendered with the data from the server and there'll be no client loading state 👍
    */
-  const allTasks = trpc.calendar.all.useQuery(undefined, {
+  const allCalendars = trpc.calendar.all.useQuery(undefined, {
     staleTime: 3000,
   });
 
   const utils = trpc.useUtils();
-  const addTask = trpc.calendar.add.useMutation({
+  const addCalendar = trpc.calendar.add.useMutation({
     async onMutate({ text }) {
       /**
        * Optimistically update the data
        * with the newly added task
        */
       await utils.calendar.all.cancel();
-      const tasks = allTasks.data ?? [];
+      const tasks = allCalendars.data ?? [];
       utils.calendar.all.setData(undefined, [
         ...tasks,
         {
-          id: `${Math.random()}`,
+          id: Math.random(),
           completed: false,
           text,
           createdAt: new Date(),
+          updatedAt: new Date(),
         },
       ]);
     },
@@ -174,10 +173,10 @@ export default function TodosPage(props: PageProps) {
   const clearCompleted = trpc.calendar.clearCompleted.useMutation({
     async onMutate() {
       await utils.calendar.all.cancel();
-      const tasks = allTasks.data ?? [];
+      const tasks = allCalendars.data ?? [];
       utils.calendar.all.setData(
         undefined,
-        tasks.filter((t: Task) => !t.completed),
+        tasks.filter((t: Calendar) => !t.completed),
       );
     },
   });
@@ -185,10 +184,10 @@ export default function TodosPage(props: PageProps) {
   const toggleAll = trpc.calendar.toggleAll.useMutation({
     async onMutate({ completed }) {
       await utils.calendar.all.cancel();
-      const tasks = allTasks.data ?? [];
+      const tasks = allCalendars.data ?? [];
       utils.calendar.all.setData(
         undefined,
-        tasks.map((t: Task) => ({
+        tasks.map((t: Calendar) => ({
           ...t,
           completed,
         })),
@@ -206,22 +205,22 @@ export default function TodosPage(props: PageProps) {
     }
   }, [number, utils])
 
-  const tasksLeft = allTasks.data?.filter((t: Task) => !t.completed).length ?? 0
-  const tasksCompleted = allTasks.data?.filter((t: Task) => t.completed).length ?? 0
+  const tasksLeft = allCalendars.data?.filter((t: Calendar) => !t.completed).length ?? 0
+  const tasksCompleted = allCalendars.data?.filter((t: Calendar) => t.completed).length ?? 0
 
-  const filterTasks = (task: Calendar) => {
+  const filterTasks = (calendar: Calendar) => {
     if (props.filter === 'completed') {
-      return task.completed;
+      return calendar.completed;
     } else if (props.filter === 'active') {
-      return !task.completed;
+      return !calendar.completed;
     } else {
       return true;
     }
   }
 
-  const createListItem = (task: Task) => <ListItem key={task.id} task={task} />
+  const createListItem = (calendar: Calendar) => <ListItem key={calendar.id} calendar={calendar} />
 
-  const filteredAndMappedTasks = allTasks.data?.filter(filterTasks).map(createListItem)
+  const filteredAndMappedTasks = allCalendars.data?.filter(filterTasks).map(createListItem)
 
   return (
     <>
@@ -241,7 +240,7 @@ export default function TodosPage(props: PageProps) {
             onKeyDown={(e) => {
               const text = e.currentTarget.value.trim();
               if (e.key === 'Enter' && text) {
-                addTask.mutate({ text });
+                addCalendar.mutate({ text });
                 e.currentTarget.value = '';
               }
             }}
@@ -253,7 +252,7 @@ export default function TodosPage(props: PageProps) {
             id="toggle-all"
             className="toggle-all"
             type="checkbox"
-            checked={tasksCompleted === allTasks.data?.length}
+            checked={tasksCompleted === allCalendars.data?.length}
             onChange={(e) => {
               toggleAll.mutate({ completed: e.currentTarget.checked });
             }}
@@ -330,10 +329,6 @@ export const getStaticProps = async (context: GetStaticPropsContext) => {
     trpcState.queries[1].state.data = null; // or some other default value
   }
 
-  if (trpcState.queries[1].state.error instanceof Error) {
-    console.error(`error: ${trpcState.queries[1].state.error}`)
-  }
-
   return {
     props: {
       trpcState: trpcState,
@@ -341,6 +336,5 @@ export const getStaticProps = async (context: GetStaticPropsContext) => {
       locale: context.locale ?? context.defaultLocale,
       locales: context.locales ?? ['en', 'es'],
     },
-    revalidate: 1,
   };
 };

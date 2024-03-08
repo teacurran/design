@@ -24,8 +24,8 @@ const config = {
 
 module.exports = config;
 
-module.exports = {
-  experimental: {
-    swcPlugins: [["next-superjson-plugin", {}]],
-  },
-};
+// module.exports = {
+//   experimental: {
+//     swcPlugins: [["next-superjson-plugin", {}]],
+//   },
+// };
