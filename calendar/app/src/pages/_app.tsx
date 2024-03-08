@@ -4,6 +4,13 @@ import { appWithTranslation } from 'next-i18next'
 import type { AppProps } from 'next/app'
 import type { ComponentProps } from 'react'
 import { trpc } from '~/utils/trpc'
+import { PrimeReactProvider } from 'primereact/api';
+
+//theme
+import "primereact/resources/themes/lara-light-indigo/theme.css";
+
+//core
+import "primereact/resources/primereact.min.css";
 
 const I18nextAdapter = appWithTranslation<
   AppProps<SSRConfig> & { children: React.ReactNode }
@@ -31,8 +38,10 @@ const I18nProvider = (props: AppProps) => {
 const MyApp = ({ Component, pageProps }: AppProps) => {
   return (
     <I18nProvider {...pageProps}>
-      <Component {...pageProps} />
-      <ReactQueryDevtools initialIsOpen={false} />
+      <PrimeReactProvider>
+        <Component {...pageProps} />
+        <ReactQueryDevtools initialIsOpen={false} />
+      </PrimeReactProvider>
     </I18nProvider>
   );
 };

@@ -7,8 +7,8 @@ const config = {
   async redirects() {
     return [
       {
-        source: '/',
-        destination: '/all',
+        source: '/history/',
+        destination: '/history/all',
         permanent: false,
       },
     ];

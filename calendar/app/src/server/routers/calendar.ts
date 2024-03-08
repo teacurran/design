@@ -1,7 +1,24 @@
 import { z } from 'zod';
 import { baseProcedure, router } from '../trpc';
+import { CalendarSchema, getSvgAsDocumentDom } from "~/calendar";
+import type * as d3 from "d3";
 
 export const calendarRouter = router({
+  generate: baseProcedure
+    .input(CalendarSchema)
+    .mutation((opts) => {
+      const { input } = opts
+
+      const svgDom: d3.Selection<HTMLElement, unknown, null, undefined> = getSvgAsDocumentDom(input)
+      const svg = svgDom.html()
+      return svg
+    }
+  ),
+
+  postList: baseProcedure.query(() => {
+    return []
+  }),
+
   all: baseProcedure.query(({ ctx }) => {
     return ctx.calendar.findMany({
       orderBy: {

@@ -5,18 +5,17 @@ import type {
   GetStaticPropsContext,
   InferGetStaticPropsType,
 } from 'next'
-import { i18n } from 'next-i18next.config'
+import { i18n } from '../../../next-i18next.config'
 import Head from 'next/head'
 import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
-import 'todomvc-app-css/index.css'
-import 'todomvc-common/base.css'
 import { useLocale } from '~/utils/use-locale'
 import { InfoFooter } from '~/components/footer'
 import type { AppRouter } from '~/server/routers/_app'
 import { ssgInit } from '~/server/ssg-init'
 import { trpc } from '~/utils/trpc'
 import { useClickOutside } from '~/utils/use-click-outside'
+import { Button } from "primereact/button";
 
 type Calendar = inferProcedureOutput<AppRouter['calendar']['all']>[number];
 
@@ -114,6 +113,7 @@ function ListItem(props: { calendar: Calendar  }) {
             deleteCalendar.mutate(calendar.id);
           }}
         />
+        <Button label="Submit" severity="help"/>
       </div>
       <input
         className="edit"
@@ -225,13 +225,13 @@ export default function CalendarPage(props: PageProps) {
   return (
     <>
       <Head>
-        <title>Todos</title>
+        <title>Calendars</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
       <section className="todoapp">
         <header className="header">
-          <h1>todos</h1>
+          <h1>calendars</h1>
 
           <input
             className="new-todo"
@@ -328,7 +328,7 @@ export const getStaticProps = async (context: GetStaticPropsContext) => {
   return {
     props: {
       trpcState: trpcState,
-      filter: (context.params?.filter as string) ?? 'all',
+      filter: (context.params?.filter as string) ?? 'active',
       locale: context.locale ?? context.defaultLocale,
       locales: context.locales ?? ['en', 'es'],
     },
