@@ -138,7 +138,7 @@ function ListItem(props: { calendar: Calendar  }) {
 }
 
 type PageProps = InferGetStaticPropsType<typeof getStaticProps>;
-export default function TodosPage(props: PageProps) {
+export default function CalendarPage(props: PageProps) {
   const { t } = useLocale();
   /*
    * This data will be hydrated from the `prefetch` in `getStaticProps`. This means that the page
@@ -156,9 +156,9 @@ export default function TodosPage(props: PageProps) {
        * with the newly added task
        */
       await utils.calendar.all.cancel();
-      const tasks = allCalendars.data ?? [];
+      const calendars = allCalendars.data ?? [];
       utils.calendar.all.setData(undefined, [
-        ...tasks,
+        ...calendars,
         {
           id: Math.random(),
           completed: false,
@@ -323,11 +323,7 @@ export const getStaticProps = async (context: GetStaticPropsContext) => {
   const ssg = await ssgInit(context);
 
   await ssg.calendar.all.prefetch();
-
   const trpcState = ssg.dehydrate();
-  if (trpcState.queries[1].state.data === undefined) {
-    trpcState.queries[1].state.data = null; // or some other default value
-  }
 
   return {
     props: {
