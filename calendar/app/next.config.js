@@ -1,9 +1,8 @@
+const { i18n } = require('./next-i18next.config');
+
 /** @type {import("next").NextConfig} */
 const config = {
-  i18n: {
-    defaultLocale: 'en',
-    locales: ['en', 'es'],
-  },
+  i18n,
 
   async redirects() {
     return [
@@ -19,6 +18,14 @@ const config = {
   eslint: {
     ignoreDuringBuilds: !!process.env.CI,
   },
+
+
 };
 
 module.exports = config;
+
+module.exports = {
+  experimental: {
+    swcPlugins: [["next-superjson-plugin", {}]],
+  },
+};

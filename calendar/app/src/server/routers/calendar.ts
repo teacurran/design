@@ -3,7 +3,7 @@ import { baseProcedure, router } from '../trpc';
 
 export const calendarRouter = router({
   all: baseProcedure.query(({ ctx }) => {
-    return ctx.task.findMany({
+    return ctx.calendar.findMany({
       orderBy: {
         createdAt: 'asc',
       },
@@ -17,7 +17,7 @@ export const calendarRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const todo = await ctx.task.create({
+      const todo = await ctx.calendar.create({
         data: input,
       });
       return todo;
@@ -34,7 +34,7 @@ export const calendarRouter = router({
     )
     .mutation(async ({ ctx, input }) => {
       const { id, data } = input;
-      const todo = await ctx.task.update({
+      const todo = await ctx.calendar.update({
         where: { id },
         data,
       });
@@ -43,19 +43,19 @@ export const calendarRouter = router({
   toggleAll: baseProcedure
     .input(z.object({ completed: z.boolean() }))
     .mutation(async ({ ctx, input }) => {
-      await ctx.task.updateMany({
+      await ctx.calendar.updateMany({
         data: { completed: input.completed },
       });
     }),
   delete: baseProcedure
     .input(z.string().uuid())
     .mutation(async ({ ctx, input: id }) => {
-      await ctx.task.delete({ where: { id } });
+      await ctx.calendar.delete({ where: { id } });
       return id;
     }),
   clearCompleted: baseProcedure.mutation(async ({ ctx }) => {
-    await ctx.task.deleteMany({ where: { completed: true } });
+    await ctx.calendar.deleteMany({ where: { completed: true } });
 
-    return ctx.task.findMany();
+    return ctx.calendar.findMany();
   }),
 });
