@@ -6,6 +6,9 @@ import { vermontMonthlyColors2 } from './vermont_weekends'
 import { type Span, trace } from '@opentelemetry/api'
 import { z } from 'zod'
 
+
+type CalendarTheme = "" | "vermontWeekends" | "rainbowWeekends" | "rainbowDays1" | "rainbowDays2" | "rainbowDays3"
+
 const CalendarSchema = z.object({
   cellBackgroundColor: z.string().default('white'),
   weekendBackgroundColor: z.string().default('grey'),
@@ -25,11 +28,7 @@ const CalendarSchema = z.object({
   optHighlightWeekends: z.boolean().default(false),
   optShowDayNames: z.boolean().default(false),
   hideWeekendDayNames: z.boolean().default(false),
-  optRainbowDays1: z.boolean().default(false),
-  optRainbowDays2: z.boolean().default(false),
-  optRainbowDays3: z.boolean().default(false),
-  optRainbowWeekends: z.boolean().default(false),
-  optVermontWeekends: z.boolean().default(false),
+  theme: z.enum(["", "vermontWeekends", "rainbowWeekends", "rainbowDays1", "rainbowDays2", "rainbowDays3"]).default(""),
   optShowMoonIllumination: z.boolean().default(false),
   optShowMoonPhase: z.boolean().default(false),
   optShowGrid: z.boolean().default(false),
@@ -198,22 +197,22 @@ const getBackgroundColor = (calendar: Calendar, date: Date, isWeekend: boolean, 
   const dayNum = date.getDate()
   let backgroundColor = calendar.cellBackgroundColor
 
-  if (calendar.optRainbowDays1) {
+  if (calendar.theme == 'rainbowDays1') {
     const hue = date.getDay() * 30
     backgroundColor = `hsl(${hue}, 100%, 90%)`
   }
 
-  if (calendar.optRainbowDays2 || calendar.optRainbowDays3) {
+  if (calendar.theme == 'rainbowDays2' || calendar.theme == 'rainbowDays3') {
     // Calculate hue once and store it in a variable
     const hue = (dayNum / (30)) * 360
 
-    if (calendar.optRainbowDays2) {
+    if (calendar.theme == 'rainbowDays2') {
       const saturation = 100
       const lightness = 50
       backgroundColor = `hsl(${hue}, ${saturation}%, ${lightness}%)`
     }
 
-    if (calendar.optRainbowDays3) {
+    if (calendar.theme == 'rainbowDays3') {
       // Use the pre-calculated maxDistance
       const distance = Math.sqrt(Math.pow(12 - date.getMonth(), 2) + Math.pow(30 - dayNum, 2))
       const normalizedDistance = distance / maxDistance
@@ -230,12 +229,12 @@ const getBackgroundColor = (calendar: Calendar, date: Date, isWeekend: boolean, 
       backgroundColor = calendar.weekendBackgroundColor
     }
 
-    if (calendar.optRainbowWeekends) {
+    if (calendar.theme == 'rainbowWeekends') {
       const hue = (date.getDate() / 30) * 360
       backgroundColor = `hsl(${hue}, 100%, 90%)`
     }
 
-    if (calendar.optVermontWeekends) {
+    if (calendar.theme == 'vermontWeekends') {
       backgroundColor = vermontMonthlyColors2[date.getMonth()][weekendIndex]
     }
   }
@@ -378,10 +377,17 @@ const _appendMoonPhase = (svg: d3.Selection<SVGSVGElement, unknown, null, undefi
 }
 
 const getSvgAsDocumentDom = (calendar: Calendar): d3.Selection<HTMLElement, unknown, null, undefined> => {
-  const dom = new JSDOM('<!DOCTYPE html><body></body>')
-  const documentBody = d3.select(dom.window.document.body)
-  generateSvg(documentBody, calendar)
-  return documentBody
+  return tracer.startActiveSpan('getSvgAsDocumentDom', (span: Span) => {
+    span.setAttribute('calendar', JSON.stringify(calendar))
+    console.info('calendar', JSON.stringify(calendar))
+
+    const dom = new JSDOM('<!DOCTYPE html><body></body>')
+    const documentBody = d3.select(dom.window.document.body)
+    generateSvg(documentBody, calendar)
+    span.end()
+
+    return documentBody
+  })
 }
 
 const getDefaultCalendar = (): Calendar => {
@@ -403,11 +409,6 @@ const getDefaultCalendar = (): Calendar => {
     optHighlightWeekends: false,
     optShowDayNames: false,
     hideWeekendDayNames: false,
-    optRainbowDays1: false,
-    optRainbowDays2: false,
-    optRainbowDays3: false,
-    optRainbowWeekends: false,
-    optVermontWeekends: false,
     optShowMoonIllumination: false,
     optShowMoonPhase: false,
 
@@ -417,12 +418,14 @@ const getDefaultCalendar = (): Calendar => {
     lng: -72.26793,
     cellBackgroundColor,
     weekendBackgroundColor,
-    startDate
+    startDate,
+    theme: ""
   }
 }
 
 export {
   type Calendar,
+  type CalendarTheme,
   CalendarSchema,
   getSvgAsDocumentDom,
   getDefaultCalendar

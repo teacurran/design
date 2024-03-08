@@ -12,6 +12,8 @@ import "primereact/resources/themes/lara-light-indigo/theme.css";
 //core
 import "primereact/resources/primereact.min.css";
 
+import '~/styles/global.css'
+
 const I18nextAdapter = appWithTranslation<
   AppProps<SSRConfig> & { children: React.ReactNode }
 >(({ children }) => <>{children}</>)

@@ -6,12 +6,13 @@ import { Divider } from "primereact/divider"
 import { Dropdown } from "primereact/dropdown"
 import { classNames } from "primereact/utils"
 import { trpc } from '~/utils/trpc'
+import { CalendarTheme } from "~/calendar";
 
 function Calendar() {
-  const [url, setUrl] = useState("")
+  const [url] = useState("")
   const [svg, setSvg] = useState("")
-  const [arrivingSvg] = useState("")
-  const [svgIsArriving] = useState(false)
+  const [arrivingSvg, setArrivingSvg] = useState("")
+  const [svgIsArriving, setSvgIsArriving] = useState(false)
 
   const [showMoonPhases, setShowMoonPhases] = useState<boolean>(false)
   const [showMoonIllunination, setShowMoonIllunination] = useState<boolean>(false)
@@ -22,47 +23,32 @@ function Calendar() {
   const [rotateMonthNames, setRotateMonthNames] = useState<boolean>(true)
   const [optimize, setOptimize] = useState<boolean>(false)
 
-  const generateCalendar = trpc.calendar.generate.useMutation({
-    async onMutate(data) {
-      setSvg("")
-      console.log(`onMutate: ${JSON.stringify(data)}}`)
+  const generateCalendarMutation = trpc.calendar.generate.useMutation({
+    onSuccess: (data) => {
+      setArrivingSvg(data)
+      setSvgIsArriving(true)
+
+      setTimeout(() => {
+        setSvg(data)
+        setSvgIsArriving(false)
+      }, 500)
     },
+    onError: (error) => {
+      console.error("Error fetching SVG:", error)
+    }
   })
 
   useEffect(() => {
-
-    let queryString = ""
-    queryString += `?showMoonPhases=${showMoonPhases}`
-    queryString += `&showMoonIllunination=${showMoonIllunination}`
-    queryString += `&showGrid=${showGrid}`
-    queryString += `&showDayNames=${showDayNames}`
-    queryString += `&hideWeekendDayNames=${hideWeekendDayNames}`
-    queryString += `&theme=${theme}`
-    queryString += `&rotateMonthNames=${rotateMonthNames}`
-    queryString += `&optimize=${optimize}`
-
-    setUrl(`${url}${queryString}`)
-
+    generateCalendarMutation.mutate({
+      optShowMoonPhase: showMoonPhases,
+      optShowMoonIllumination: showMoonIllunination,
+      optShowGrid: showGrid,
+      optShowDayNames: showDayNames,
+      rotateMonthNames,
+      hideWeekendDayNames,
+      theme: theme as CalendarTheme
+    })
   }, [showMoonPhases, showMoonIllunination, showGrid, showDayNames, hideWeekendDayNames, theme, rotateMonthNames, optimize])
-
-  useEffect(() => {
-    generateCalendar.mutate({})
-
-    // fetch(url)
-    //   .then((response) => response.text())
-    //   .then((data) => {
-    //     setArrivingSvg(data)
-    //     setSvgIsArriving(true)
-    //
-    //     setTimeout(() => {
-    //       setSvg(data)
-    //       setSvgIsArriving(false)
-    //     }, 500)
-    //   })
-    //   .catch((error) => {
-    //     console.error("Error fetching SVG:", error)
-    //   })
-  }, [url])
 
   const themes = [
     {
@@ -174,9 +160,9 @@ function Calendar() {
 
         </SplitterPanel>
         <SplitterPanel className="mainContent flex align-items-center justify-content-center cal-svg-container">
-          [[<div dangerouslySetInnerHTML={{ __html: svg }}/>]]
-          [;[<div className={classNames({ "cal-hidden": !svgIsArriving, "cal-fade-in": svgIsArriving })}
-                  dangerouslySetInnerHTML={{ __html: arrivingSvg }}/>];]
+          <div dangerouslySetInnerHTML={{ __html: svg }}/>
+          <div className={classNames({ "cal-hidden": !svgIsArriving, "cal-fade-in": svgIsArriving })}
+                  dangerouslySetInnerHTML={{ __html: arrivingSvg }}/>
         </SplitterPanel>
       </Splitter>
     </div>
