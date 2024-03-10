@@ -33,8 +33,8 @@ const CalendarSchema = z.object({
   optShowMoonPhase: z.boolean().default(false),
   optShowGrid: z.boolean().default(false),
   gridStroke: z.string().default('black'),
-  lat: z.number().default(0),
-  lng: z.number().default(0)
+  lat: z.number().optional(),
+  lng: z.number().optional()
 })
 
 type Calendar = z.infer<typeof CalendarSchema>
