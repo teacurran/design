@@ -213,11 +213,13 @@ const getBackgroundColor = (calendar: Calendar, date: Date, isWeekend: boolean, 
     }
 
     if (calendar.theme == 'rainbowDays3') {
+      const monthWeight = 3;
       // Use the pre-calculated maxDistance
-      const distance = Math.sqrt(Math.pow(12 - date.getMonth(), 2) + Math.pow(30 - dayNum, 2))
+      const distance = Math.sqrt(Math.pow(12 - date.getMonth() * monthWeight, 2) + Math.pow(30 - dayNum, 2))
+      console.log(`month: ${date.getMonth()}, day: ${dayNum}, distance: ${distance}, maxDistance: ${maxDistance}`)
       const normalizedDistance = distance / maxDistance
       const lightnessMin = 80
-      const lightnessMax = 80
+      const lightnessMax = 90
       const lightness = lightnessMin + (1 - normalizedDistance) * (lightnessMax - lightnessMin)
       const saturation = 100
       backgroundColor = `hsl(${hue}, ${saturation}%, ${lightness}%)`
@@ -292,8 +294,8 @@ const _appendMoon = (svg: d3.Selection<SVGSVGElement, unknown, null, undefined>,
 
   const { parallacticAngle } = suncalc.getMoonPosition(
     date,
-    calendar.lat,
-    calendar.lng
+    calendar.lat ?? 0,
+    calendar.lng ?? 0
   )
   const rotationZ = ((moonIllumination.angle - parallacticAngle) / TAU) * 360 * -1
 

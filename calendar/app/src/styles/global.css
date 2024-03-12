@@ -5,68 +5,74 @@
   @tailwind utilities;
 }
 
-@layer primereact {
-  body {
-    height: 100vh;
-    background-color: white;
-    color: #fff;
-    padding: 0 32px;
-  }
-
-  .App {
-    text-align: center;
-  }
-
-  .leftMenu {
-    padding: 10px;
-  }
-
-  .leftMenu .p-accordion-content ul {
-    list-style-type: none;
-    margin-block-start: 0;
-    padding-inline-start: 0;
-  }
-
-  .leftMenu .p-accordion-content ul li {
-    padding-bottom: 10px;
-  }
-
-  .mainContent {
-    padding: 10px 10px 50px 20px;
-    vertical-align: top;
-  }
-
-  .mainContent svg {
-    width: 100%;
-    height: auto;
-  }
-
-  .p-button {
-    text-decoration: none;
-  }
-
-  .cal-fade-in {
-    transition: opacity 0.5s;
-    opacity: 1;
-  }
-
-  .cal-hidden {
-    transition: opacity 0.5s;
-    opacity: 0;
-  }
-
-  .cal-svg-container {
-    position: relative;
-  }
-
-  .cal-svg-container div {
-    position: absolute;
-    top: 0;
-    left: 0;
-  }
-
-  .cal-svg-container svg {
-    background-color: white;
-  }
-
+body {
+  height: 100vh;
+  background-color: white;
+  color: #000;
+  padding: 0 15px;
 }
+
+.App {
+  text-align: center;
+}
+
+.leftMenu {
+  padding: 10px;
+}
+
+.leftMenu .p-accordion-content ul {
+  list-style-type: none;
+  margin-block-start: 0;
+  padding-inline-start: 0;
+}
+
+.leftMenu .p-accordion-content ul li {
+  padding-bottom: 10px;
+}
+
+.mainContent {
+  padding: 10px 10px 50px 20px;
+  vertical-align: top;
+}
+
+.mainContent svg {
+  width: 100%;
+  height: auto;
+}
+
+.p-button {
+  text-decoration: none;
+}
+
+.cal-fade-in {
+  transition: opacity 0.5s;
+  opacity: 1;
+}
+
+.cal-hidden {
+  transition: opacity 0.5s;
+  opacity: 0;
+}
+
+.cal-svg-container {
+  position: relative;
+}
+
+.cal-svg-container div {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.cal-svg-container svg {
+  background-color: white;
+}
+
+.field {
+  margin-bottom: 0;
+}
+
+.field .p-checkbox {
+  margin: 5px;
+}
+
