@@ -135,12 +135,8 @@ const generateSvg = (documentBody: d3.Selection<HTMLElement, unknown, null, unde
         continue
       }
 
-      if (month !== row) {
-        continue
-      }
-
       // cell background
-      const cellBackgroundColor: string = getBackgroundColor(calendar, estDate, isWeekend, weekendIndex)
+      const cellBackgroundColor: string = getBackgroundColor(calendar, estDate, row, day, isWeekend, weekendIndex)
       svg.append('rect')
         .attr('width', cellWidth)
         .attr('height', cellHeight)
@@ -148,22 +144,24 @@ const generateSvg = (documentBody: d3.Selection<HTMLElement, unknown, null, unde
         .attr('y', y)
         .attr('fill', cellBackgroundColor)
 
-      // day number
-      svg.append('text')
-        .text(day)
-        .attr('x', x + cellPadding)
-        .attr('y', y + 14)
-        .attr('font-size', '12px')
-        .attr('font-family', 'Helvetica')
+      if (month === row) {
+        // day number
+        svg.append('text')
+          .text(day)
+          .attr('x', x + cellPadding)
+          .attr('y', y + 14)
+          .attr('font-size', '12px')
+          .attr('font-family', 'Helvetica')
 
-      appendDayName(svg, calendar, x, y, estDate)
+        appendDayName(svg, calendar, x, y, estDate)
 
-      if (calendar.optShowMoonIllumination) {
-        appendMoon(svg, calendar, estDate, x, y)
-      }
+        if (calendar.optShowMoonIllumination) {
+          appendMoon(svg, calendar, estDate, x, y)
+        }
 
-      if (calendar.optShowMoonPhase) {
-        appendMoonPhase(svg, estDate, x, y, moonPhases)
+        if (calendar.optShowMoonPhase) {
+          appendMoonPhase(svg, estDate, x, y, moonPhases)
+        }
       }
 
       if (calendar.optShowGrid) {
@@ -193,8 +191,7 @@ const generateSvg = (documentBody: d3.Selection<HTMLElement, unknown, null, unde
   return svg
 }
 
-const getBackgroundColor = (calendar: Calendar, date: Date, isWeekend: boolean, weekendIndex: number): string => {
-  const dayNum = date.getDate()
+const getBackgroundColor = (calendar: Calendar, date: Date, monthNum: number, dayNum: number, isWeekend: boolean, weekendIndex: number): string => {
   let backgroundColor = calendar.cellBackgroundColor
 
   if (calendar.theme == 'rainbowDays1') {
@@ -208,15 +205,15 @@ const getBackgroundColor = (calendar: Calendar, date: Date, isWeekend: boolean, 
 
     if (calendar.theme == 'rainbowDays2') {
       const saturation = 100
-      const lightness = 50
+      const lightness = 80
       backgroundColor = `hsl(${hue}, ${saturation}%, ${lightness}%)`
     }
 
     if (calendar.theme == 'rainbowDays3') {
       const monthWeight = 3;
       // Use the pre-calculated maxDistance
-      const distance = Math.sqrt(Math.pow(12 - date.getMonth() * monthWeight, 2) + Math.pow(30 - dayNum, 2))
-      console.log(`month: ${date.getMonth()}, day: ${dayNum}, distance: ${distance}, maxDistance: ${maxDistance}`)
+      const distance = Math.sqrt(Math.pow(12 - monthNum * monthWeight, 2) + Math.pow(31 - dayNum, 2))
+      console.log(`month: ${monthNum}, day: ${dayNum}, distance: ${distance}, maxDistance: ${maxDistance}`)
       const normalizedDistance = distance / maxDistance
       const lightnessMin = 80
       const lightnessMax = 90
@@ -237,7 +234,7 @@ const getBackgroundColor = (calendar: Calendar, date: Date, isWeekend: boolean, 
     }
 
     if (calendar.theme == 'vermontWeekends') {
-      backgroundColor = vermontMonthlyColors2[date.getMonth()][weekendIndex]
+      backgroundColor = vermontMonthlyColors2[monthNum][weekendIndex]
     }
   }
 
