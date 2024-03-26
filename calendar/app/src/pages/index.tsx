@@ -36,8 +36,37 @@ function Calendar() {
     }
   })
 
-  useEffect(() => {
-    generateCalendarMutation.mutate({
+  const downloadPdf = () => {
+    downloadFile("pdf")
+  }
+
+  const downloadPng = () => {
+    downloadFile("png")
+  }
+
+  const downloadFile = (format: string) => {
+    // send a POST request to /api/calendar/export/pdf with the current state
+    fetch(`${url}/api/calendar/export?format=${format}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(getCalendarParamrers())
+    })
+      .then(response => response.blob())
+      .then(blob => {
+        const url = window.URL.createObjectURL(new Blob([blob]))
+        const link = document.createElement('a')
+        link.href = url
+        link.setAttribute('download', `calendar.${format}`)
+        document.body.appendChild(link)
+        link.click()
+        link.parentNode?.removeChild(link)
+      })
+  }
+
+  const getCalendarParamrers = () => {
+    return {
       optShowMoonPhase: showMoonPhases,
       optShowMoonIllumination: showMoonIllunination,
       optShowGrid: showGrid,
@@ -45,7 +74,11 @@ function Calendar() {
       rotateMonthNames,
       hideWeekendDayNames,
       theme: theme as CalendarTheme
-    })
+    }
+  }
+
+  useEffect(() => {
+    generateCalendarMutation.mutate(getCalendarParamrers())
   }, [showMoonPhases, showMoonIllunination, showGrid, showDayNames, hideWeekendDayNames, theme, rotateMonthNames, optimize])
 
   const themes = [
@@ -129,13 +162,13 @@ function Calendar() {
           <label htmlFor="hideWeekendDayNames" className="ml-2">hide weekend names</label>
         </div>
         <Divider/>
-        <a href={`${url}&format=png`} download="calendar.pdf" className="p-button font-bold">
+        <a className="p-button font-bold" onClick={downloadPng}>
           <span className="pi pi-image"></span>{""}
           &nbsp;&nbsp;PNG&nbsp;&nbsp;
           <span className="pi pi-download"></span>
         </a>
         <Divider/>
-        <a href={`${url}&format=pdf`} download="calendar.pdf" className="p-button font-bold">
+        <a className="p-button font-bold" onClick={downloadPdf}>
           <span className="pi pi-file-pdf"></span>{""}
           &nbsp;&nbsp;PDF&nbsp;&nbsp;
           <span className="pi pi-download"></span>

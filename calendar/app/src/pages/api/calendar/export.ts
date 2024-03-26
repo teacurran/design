@@ -1,5 +1,4 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { useRouter } from "next/router";
 import { Calendar, CalendarSchema, getDefaultCalendar, getSvgAsDocumentDom } from "~/calendar";
 import type * as d3 from "d3";
 import * as puppeteer from "puppeteer";
@@ -36,24 +35,24 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       await page.setContent(svg)
     }
 
-    if (req.query.format === 'pdf' && page !== undefined) {
+    if (req.query.format === 'png' && page !== undefined) {
       const png = await page.screenshot({
         type: 'png',
         fullPage: true
       })
       // set the filename with todays date
-      const filename = `calendar-${new Date().toISOString().split('T')[0]}.pdf`
-      res.setHeader('Content-Type', 'application/pdf')
+      const filename = `calendar-${new Date().toISOString().split('T')[0]}.png`
+      res.setHeader('Content-Type', 'image/png')
       res.setHeader('Content-Disposition', `attachment; filename=${filename}`)
       res.send(png)
       return
     }
 
-    if (req.query.format === 'png' && page !== undefined) {
+    if (req.query.format === 'pdf' && page !== undefined) {
       const pdf = await page.pdf({ format: 'A1', landscape: true, scale: 2 })
       // set the filename with todays date
-      const filename = `calendar-${new Date().toISOString().split('T')[0]}.png`
-      res.setHeader('Content-Type', 'image/png')
+      const filename = `calendar-${new Date().toISOString().split('T')[0]}.pdf`
+      res.setHeader('Content-Type', 'application/pdf')
       res.setHeader('Content-Disposition', `attachment; filename=${filename}`)
       res.send(pdf)
       return
