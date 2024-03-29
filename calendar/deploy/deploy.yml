@@ -79,7 +79,7 @@
         -t {{ docker_image_tag }}
         .
       args:
-        chdir: ../server/
+        chdir: ../app/
       tags:
         - docker
 
@@ -91,7 +91,7 @@
         --tag {{docker_image_tag}}-arm64
         .
       args:
-        chdir: ../server/
+        chdir: ../app/
       tags: upload
 
     - name: tag AMD64 build
@@ -102,7 +102,7 @@
         --tag {{docker_image_tag}}-amd64
         .
       args:
-        chdir: ../server/
+        chdir: ../app/
       tags: upload
 
     - name: Remove buildx instance
