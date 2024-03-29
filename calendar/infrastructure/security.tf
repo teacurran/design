@@ -73,3 +73,32 @@ resource "aws_security_group" "load_balancer" {
     description = "Allow all outbound traffic"
   }
 }
+
+resource "aws_security_group" "rds" {
+  name   = "rds-database-access"
+  vpc_id = aws_vpc.main.id
+
+  # allow postgresql traffic from within the VPC
+  ingress {
+    from_port   = 5432
+    to_port     = 5432
+    protocol    = "tcp"
+    cidr_blocks = [aws_vpc.main.cidr_block]
+  }
+
+  ingress {
+    ipv6_cidr_blocks = ["2600:6c64:477f:4000::/64"]
+    from_port   = 5432
+    to_port     = 5432
+    protocol    = "tcp"
+    description = "Allow inbound PostgreSQL traffic from maple-vortex"
+  }
+
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}

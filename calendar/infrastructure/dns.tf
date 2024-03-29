@@ -13,3 +13,15 @@ resource "aws_route53_record" "calendar" {
   }
   allow_overwrite = true
 }
+
+resource "aws_route53_record" "db" {
+  zone_id = data.aws_route53_zone.mostlycats.zone_id
+  name    = "appi-db"
+  type    = "A"
+  alias {
+    name                   = aws_rds_cluster.appi.endpoint
+    zone_id                = aws_rds_cluster.appi.hosted_zone_id
+    evaluate_target_health = false
+  }
+  allow_overwrite = true
+}
