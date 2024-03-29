@@ -55,7 +55,7 @@ resource "aws_cloudfront_distribution" "calendar" {
   }
 
   ordered_cache_behavior {
-    path_pattern     = "/calendar*"
+    path_pattern     = "/*"
     target_origin_id = "api-origin"
 
     forwarded_values {

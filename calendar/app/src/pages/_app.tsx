@@ -6,11 +6,9 @@ import type { ComponentProps } from 'react'
 import { trpc } from '~/utils/trpc'
 import { PrimeReactProvider } from 'primereact/api';
 
-//theme
-import "primereact/resources/themes/lara-light-indigo/theme.css";
-
-//core
-import "primereact/resources/primereact.min.css";
+import "primeflex/primeflex.css";
+import "primereact/resources/themes/saga-orange/theme.css";
+import '~/styles/global.css'
 
 const I18nextAdapter = appWithTranslation<
   AppProps<SSRConfig> & { children: React.ReactNode }

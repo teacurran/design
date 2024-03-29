@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { baseProcedure, router } from '../trpc';
-import { CalendarSchema, getSvgAsDocumentDom } from "~/calendar";
+import { CalendarSchema, getDefaultCalendar, getSvgAsDocumentDom } from "~/calendar";
 import type * as d3 from "d3";
 
 export const calendarRouter = router({
@@ -8,8 +8,15 @@ export const calendarRouter = router({
     .input(CalendarSchema)
     .mutation((opts) => {
       const { input } = opts
+      const defaultCalendar = getDefaultCalendar()
 
-      const svgDom: d3.Selection<HTMLElement, unknown, null, undefined> = getSvgAsDocumentDom(input)
+      console.info('calendar', JSON.stringify(input))
+      const effectiveCalendar = {
+        ...defaultCalendar,
+        ...input,
+      }
+
+      const svgDom: d3.Selection<HTMLElement, unknown, null, undefined> = getSvgAsDocumentDom(effectiveCalendar)
       const svg = svgDom.html()
       return svg
     }
