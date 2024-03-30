@@ -72,11 +72,13 @@
 
     - debug: msg="docker buildx build --platform linux/arm64,linux/amd64 --allow network.host --network=host -t {{ecr_hostname}}/{{docker_image_tag}} --push -f Dockerfile ."
 
-    - name: Build Docker image - docker buildx build --platform linux/arm64,linux/amd64 --allow network.host --network=host -t {{docker_image_tag}} -f {{docker_file_name}} .
+    - name: Build Docker image - docker buildx build
       command: |
         docker buildx build
         --push
         --platform linux/arm64,linux/amd64
+        --allow network.host
+        --network=host
         -t {{ ecr_repository }}
         -t {{ docker_image_tag }}
         --build-arg DATABASE_URL="{{ local_database_url }}"
