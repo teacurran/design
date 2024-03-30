@@ -8,7 +8,7 @@ resource "aws_db_subnet_group" "appi" {
 resource "aws_rds_cluster" "appi" {
   cluster_identifier        = "appi-cluster"
   engine                    = "aurora-postgresql"
-  engine_version            = "14.6"
+  engine_version            = "16.1"
   database_name             = "appi"
   master_username           = var.db_username
   master_password           = var.db_password
@@ -24,7 +24,7 @@ resource "aws_rds_cluster_instance" "appi_instance" {
   cluster_identifier      = aws_rds_cluster.appi.id
   instance_class          = "db.t4g.medium"
   engine                  = "aurora-postgresql"
-  engine_version          = "14.6"
+  engine_version          = "16.1"
   publicly_accessible     = false
   db_subnet_group_name    = aws_db_subnet_group.appi.name
   performance_insights_enabled = true

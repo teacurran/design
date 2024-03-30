@@ -32,5 +32,5 @@ jobs:
         working-directory: ./calendar/deploy
 
       - name: Run Ansible script
-        run: ansible-playbook deploy.yml
+        run: ansible-playbook deploy.yml --extra-vars "db_password=${{ secrets.DB_PASSWORD }} db_host=${{ secrets.DB_HOST }} db_port=${{ secrets.DB_PORT }} db_name=calendar_app db_user=${{ secrets.DB_USER }}"
         working-directory: ./calendar/deploy
