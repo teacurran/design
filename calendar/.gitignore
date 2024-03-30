@@ -85,3 +85,6 @@ dist
 .env
 
 deploy/build
+
+infrastructure/terraform.tfvars
+

@@ -3,8 +3,11 @@
 resource "aws_subnet" "subnet1" {
   vpc_id                  = aws_vpc.main.id
   cidr_block              = cidrsubnet(aws_vpc.main.cidr_block, 8, 1)
+  ipv6_cidr_block         = cidrsubnet(aws_vpc.main.ipv6_cidr_block, 8, 1)
   map_public_ip_on_launch = true
   availability_zone       = "us-east-1a"
+  assign_ipv6_address_on_creation = true
+  private_dns_hostname_type_on_launch = "resource-name"
   tags = merge(local.tags, {
     Name = "public-subnet-1"
   })
@@ -13,8 +16,11 @@ resource "aws_subnet" "subnet1" {
 resource "aws_subnet" "subnet2" {
   vpc_id                  = aws_vpc.main.id
   cidr_block              = cidrsubnet(aws_vpc.main.cidr_block, 8, 2)
+  ipv6_cidr_block         = cidrsubnet(aws_vpc.main.ipv6_cidr_block, 8, 2)
   map_public_ip_on_launch = true
   availability_zone       = "us-east-1b"
+  assign_ipv6_address_on_creation = true
+  private_dns_hostname_type_on_launch = "resource-name"
   tags = merge(local.tags, {
     Name = "public-subnet-2"
   })
@@ -53,8 +59,11 @@ resource "aws_route_table_association" "subnet2_route" {
 resource "aws_subnet" "private-subnet-1" {
   vpc_id                  = aws_vpc.main.id
   cidr_block              = cidrsubnet(aws_vpc.main.cidr_block, 8, 3)
+  ipv6_cidr_block         = cidrsubnet(aws_vpc.main.ipv6_cidr_block, 8, 10)
   map_public_ip_on_launch = true
   availability_zone       = "us-east-1a"
+  assign_ipv6_address_on_creation = true
+  private_dns_hostname_type_on_launch = "resource-name"
   tags = merge(local.tags, {
     Name = "private-subnet-1"
   })
@@ -63,8 +72,11 @@ resource "aws_subnet" "private-subnet-1" {
 resource "aws_subnet" "private-subnet-2" {
   vpc_id                  = aws_vpc.main.id
   cidr_block              = cidrsubnet(aws_vpc.main.cidr_block, 8, 4)
+  ipv6_cidr_block         = cidrsubnet(aws_vpc.main.ipv6_cidr_block, 8, 11)
   map_public_ip_on_launch = true
   availability_zone       = "us-east-1b"
+  assign_ipv6_address_on_creation = true
+  private_dns_hostname_type_on_launch = "resource-name"
   tags = merge(local.tags, {
     Name = "private-subnet-2"
   })
