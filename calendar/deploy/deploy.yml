@@ -93,7 +93,10 @@
         docker buildx build
         --push
         --platform linux/arm64
+        --allow=network.host
+        --network=host
         --tag {{docker_image_tag}}-arm64
+        --build-arg DATABASE_URL="{{ local_database_url }}"
         .
       args:
         chdir: ../app/
@@ -104,7 +107,10 @@
         docker buildx build
         --push
         --platform linux/amd64
+        --allow=network.host
+        --network=host
         --tag {{docker_image_tag}}-amd64
+        --build-arg DATABASE_URL="{{ local_database_url }}"
         .
       args:
         chdir: ../app/
