@@ -78,7 +78,7 @@
         --platform linux/arm64,linux/amd64
         -t {{ ecr_repository }}
         -t {{ docker_image_tag }}
-        --build-arg DATABASE_URL=${database_url}
+        --build-arg DATABASE_URL="{{ database_url }}"
         .
       args:
         chdir: ../app/
