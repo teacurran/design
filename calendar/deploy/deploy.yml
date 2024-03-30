@@ -58,7 +58,7 @@
         - docker
 
     - name: Create a new buildx instance
-      command: docker buildx create --use --name calendar-multi-arch-builder --driver docker-container --allow=network.host --buildkitd-flags '--oci-worker-net host --allow-insecure-entitlement network.host'
+      command: docker buildx create --use --name calendar-multi-arch-builder --driver docker-container --buildkitd-flags '--oci-worker-net host --allow-insecure-entitlement network.host'
       tags:
         - docker
 
