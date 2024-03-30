@@ -14,6 +14,7 @@
     ecr_repository: "{{ ecr_hostname }}/{{ app_name }}"
     docker_image_tag: "{{ ecr_repository }}:{{ app_version }}"
     ecr_image_name: "{{ app_name }}"
+    local_database_url: "postgresql://calendar:calendar@localhost:5432/calendar?schema=public"
     database_url: "postgresql://{{db_user}}:{{db_password}}@{{db_host}}:5432/{{db_name}}?schema=public"
     docker_file_name: "Dockefile"
     task_name: "api"
@@ -78,7 +79,7 @@
         --platform linux/arm64,linux/amd64
         -t {{ ecr_repository }}
         -t {{ docker_image_tag }}
-        --build-arg DATABASE_URL="{{ database_url }}"
+        --build-arg DATABASE_URL="{{ local_database_url }}"
         .
       args:
         chdir: ../app/
