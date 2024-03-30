@@ -51,26 +51,26 @@
       ecs_ecr: name={{app_name}}
       tags: ecr
 
-    - name: Remove old buildx instance if it exists
-      command: docker buildx rm calendar-multi-arch-builder
-      ignore_errors: true
-      tags:
-        - docker
+#    - name: Remove old buildx instance if it exists
+#      command: docker buildx rm calendar-multi-arch-builder
+#      ignore_errors: true
+#      tags:
+#        - docker
 
-    - name: Create a new buildx instance
-      command: docker buildx create --use --name calendar-multi-arch-builder --driver docker-container --buildkitd-flags '--oci-worker-net host'
-      tags:
-        - docker
+#    - name: Create a new buildx instance
+#      command: docker buildx create --use --name calendar-multi-arch-builder --driver docker-container --buildkitd-flags '--oci-worker-net host'
+#      tags:
+#        - docker
 
-    - name: Inspect Docker builder
-      command: docker buildx inspect --bootstrap
-      register: docker_buildx_inspect_result
-      tags:
-        - docker
+#    - name: Inspect Docker builder
+#      command: docker buildx inspect --bootstrap
+#      register: docker_buildx_inspect_result
+#      tags:
+#        - docker
 
-    - debug: msg="{{ docker_buildx_inspect_result.stdout }}"
-
-    - debug: msg="docker buildx build --platform linux/arm64,linux/amd64 --allow network.host --network=host -t {{ecr_hostname}}/{{docker_image_tag}} --push -f Dockerfile ."
+#    - debug: msg="{{ docker_buildx_inspect_result.stdout }}"
+#
+#    - debug: msg="docker buildx build --platform linux/arm64,linux/amd64 --allow network.host --network=host -t {{ecr_hostname}}/{{docker_image_tag}} --push -f Dockerfile ."
 
     - name: Build Docker image - docker buildx build
       command: |
@@ -110,10 +110,10 @@
         chdir: ../app/
       tags: upload
 
-    - name: Remove buildx instance
-      command: docker buildx rm calendar-multi-arch-builder
-      tags:
-        - docker
+#    - name: Remove buildx instance
+#      command: docker buildx rm calendar-multi-arch-builder
+#      tags:
+#        - docker
 
     - name: Register ECS task definition
       command: "aws ecs register-task-definition --cli-input-json file://ecs_task_definition.json"
