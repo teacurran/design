@@ -14,7 +14,7 @@
     ecr_repository: "{{ ecr_hostname }}/{{ app_name }}"
     docker_image_tag: "{{ ecr_repository }}:{{ app_version }}"
     ecr_image_name: "{{ app_name }}"
-    local_database_url: "postgresql://calendar:calendar@ci-database:5432/calendar?schema=public"
+    local_database_url: "postgresql://calendar:calendar@localhost:5432/calendar?schema=public"
     database_url: "postgresql://{{db_user}}:{{db_password}}@{{db_host}}:5432/{{db_name}}?schema=public"
     docker_file_name: "Dockefile"
     task_name: "api"
@@ -58,7 +58,7 @@
         - docker
 
     - name: Create a new buildx instance
-      command: docker buildx create --use --name calendar-multi-arch-builder --driver docker-container
+      command: docker buildx create --use --name calendar-multi-arch-builder --driver docker-container --buildkitd-flags '--oci-worker-net host'
       tags:
         - docker
 
