@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { Checkbox } from "primereact/checkbox"
 import { Divider } from "primereact/divider"
 import { Dropdown } from "primereact/dropdown"
@@ -19,7 +19,6 @@ function Calendar() {
   const [hideWeekendDayNames, setHideWeekendDayNames] = useState<boolean>(false)
   const [theme, setTheme] = useState("")
   const [rotateMonthNames, setRotateMonthNames] = useState<boolean>(true)
-  const [optimize, setOptimize] = useState<boolean>(false)
 
   const generateCalendarMutation = trpc.calendar.generate.useMutation({
     onSuccess: (data) => {
@@ -51,7 +50,7 @@ function Calendar() {
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(getCalendarParamrers())
+      body: JSON.stringify(getCalendarParameters())
     })
       .then(response => response.blob())
       .then(blob => {
@@ -65,7 +64,7 @@ function Calendar() {
       })
   }
 
-  const getCalendarParamrers = () => {
+  const getCalendarParameters = useCallback(() => {
     return {
       optShowMoonPhase: showMoonPhases,
       optShowMoonIllumination: showMoonIllunination,
@@ -75,11 +74,29 @@ function Calendar() {
       hideWeekendDayNames,
       theme: theme as CalendarTheme
     }
-  }
+  }, [
+    showMoonPhases,
+    showMoonIllunination,
+    showGrid,
+    showDayNames,
+    hideWeekendDayNames,
+    theme,
+    rotateMonthNames
+  ])
 
   useEffect(() => {
-    generateCalendarMutation.mutate(getCalendarParamrers())
-  }, [showMoonPhases, showMoonIllunination, showGrid, showDayNames, hideWeekendDayNames, theme, rotateMonthNames, optimize])
+    generateCalendarMutation.mutate(getCalendarParameters())
+  }, [
+    showMoonPhases,
+    showMoonIllunination,
+    showGrid,
+    showDayNames,
+    hideWeekendDayNames,
+    theme,
+    rotateMonthNames,
+    getCalendarParameters,
+    generateCalendarMutation
+  ])
 
   const themes = [
     {
@@ -176,7 +193,7 @@ function Calendar() {
       </div>
       <div className="col">
         <div className="mainContent flex align-items-center justify-content-center cal-svg-container">
-        <div dangerouslySetInnerHTML={{ __html: svg }}/>
+          <div dangerouslySetInnerHTML={{ __html: svg }}/>
           <div className={classNames({ "cal-hidden": !svgIsArriving, "cal-fade-in": svgIsArriving })}
                dangerouslySetInnerHTML={{ __html: arrivingSvg }}/>
         </div>
