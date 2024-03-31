@@ -20,7 +20,7 @@ function Calendar() {
   const [theme, setTheme] = useState("")
   const [rotateMonthNames, setRotateMonthNames] = useState<boolean>(true)
 
-  const generateCalendarMutation = trpc.calendar.generate.useMutation({
+  const { mutate } = trpc.calendar.generate.useMutation({
     onSuccess: (data) => {
       setArrivingSvg(data)
       setSvgIsArriving(true)
@@ -77,7 +77,7 @@ function Calendar() {
   }
 
   useEffect(() => {
-    generateCalendarMutation.mutate({
+    mutate({
       optShowMoonPhase: showMoonPhases,
       optShowMoonIllumination: showMoonIllunination,
       optShowGrid: showGrid,
@@ -93,7 +93,8 @@ function Calendar() {
     showDayNames,
     hideWeekendDayNames,
     theme,
-    rotateMonthNames
+    rotateMonthNames,
+    mutate
   ])
 
   const themes = [
