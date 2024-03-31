@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { Checkbox } from "primereact/checkbox"
 import { Divider } from "primereact/divider"
 import { Dropdown } from "primereact/dropdown"
@@ -64,7 +64,7 @@ function Calendar() {
       })
   }
 
-  const getCalendarParameters = useCallback(() => {
+  const getCalendarParameters = () => {
     return {
       optShowMoonPhase: showMoonPhases,
       optShowMoonIllumination: showMoonIllunination,
@@ -74,6 +74,18 @@ function Calendar() {
       hideWeekendDayNames,
       theme: theme as CalendarTheme
     }
+  }
+
+  useEffect(() => {
+    generateCalendarMutation.mutate({
+      optShowMoonPhase: showMoonPhases,
+      optShowMoonIllumination: showMoonIllunination,
+      optShowGrid: showGrid,
+      optShowDayNames: showDayNames,
+      rotateMonthNames,
+      hideWeekendDayNames,
+      theme: theme as CalendarTheme
+    })
   }, [
     showMoonPhases,
     showMoonIllunination,
@@ -82,20 +94,6 @@ function Calendar() {
     hideWeekendDayNames,
     theme,
     rotateMonthNames
-  ])
-
-  useEffect(() => {
-    generateCalendarMutation.mutate(getCalendarParameters())
-  }, [
-    showMoonPhases,
-    showMoonIllunination,
-    showGrid,
-    showDayNames,
-    hideWeekendDayNames,
-    theme,
-    rotateMonthNames,
-    getCalendarParameters,
-    generateCalendarMutation
   ])
 
   const themes = [
