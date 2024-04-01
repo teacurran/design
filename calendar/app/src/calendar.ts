@@ -193,22 +193,22 @@ const generateSvg = (documentBody: d3.Selection<HTMLElement, unknown, null, unde
 const getBackgroundColor = (calendar: Calendar, date: Date, monthNum: number, dayNum: number, isWeekend: boolean, weekendIndex: number): string => {
   let backgroundColor = calendar.cellBackgroundColor
 
-  if (calendar.theme == 'rainbowDays1') {
+  if (calendar.theme === 'rainbowDays1') {
     const hue = date.getDay() * 30
     backgroundColor = `hsl(${hue}, 100%, 90%)`
   }
 
-  if (calendar.theme == 'rainbowDays2' || calendar.theme == 'rainbowDays3') {
+  if (calendar.theme === 'rainbowDays2' || calendar.theme === 'rainbowDays3') {
     // Calculate hue once and store it in a variable
     const hue = (dayNum / (30)) * 360
 
-    if (calendar.theme == 'rainbowDays2') {
+    if (calendar.theme === 'rainbowDays2') {
       const saturation = 100
       const lightness = 80
       backgroundColor = `hsl(${hue}, ${saturation}%, ${lightness}%)`
     }
 
-    if (calendar.theme == 'rainbowDays3') {
+    if (calendar.theme === 'rainbowDays3') {
       const monthWeight = 3
       // Use the pre-calculated maxDistance
       const distance = Math.sqrt(Math.pow(12 - monthNum * monthWeight, 2) + Math.pow(31 - dayNum, 2))
@@ -227,12 +227,12 @@ const getBackgroundColor = (calendar: Calendar, date: Date, monthNum: number, da
       backgroundColor = calendar.weekendBackgroundColor
     }
 
-    if (calendar.theme == 'rainbowWeekends') {
+    if (calendar.theme === 'rainbowWeekends') {
       const hue = (date.getDate() / 30) * 360
       backgroundColor = `hsl(${hue}, 100%, 90%)`
     }
 
-    if (calendar.theme == 'vermontWeekends') {
+    if (calendar.theme === 'vermontWeekends') {
       backgroundColor = vermontMonthlyColors2[monthNum][weekendIndex]
     }
   }
@@ -304,6 +304,7 @@ const _appendMoon = (svg: d3.Selection<SVGSVGElement, unknown, null, undefined>,
   // NOSONAR
   svg.append('path')
     .attr('fill', '#FFFFFF')
+    // eslint-disable-next-line no-sequences
     .attr('d', `${geoProjection.rotate([lightAngle, 0, rotationZ]), geoPath(geoHemisphere)}`)
     .attr('transform', `translate(${x + 24}, ${y + 42})`)
 
@@ -363,6 +364,7 @@ const _appendMoonPhase = (svg: d3.Selection<SVGSVGElement, unknown, null, undefi
     // NOSONAR
     svg.append('path')
       .attr('fill', '#FFFFFF')
+      // eslint-disable-next-line no-sequences
       .attr('d', `${geoProjection.rotate([moonAngle, 0]), geoPath(geoHemisphere)}`)
       .attr('transform', `translate(${moonX}, ${moonY})`)
 

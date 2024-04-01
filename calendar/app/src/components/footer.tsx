@@ -1,7 +1,8 @@
 import { useLocale } from '~/utils/use-locale'
 import Link from 'next/link'
+import { type ReactElement } from 'react'
 
-export function InfoFooter (props: { filter: string, locales: string[] }) {
+export function InfoFooter (props: { filter: string, locales: string[] }): ReactElement<any, any> {
   const { t, i18n } = useLocale()
 
   return (

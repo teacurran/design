@@ -7,6 +7,7 @@ import type { AppRouter } from './routers/_app'
 import { appRouter } from './routers/_app'
 import superjson from 'superjson'
 
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export async function ssgInit<TParams extends { locale?: string }> (
   opts: GetStaticPropsContext<TParams>
 ) {

@@ -14,13 +14,13 @@ const I18nextAdapter = appWithTranslation<
 AppProps<SSRConfig> & { children: React.ReactNode }
 >(({ children }) => <>{children}</>)
 
-const I18nProvider = (props: AppProps) => {
+const I18nProvider = (props: AppProps): JSX.Element => {
   const _i18n = trpc.i18n.useQuery(undefined, {
     trpc: { context: { skipBatch: true } }
   })
 
-  const locale = _i18n.data?.locale
-  const i18n = _i18n.data?.i18n
+  const locale: string | undefined = _i18n.data?.locale
+  const i18n: SSRConfig | undefined = _i18n.data?.i18n
 
   const passedProps = {
     ...props,

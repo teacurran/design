@@ -6,7 +6,7 @@ import { classNames } from 'primereact/utils'
 import { trpc } from '~/utils/trpc'
 import { type CalendarTheme } from '~/calendar'
 
-function Calendar () {
+function Calendar (): JSX.Element {
   const [url] = useState('')
   const [svg, setSvg] = useState('')
   const [arrivingSvg, setArrivingSvg] = useState('')
@@ -21,29 +21,29 @@ function Calendar () {
   const [rotateMonthNames, setRotateMonthNames] = useState<boolean>(true)
 
   const { mutate } = trpc.calendar.generate.useMutation({
-    onSuccess: (data) => {
+    onSuccess: (data: string): void => {
       setArrivingSvg(data)
       setSvgIsArriving(true)
 
-      setTimeout(() => {
+      setTimeout((): void => {
         setSvg(data)
         setSvgIsArriving(false)
       }, 500)
     },
-    onError: (error) => {
+    onError: (error): void => {
       console.error('Error fetching SVG:', error)
     }
   })
 
-  const downloadPdf = () => {
+  const downloadPdf = (): void => {
     downloadFile('pdf')
   }
 
-  const downloadPng = () => {
+  const downloadPng = (): void => {
     downloadFile('png')
   }
 
-  const downloadFile = (format: string) => {
+  const downloadFile = (format: string): void => {
     // send a POST request to /api/calendar/export/pdf with the current state
     fetch(`${url}/api/calendar/export?format=${format}`, {
       method: 'POST',
@@ -64,7 +64,7 @@ function Calendar () {
       })
   }
 
-  const getCalendarParameters = () => {
+  const getCalendarParameters = (): void => {
     return {
       optShowMoonPhase: showMoonPhases,
       optShowMoonIllumination: showMoonIllunination,
@@ -131,18 +131,24 @@ function Calendar () {
           <h1>Full Year Calendar Generator</h1>
         </div>
         <div className="field">
-          <Dropdown value={theme} onChange={(e) => { setTheme(e.value) }} options={themes}/>
+          <Dropdown value={theme} onChange={(e) => {
+            setTheme(e.value)
+          }} options={themes}/>
         </div>
         <div className="field">
           <Checkbox inputId="showGrid"
-                    onChange={(e) => { setShowGrid(e.checked ?? true) }}
+                    onChange={(e) => {
+                      setShowGrid(e.checked ?? true)
+                    }}
                     checked={showGrid ?? true}
           />
           <label htmlFor="showGrid">grid</label>
         </div>
         <div className="field">
           <Checkbox inputId="rotateMonthNames"
-                    onChange={(e) => { setRotateMonthNames(e.checked ?? true) }}
+                    onChange={(e) => {
+                      setRotateMonthNames(e.checked ?? true)
+                    }}
                     checked={rotateMonthNames ?? true}
           />
           <label htmlFor="rotateMonthNames">rotate months</label>
@@ -150,7 +156,9 @@ function Calendar () {
         <div className="field">
 
           <Checkbox inputId="showMoonPhases"
-                    onChange={(e) => { setShowMoonPhases(e.checked ?? false) }}
+                    onChange={(e) => {
+                      setShowMoonPhases(e.checked ?? false)
+                    }}
                     checked={showMoonPhases ?? false}
           />
           <label htmlFor="showMoonPhases">moon phases</label>
@@ -158,21 +166,27 @@ function Calendar () {
         <div className="field">
 
           <Checkbox inputId="showMoonIllunination"
-                    onChange={(e) => { setShowMoonIllunination(e.checked ?? false) }}
+                    onChange={(e) => {
+                      setShowMoonIllunination(e.checked ?? false)
+                    }}
                     checked={showMoonIllunination ?? false}
           />
           <label htmlFor="showMoonIllunination">moon illumination</label>
         </div>
         <div className="field">
           <Checkbox inputId="showDayNames"
-                    onChange={(e) => { setShowDayNames(e.checked ?? false) }}
+                    onChange={(e) => {
+                      setShowDayNames(e.checked ?? false)
+                    }}
                     checked={showDayNames ?? false}
           />
           <label htmlFor="showDayNames">day names</label>
         </div>
         <div className="field">
           <Checkbox inputId="hideWeekendDayNames"
-                    onChange={(e) => { setHideWeekendDayNames(e.checked ?? false) }}
+                    onChange={(e) => {
+                      setHideWeekendDayNames(e.checked ?? false)
+                    }}
                     checked={hideWeekendDayNames ?? false}
           />
           <label htmlFor="hideWeekendDayNames" className="ml-2">hide weekend names</label>

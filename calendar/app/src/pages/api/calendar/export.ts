@@ -3,7 +3,7 @@ import { type Calendar, CalendarSchema, getDefaultCalendar, getSvgAsDocumentDom 
 import type * as d3 from 'd3'
 import * as puppeteer from 'puppeteer'
 
-export default async function handler (req: NextApiRequest, res: NextApiResponse) {
+export default async function handler (req: NextApiRequest, res: NextApiResponse): Promise<void> {
   const format = req.query.format
 
   if (req.method === 'POST') {
