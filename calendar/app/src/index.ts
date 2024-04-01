@@ -26,7 +26,7 @@ import {
   otherHolidays,
   personalHolidays
 } from './holidays'
-import { CalendarTheme, getDefaultCalendar, getSvgAsDocumentDom } from './calendar'
+import { type CalendarTheme, getDefaultCalendar, getSvgAsDocumentDom } from './calendar'
 import * as fs from 'fs'
 import { type Span, trace } from '@opentelemetry/api'
 
@@ -130,7 +130,7 @@ app.get('/calendar',
       calendar.optShowMoonIllumination = req.query.showMoonIllunination
 
       const theme = req.query.theme
-      calendar.theme = (theme ?? "") as CalendarTheme
+      calendar.theme = (theme ?? '') as CalendarTheme
 
       const svgDom: d3.Selection<HTMLElement, unknown, null, undefined> = getSvgAsDocumentDom(calendar)
       let svg = svgDom.html()

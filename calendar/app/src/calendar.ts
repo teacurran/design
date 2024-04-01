@@ -6,8 +6,7 @@ import { vermontMonthlyColors2 } from './vermont_weekends'
 import { type Span, trace } from '@opentelemetry/api'
 import { z } from 'zod'
 
-
-type CalendarTheme = "" | "vermontWeekends" | "rainbowWeekends" | "rainbowDays1" | "rainbowDays2" | "rainbowDays3"
+type CalendarTheme = '' | 'vermontWeekends' | 'rainbowWeekends' | 'rainbowDays1' | 'rainbowDays2' | 'rainbowDays3'
 
 const CalendarSchema = z.object({
   cellBackgroundColor: z.string().default('white'),
@@ -28,7 +27,7 @@ const CalendarSchema = z.object({
   optHighlightWeekends: z.boolean().default(false),
   optShowDayNames: z.boolean().default(false),
   hideWeekendDayNames: z.boolean().default(false),
-  theme: z.enum(["", "vermontWeekends", "rainbowWeekends", "rainbowDays1", "rainbowDays2", "rainbowDays3"]).default(""),
+  theme: z.enum(['', 'vermontWeekends', 'rainbowWeekends', 'rainbowDays1', 'rainbowDays2', 'rainbowDays3']).default(''),
   optShowMoonIllumination: z.boolean().default(false),
   optShowMoonPhase: z.boolean().default(false),
   optShowGrid: z.boolean().default(false),
@@ -210,7 +209,7 @@ const getBackgroundColor = (calendar: Calendar, date: Date, monthNum: number, da
     }
 
     if (calendar.theme == 'rainbowDays3') {
-      const monthWeight = 3;
+      const monthWeight = 3
       // Use the pre-calculated maxDistance
       const distance = Math.sqrt(Math.pow(12 - monthNum * monthWeight, 2) + Math.pow(31 - dayNum, 2))
       console.log(`month: ${monthNum}, day: ${dayNum}, distance: ${distance}, maxDistance: ${maxDistance}`)
@@ -418,7 +417,7 @@ const getDefaultCalendar = (): Calendar => {
     cellBackgroundColor,
     weekendBackgroundColor,
     startDate,
-    theme: ""
+    theme: ''
   }
 }
 

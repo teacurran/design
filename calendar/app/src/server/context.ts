@@ -1,6 +1,6 @@
-import type { CreateNextContextOptions } from '@trpc/server/adapters/next';
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-import { prisma } from './prisma';
+import type { CreateNextContextOptions } from '@trpc/server/adapters/next'
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
+import { prisma } from './prisma'
 
 /**
  * Defines your inner context shape.
@@ -8,8 +8,8 @@ import { prisma } from './prisma';
  */
 export interface CreateInnerContextOptions
   extends Partial<CreateNextContextOptions> {
-  locale: string;
-  i18n: Awaited<ReturnType<typeof serverSideTranslations>>;
+  locale: string
+  i18n: Awaited<ReturnType<typeof serverSideTranslations>>
 }
 
 /**
@@ -21,12 +21,12 @@ export interface CreateInnerContextOptions
  *
  * @link https://trpc.io/docs/v11/context#inner-and-outer-context
  */
-export async function createInnerTRPCContext(opts?: CreateInnerContextOptions) {
+export async function createInnerTRPCContext (opts?: CreateInnerContextOptions) {
   return {
     prisma,
     calendar: prisma.calendar,
-    ...opts,
-  };
+    ...opts
+  }
 }
 
 /**
@@ -35,20 +35,20 @@ export async function createInnerTRPCContext(opts?: CreateInnerContextOptions) {
  * @link https://trpc.io/docs/v11/context#inner-and-outer-context
  */
 export const createTRPCContext = async (opts?: CreateNextContextOptions) => {
-  const acceptLanguage = opts?.req.headers['accept-language'];
+  const acceptLanguage = opts?.req.headers['accept-language']
   // If you store locales on User in DB, you can use that instead
   // We use the accept-language header to determine the locale here.
-  const locale = acceptLanguage?.includes('en') ? 'en' : 'es';
-  const _i18n = await serverSideTranslations(locale, ['common']);
+  const locale = acceptLanguage?.includes('en') ? 'en' : 'es'
+  const _i18n = await serverSideTranslations(locale, ['common'])
 
   const innerContext = await createInnerTRPCContext({
     req: opts?.req,
     locale,
-    i18n: _i18n,
-  });
+    i18n: _i18n
+  })
 
   return {
     ...innerContext,
-    req: opts?.req,
-  };
-};
+    req: opts?.req
+  }
+}

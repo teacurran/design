@@ -14,6 +14,18 @@ resource "aws_route53_record" "calendar" {
   allow_overwrite = true
 }
 
+resource "aws_route53_record" "calendar-ipv6" {
+  zone_id = data.aws_route53_zone.mostlycats.zone_id
+  name    = local.domain_name
+  type    = "AAAA"
+  alias {
+    name                   = aws_cloudfront_distribution.calendar.domain_name
+    zone_id                = aws_cloudfront_distribution.calendar.hosted_zone_id
+    evaluate_target_health = false
+  }
+  allow_overwrite = true
+}
+
 resource "aws_route53_record" "db" {
   zone_id = data.aws_route53_zone.mostlycats.zone_id
   name    = "db"

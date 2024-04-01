@@ -1,8 +1,8 @@
-import { useLocale } from '~/utils/use-locale';
-import Link from 'next/link';
+import { useLocale } from '~/utils/use-locale'
+import Link from 'next/link'
 
-export function InfoFooter(props: { filter: string; locales: string[] }) {
-  const { t, i18n } = useLocale();
+export function InfoFooter (props: { filter: string, locales: string[] }) {
+  const { t, i18n } = useLocale()
 
   return (
     <footer className="info">
@@ -38,5 +38,5 @@ export function InfoFooter(props: { filter: string; locales: string[] }) {
         ))}
       </ul>
     </footer>
-  );
+  )
 }

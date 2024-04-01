@@ -1,13 +1,13 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { Calendar, CalendarSchema, getDefaultCalendar, getSvgAsDocumentDom } from "~/calendar";
-import type * as d3 from "d3";
-import * as puppeteer from "puppeteer";
+import { type Calendar, CalendarSchema, getDefaultCalendar, getSvgAsDocumentDom } from '~/calendar'
+import type * as d3 from 'd3'
+import * as puppeteer from 'puppeteer'
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler (req: NextApiRequest, res: NextApiResponse) {
   const format = req.query.format
 
   if (req.method === 'POST') {
-    const parsed = CalendarSchema.safeParse(req.body);
+    const parsed = CalendarSchema.safeParse(req.body)
 
     if (!parsed.success) {
       // If parsing failed, return an error
@@ -17,11 +17,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     const defaultCalendar = getDefaultCalendar()
 
-    const calendar: Calendar = parsed.data;
+    const calendar: Calendar = parsed.data
     console.info('calendar', JSON.stringify(calendar))
     const effectiveCalendar = {
       ...defaultCalendar,
-      ...calendar,
+      ...calendar
     }
 
     const svgDom: d3.Selection<HTMLElement, unknown, null, undefined> = getSvgAsDocumentDom(effectiveCalendar)
@@ -60,7 +60,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     res.setHeader('Content-Type', 'image/svg+xml')
     res.send(svg)
-
   }
 
   res.status(200).json({ name: 'John Doe' })

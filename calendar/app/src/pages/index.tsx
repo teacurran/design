@@ -1,15 +1,15 @@
-import { useEffect, useState } from "react"
-import { Checkbox } from "primereact/checkbox"
-import { Divider } from "primereact/divider"
-import { Dropdown } from "primereact/dropdown"
-import { classNames } from "primereact/utils"
+import { useEffect, useState } from 'react'
+import { Checkbox } from 'primereact/checkbox'
+import { Divider } from 'primereact/divider'
+import { Dropdown } from 'primereact/dropdown'
+import { classNames } from 'primereact/utils'
 import { trpc } from '~/utils/trpc'
-import { CalendarTheme } from "~/calendar";
+import { type CalendarTheme } from '~/calendar'
 
-function Calendar() {
-  const [url] = useState("")
-  const [svg, setSvg] = useState("")
-  const [arrivingSvg, setArrivingSvg] = useState("")
+function Calendar () {
+  const [url] = useState('')
+  const [svg, setSvg] = useState('')
+  const [arrivingSvg, setArrivingSvg] = useState('')
   const [svgIsArriving, setSvgIsArriving] = useState(false)
 
   const [showMoonPhases, setShowMoonPhases] = useState<boolean>(false)
@@ -17,7 +17,7 @@ function Calendar() {
   const [showGrid, setShowGrid] = useState<boolean>(true)
   const [showDayNames, setShowDayNames] = useState<boolean>(false)
   const [hideWeekendDayNames, setHideWeekendDayNames] = useState<boolean>(false)
-  const [theme, setTheme] = useState("")
+  const [theme, setTheme] = useState('')
   const [rotateMonthNames, setRotateMonthNames] = useState<boolean>(true)
 
   const { mutate } = trpc.calendar.generate.useMutation({
@@ -31,16 +31,16 @@ function Calendar() {
       }, 500)
     },
     onError: (error) => {
-      console.error("Error fetching SVG:", error)
+      console.error('Error fetching SVG:', error)
     }
   })
 
   const downloadPdf = () => {
-    downloadFile("pdf")
+    downloadFile('pdf')
   }
 
   const downloadPng = () => {
-    downloadFile("png")
+    downloadFile('png')
   }
 
   const downloadFile = (format: string) => {
@@ -52,7 +52,7 @@ function Calendar() {
       },
       body: JSON.stringify(getCalendarParameters())
     })
-      .then(response => response.blob())
+      .then(async response => await response.blob())
       .then(blob => {
         const url = window.URL.createObjectURL(new Blob([blob]))
         const link = document.createElement('a')
@@ -99,28 +99,28 @@ function Calendar() {
 
   const themes = [
     {
-      label: "Color Theme",
-      value: ""
+      label: 'Color Theme',
+      value: ''
     },
     {
-      label: "Vermont Weekends",
-      value: "vermontWeekends"
+      label: 'Vermont Weekends',
+      value: 'vermontWeekends'
     },
     {
-      label: "Rainbow Weekends",
-      value: "rainbowWeekends"
+      label: 'Rainbow Weekends',
+      value: 'rainbowWeekends'
     },
     {
-      label: "Rainbow Days 1",
-      value: "rainbowDays1"
+      label: 'Rainbow Days 1',
+      value: 'rainbowDays1'
     },
     {
-      label: "Rainbow Days 2",
-      value: "rainbowDays2"
+      label: 'Rainbow Days 2',
+      value: 'rainbowDays2'
     },
     {
-      label: "Rainbow Days 3",
-      value: "rainbowDays3"
+      label: 'Rainbow Days 3',
+      value: 'rainbowDays3'
     }
   ]
 
@@ -131,18 +131,18 @@ function Calendar() {
           <h1>Full Year Calendar Generator</h1>
         </div>
         <div className="field">
-          <Dropdown value={theme} onChange={(e) => setTheme(e.value)} options={themes}/>
+          <Dropdown value={theme} onChange={(e) => { setTheme(e.value) }} options={themes}/>
         </div>
         <div className="field">
           <Checkbox inputId="showGrid"
-                    onChange={(e) => setShowGrid(e.checked ?? true)}
+                    onChange={(e) => { setShowGrid(e.checked ?? true) }}
                     checked={showGrid ?? true}
           />
           <label htmlFor="showGrid">grid</label>
         </div>
         <div className="field">
           <Checkbox inputId="rotateMonthNames"
-                    onChange={(e) => setRotateMonthNames(e.checked ?? true)}
+                    onChange={(e) => { setRotateMonthNames(e.checked ?? true) }}
                     checked={rotateMonthNames ?? true}
           />
           <label htmlFor="rotateMonthNames">rotate months</label>
@@ -150,7 +150,7 @@ function Calendar() {
         <div className="field">
 
           <Checkbox inputId="showMoonPhases"
-                    onChange={(e) => setShowMoonPhases(e.checked ?? false)}
+                    onChange={(e) => { setShowMoonPhases(e.checked ?? false) }}
                     checked={showMoonPhases ?? false}
           />
           <label htmlFor="showMoonPhases">moon phases</label>
@@ -158,34 +158,34 @@ function Calendar() {
         <div className="field">
 
           <Checkbox inputId="showMoonIllunination"
-                    onChange={(e) => setShowMoonIllunination(e.checked ?? false)}
+                    onChange={(e) => { setShowMoonIllunination(e.checked ?? false) }}
                     checked={showMoonIllunination ?? false}
           />
           <label htmlFor="showMoonIllunination">moon illumination</label>
         </div>
         <div className="field">
           <Checkbox inputId="showDayNames"
-                    onChange={(e) => setShowDayNames(e.checked ?? false)}
+                    onChange={(e) => { setShowDayNames(e.checked ?? false) }}
                     checked={showDayNames ?? false}
           />
           <label htmlFor="showDayNames">day names</label>
         </div>
         <div className="field">
           <Checkbox inputId="hideWeekendDayNames"
-                    onChange={(e) => setHideWeekendDayNames(e.checked ?? false)}
+                    onChange={(e) => { setHideWeekendDayNames(e.checked ?? false) }}
                     checked={hideWeekendDayNames ?? false}
           />
           <label htmlFor="hideWeekendDayNames" className="ml-2">hide weekend names</label>
         </div>
         <Divider/>
         <a className="p-button font-bold" onClick={downloadPng}>
-          <span className="pi pi-image"></span>{""}
+          <span className="pi pi-image"></span>{''}
           &nbsp;&nbsp;PNG&nbsp;&nbsp;
           <span className="pi pi-download"></span>
         </a>
         <Divider/>
         <a className="p-button font-bold" onClick={downloadPdf}>
-          <span className="pi pi-file-pdf"></span>{""}
+          <span className="pi pi-file-pdf"></span>{''}
           &nbsp;&nbsp;PDF&nbsp;&nbsp;
           <span className="pi pi-download"></span>
         </a>
@@ -193,13 +193,12 @@ function Calendar() {
       <div className="col">
         <div className="mainContent flex align-items-center justify-content-center cal-svg-container">
           <div dangerouslySetInnerHTML={{ __html: svg }}/>
-          <div className={classNames({ "cal-hidden": !svgIsArriving, "cal-fade-in": svgIsArriving })}
+          <div className={classNames({ 'cal-hidden': !svgIsArriving, 'cal-fade-in': svgIsArriving })}
                dangerouslySetInnerHTML={{ __html: arrivingSvg }}/>
         </div>
       </div>
     </div>
   )
-
 }
 
 export default Calendar
