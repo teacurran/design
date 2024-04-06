@@ -2,6 +2,7 @@ import type { CreateNextContextOptions } from '@trpc/server/adapters/next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { prisma } from './prisma'
 import { type SSRConfig } from 'next-i18next'
+import { type NextApiRequest } from 'next'
 
 /**
  * Defines your inner context shape.
@@ -9,8 +10,8 @@ import { type SSRConfig } from 'next-i18next'
  */
 export interface CreateInnerContextOptions
   extends Partial<CreateNextContextOptions> {
-  locale: string
-  i18n: Awaited<ReturnType<typeof serverSideTranslations>>
+  locale?: string
+  i18n?: Awaited<ReturnType<typeof serverSideTranslations>>
 }
 
 /**
@@ -22,7 +23,10 @@ export interface CreateInnerContextOptions
  *
  * @link https://trpc.io/docs/v11/context#inner-and-outer-context
  */
-export async function createInnerTRPCContext (opts?: CreateInnerContextOptions) {
+export async function createInnerTRPCContext (opts?: CreateInnerContextOptions): Promise<{
+  prisma: typeof prisma
+  calendar: typeof prisma.calendar
+} & CreateInnerContextOptions> {
   return {
     prisma,
     calendar: prisma.calendar,
@@ -35,11 +39,17 @@ export async function createInnerTRPCContext (opts?: CreateInnerContextOptions) 
  *
  * @link https://trpc.io/docs/v11/context#inner-and-outer-context
  */
-export const createTRPCContext = async (opts?: CreateNextContextOptions) => {
+export const createTRPCContext = async (opts?: CreateNextContextOptions): Promise<{
+  req?: NextApiRequest
+  locale?: string
+  i18n?: SSRConfig
+  prisma: typeof prisma
+  calendar: typeof prisma.calendar
+} & CreateInnerContextOptions> => {
   const acceptLanguage = opts?.req.headers['accept-language']
   // If you store locales on User in DB, you can use that instead
   // We use the accept-language header to determine the locale here.
-  const locale: 'en' | 'es' = acceptLanguage?.includes('en') ? 'en' : 'es'
+  const locale: string | undefined = (acceptLanguage === undefined || acceptLanguage?.includes('en')) ? 'en' : 'es'
   const _i18n: SSRConfig = await serverSideTranslations(locale, ['common'])
 
   const innerContext = await createInnerTRPCContext({

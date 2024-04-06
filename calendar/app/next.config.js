@@ -19,6 +19,9 @@ const config = {
     ignoreDuringBuilds: !!process.env.CI,
   },
 
+  experimental: {
+    instrumentationHook: true
+  }
 
 };
 

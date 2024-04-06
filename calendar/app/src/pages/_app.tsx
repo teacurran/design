@@ -28,12 +28,12 @@ const I18nProvider = (props: AppProps): JSX.Element => {
       ...props.pageProps,
       ...i18n
     },
-    router: locale ? { locale } : props.router
+    router: (locale !== null && locale !== undefined) ? { locale } : props.router
   } as unknown as ComponentProps<typeof I18nextAdapter>
   return <I18nextAdapter {...passedProps} />
 }
 
-const MyApp = ({ Component, pageProps }: AppProps) => {
+const MyApp = ({ Component, pageProps }: AppProps): JSX.Element => {
   return (
     <I18nProvider {...pageProps}>
       <PrimeReactProvider>

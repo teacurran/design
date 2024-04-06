@@ -13,14 +13,16 @@ ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
 
 COPY --from=ghcr.io/ufoscout/docker-compose-wait:latest /wait /wait
 
+RUN npm install -g pnpm
+
 COPY ./package.json ./
 COPY ./package-lock.json ./
-RUN npm install
+RUN pnpm install
 
 EXPOSE 3000
 
 COPY . /app
-RUN npm run build
+RUN pnpm run build
 
 EXPOSE 3000 9229
-CMD [ "npm", "run", "start"]
+CMD [ "pnpm", "run", "start"]

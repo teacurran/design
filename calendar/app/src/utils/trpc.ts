@@ -10,12 +10,12 @@ function getBaseUrl (): string {
     return ''
   }
   // reference for vercel.com
-  if (process.env.VERCEL_URL) {
+  if (process.env.VERCEL_URL !== undefined) {
     return `https://${process.env.VERCEL_URL}`
   }
 
   // // reference for render.com
-  if (process.env.RENDER_INTERNAL_HOSTNAME) {
+  if (process.env.RENDER_INTERNAL_HOSTNAME !== undefined) {
     return `http://${process.env.RENDER_INTERNAL_HOSTNAME}:${process.env.PORT}`
   }
 

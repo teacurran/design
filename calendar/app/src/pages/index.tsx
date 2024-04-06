@@ -50,7 +50,7 @@ function Calendar (): JSX.Element {
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(getCalendarParameters())
+      body: JSON.stringify(getCalendarParameters)
     })
       .then(async response => await response.blob())
       .then(blob => {
@@ -64,7 +64,15 @@ function Calendar (): JSX.Element {
       })
   }
 
-  const getCalendarParameters = (): void => {
+  const getCalendarParameters = (): {
+    optShowMoonPhase: boolean
+    optShowMoonIllumination: boolean
+    optShowGrid: boolean
+    optShowDayNames: boolean
+    rotateMonthNames: boolean
+    hideWeekendDayNames: boolean
+    theme: string
+  } => {
     return {
       optShowMoonPhase: showMoonPhases,
       optShowMoonIllumination: showMoonIllunination,
