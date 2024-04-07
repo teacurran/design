@@ -27,7 +27,7 @@ export const calendarRouter = router({
   }),
 
   all: baseProcedure.query(async ({ ctx }) => {
-    return ctx.calendar.findMany({
+    return await ctx.calendar.findMany({
       orderBy: {
         createdAt: 'asc'
       }
@@ -80,6 +80,6 @@ export const calendarRouter = router({
   clearCompleted: baseProcedure.mutation(async ({ ctx }) => {
     await ctx.calendar.deleteMany({ where: { completed: true } })
 
-    return ctx.calendar.findMany()
+    return await ctx.calendar.findMany()
   })
 })

@@ -61,6 +61,8 @@ function Calendar (): JSX.Element {
         document.body.appendChild(link)
         link.click()
         link.parentNode?.removeChild(link)
+      }).catch(error => {
+        console.error('Error fetching SVG:', error)
       })
   }
 
@@ -140,7 +142,7 @@ function Calendar (): JSX.Element {
         </div>
         <div className="field">
           <Dropdown value={theme} onChange={(e) => {
-            setTheme(e.value)
+            setTheme(e.value as string)
           }} options={themes}/>
         </div>
         <div className="field">
