@@ -1,10 +1,19 @@
-/**
- * @link https://prisma.io/docs/support/help-articles/nextjs-prisma-client-dev-practices
- */
-import { type PrismaClient } from '@prisma/client'
+import { PrismaClient } from '@prisma/client'
 
-const globalForPrisma = global as unknown as { prisma: PrismaClient }
+const prismaClientSingleton = (): PrismaClient => {
+  return new PrismaClient()
+}
 
-export const prisma = globalForPrisma.prisma
+declare global {
+  const prismaGlobal: undefined | ReturnType<typeof prismaClientSingleton>
+}
 
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
+// @ts-expect-error "prismaGlobal" can't be typed in the globalThis scope
+const prisma = globalThis.prismaGlobal ?? prismaClientSingleton()
+
+export default prisma
+
+if (process.env.NODE_ENV !== 'production') {
+  // @ts-expect-error "prismaGlobal" can't be typed in the globalThis scope
+  globalThis.prismaGlobal = prisma
+}

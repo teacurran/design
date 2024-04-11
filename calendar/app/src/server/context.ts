@@ -1,6 +1,6 @@
 import type { CreateNextContextOptions } from '@trpc/server/adapters/next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
-import { prisma } from './prisma'
+import prisma from './prisma'
 import { type SSRConfig } from 'next-i18next'
 import { type NextApiRequest } from 'next'
 
