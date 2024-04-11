@@ -3,6 +3,9 @@ module.exports = {
     {
       files: ['*.js', '*.jsx', '*.ts', '*.tsx'],
       extends: 'love',
+      parserOptions: {
+        ecmaVersion: 2023
+      },
       rules: {
         // Place to specify ESLint rules. Can be used to overwrite rules specified from the extended configs
         "@typescript-eslint/consistent-type-definitions": "off",
@@ -19,6 +22,7 @@ module.exports = {
         // "@typescript-eslint/no-unsafe-return": "off",
         // "@typescript-eslint/no-unsafe-member-access": "off",
         // "@typescript-eslint/require-await": "off",
+        "@typescript-eslint/return-await": "off",
       }
     }
   ],
