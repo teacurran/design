@@ -1,9 +1,9 @@
-import type { NextApiRequest, NextApiResponse } from 'next'
+import { Request, Response } from 'express'
 import { type Calendar, CalendarSchema, getDefaultCalendar, getSvgAsDocumentDom } from '~/calendar'
 import type * as d3 from 'd3'
 import * as puppeteer from 'puppeteer'
 
-export default async function handler (req: NextApiRequest, res: NextApiResponse): Promise<void> {
+export default async function calendarHandler (req: Request, res: Response): Promise<void> {
   const format = req.query.format
 
   if (req.method === 'POST') {

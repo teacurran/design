@@ -1,34 +1,34 @@
 version: "3.9"
 
 services:
-#  client:
-#    image: client
-#    build:
-#      context: ./client
-#    working_dir: /app
-#    command: npm start
-#    volumes:
-#      - ./client:/app
-#      - /app/node_modules
-#    environment:
-#      - NODE_ENV=development
-#      - PORT=3401
-#      - REACT_APP_API_URL=http://localhost:3400
-#    ports:
-#      - "3401:3401"
-#
-#  client-build:
-#    image: client
-#    build:
-#      context: ./client
-#    working_dir: /app
-#    command: npm run build
-#    volumes:
-#      - ./client:/app
-#      - /app/node_modules
-#    environment:
-#      - NODE_ENV=production
-#    profiles: [ci]
+  client:
+    image: client
+    build:
+      context: ./client
+    working_dir: /app
+    command: npm start
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - PORT=3401
+      - REACT_APP_API_URL=http://localhost:3400
+    ports:
+      - "3401:3401"
+
+  client-build:
+    image: client
+    build:
+      context: ./client
+    working_dir: /app
+    command: npm run build
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=production
+    profiles: [ci]
 
   main-db:
     image: postgres:16
@@ -56,7 +56,7 @@ services:
     build:
       context: ./app
     working_dir: /app
-    command: sh -c "/wait && npm run dx:next"
+    command: sh -c "/wait && npm run api-dev"
     volumes:
       - ./app:/app
     environment:

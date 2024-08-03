@@ -22,7 +22,6 @@ RUN pnpm install
 EXPOSE 3000
 
 COPY . /app
-RUN pnpm run generate
 RUN pnpm run build
 
 EXPOSE 3000 9229

@@ -18,6 +18,14 @@ import {
   personalHolidays
 } from './holidays'
 import * as fs from 'fs'
+import { getDefaultCalendar } from "~/calendar";
+import {
+  type ContainerTypes,
+  createValidator,
+  type ValidatedRequest,
+  type ValidatedRequestSchema
+} from 'express-joi-validation'
+import Joi from "joi";
 
 dotenv.config()
 
@@ -31,6 +39,8 @@ app.use((req: Request, res: Response, next: () => void): void => {
 })
 
 app.use(compression())
+
+const validator = createValidator()
 
 const port: string | number = process.env.PORT ?? 3000
 
@@ -68,6 +78,10 @@ const appendEmoji = async (svg: any, value: string, x: number, y: number): Promi
 app.get('/', (req: Request, res: Response): void => {
   res.send('Express + TypeScript Server')
 })
+
+import calendarHandler from "~/pages/api/calendar/export";
+
+app.get('/calendar', calendarHandler)
 
 /* eslint-disable @typescript-eslint/no-misused-promises */
 app.get('/calendar2', async (req: Request, res: Response): Promise<void> => {
@@ -199,9 +213,3 @@ app.get('/status', (req: Request, res: Response) => {
     res.send(revision)
   }
 })
-
-// const server = createHTTPServer({
-//   router: calendarRouter
-// })
-//
-// server.listen(4.000)
