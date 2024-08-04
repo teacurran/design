@@ -45,7 +45,7 @@ services:
   jaeger:
     image: jaegertracing/all-in-one:latest
     ports:
-      - "16686:16686"
+      - "16687:16686"
     environment:
       COLLECTOR_OTLP_ENABLED: "true"
       LOG_LEVEL: debug

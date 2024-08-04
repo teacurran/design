@@ -1,9 +1,9 @@
 import { Request, Response } from 'express'
-import { type Calendar, CalendarSchema, getDefaultCalendar, getSvgAsDocumentDom } from '~/calendar'
+import { type Calendar, CalendarSchema, getDefaultCalendar, getSvgAsDocumentDom } from './calendar'
 import type * as d3 from 'd3'
 import * as puppeteer from 'puppeteer'
 
-export default async function calendarHandler (req: Request, res: Response): Promise<void> {
+export const getCalendar = async (req: Request, res: Response) => {
   const format = req.query.format
 
   if (req.method === 'POST') {

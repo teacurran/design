@@ -79,9 +79,9 @@ app.get('/', (req: Request, res: Response): void => {
   res.send('Express + TypeScript Server')
 })
 
-import calendarHandler from "~/pages/api/calendar/export";
+import { getCalendar } from "./calendar-api";
 
-app.get('/calendar', calendarHandler)
+app.get('/calendar', getCalendar)
 
 /* eslint-disable @typescript-eslint/no-misused-promises */
 app.get('/calendar2', async (req: Request, res: Response): Promise<void> => {
