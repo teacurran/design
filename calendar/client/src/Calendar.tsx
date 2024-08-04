@@ -59,13 +59,14 @@ function Calendar() {
 
   const getCalendar = (): Promise<Response> => {
     const url = API_URL + "/calendar"
+    const getCalendarBody = JSON.stringify(getCalendarParameters())
     // send a POST request to /api/calendar/export/pdf with the current state
     return fetch(`${url}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify(getCalendarParameters)
+      body: getCalendarBody
     })
   }
 

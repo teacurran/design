@@ -1,10 +1,12 @@
 import express, { type Express, type Request, type Response } from 'express'
+import bodyParser from "body-parser";
 import dotenv from 'dotenv'
 import compression from 'compression'
 import * as d3 from 'd3'
 import { JSDOM } from 'jsdom'
 import * as emoji from 'node-emoji'
 import * as fluent from 'fluentui-emoji-js'
+import { getCalendar } from "./calendar-api";
 
 import {
   canadianHolidays,
@@ -30,6 +32,8 @@ import Joi from "joi";
 dotenv.config()
 
 const app: Express = express()
+app.use(bodyParser.json({limit: "100mb"}))
+app.use(bodyParser.urlencoded({limit:"50mb", extended: true}))
 
 // allow CORS from anywhere
 app.use((req: Request, res: Response, next: () => void): void => {
@@ -79,9 +83,7 @@ app.get('/', (req: Request, res: Response): void => {
   res.send('Express + TypeScript Server')
 })
 
-import { getCalendar } from "./calendar-api";
-
-app.get('/calendar', getCalendar)
+app.post('/calendar', getCalendar)
 
 /* eslint-disable @typescript-eslint/no-misused-promises */
 app.get('/calendar2', async (req: Request, res: Response): Promise<void> => {

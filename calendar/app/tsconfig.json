@@ -18,7 +18,8 @@
     "paths": {
       "~/*": ["./src/*"]
     },
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "outDir": "lib"
   },
   "include": [
     "**/*.ts",
