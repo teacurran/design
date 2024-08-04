@@ -68,24 +68,19 @@ services:
     ports:
       - "3400:3000"
 
-  prisma-studio:
-    image: server
+  api:
+    image: api
     depends_on: [main-db]
     build:
-      context: ./app
-    working_dir: /app
-    command: sh -c "/wait && npm run prisma-studio"
+      context: ./api
     volumes:
-      - ./app:/app
+      - ./api:/app
     environment:
-      NODE_ENV: development
-      OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: http://jaeger:4318/v1/traces
-      OTEL_RESOURCE_ATTRIBUTES=service.name: calendar-server,env=docker-compose
-      DATABASE_URL: "postgresql://calendar:calendar@main-db:5432/calendar?schema=public"
-      WAIT_HOSTS: main-db:5432
-    ports:
-      - "5555:5555"
-
+      DATABASE_HOST: main-db
+      DATABASE_NAME: calendar
+      DATABASE_USERNAME: calendar
+      DATABASE_PASSWORD: calendar
+      DATABASE_PORT: 5432
 
   #prometheus:
   #  image: prom/prometheus:latest
