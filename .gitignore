@@ -4,3 +4,4 @@
 
 node_modules
 .terraform
+/openmoji-svg-black/*
