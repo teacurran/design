@@ -16,13 +16,13 @@ COPY --from=ghcr.io/ufoscout/docker-compose-wait:latest /wait /wait
 RUN npm install -g pnpm
 
 COPY ./package.json ./
-COPY ./package-lock.json ./
+COPY ./pnpm-lock.yaml ./
 RUN pnpm install
 
 EXPOSE 3000
 
 COPY . /app
-RUN pnpm run build
+# RUN pnpm run build
 
 EXPOSE 3000 9229
 CMD [ "pnpm", "run", "start"]

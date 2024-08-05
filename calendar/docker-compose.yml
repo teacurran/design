@@ -1,5 +1,26 @@
 version: "3.9"
 
+x-service-base: &api-base
+  image: calendar-api
+  build:
+    context: ./api
+    target: development
+  environment:
+    RAILS_ENV: assetbuild
+    DATABASE_HOST: main-db
+    DATABASE_NAME: calendar
+    DATABASE_USERNAME: calendar
+    DATABASE_PASSWORD: calendar
+    SOURCE_PATH: $PWD
+    LOG_LEVEL: DEBUG
+  entrypoint: ""
+  depends_on:
+    - main-db
+  volumes:
+    - ./api:/app
+    - vendor_bundle:/app/vendor/bundle
+    - node_modules:/app/node_modules
+
 services:
   client:
     image: client
@@ -9,13 +30,13 @@ services:
     command: npm start
     volumes:
       - ./client:/app
-      - /app/node_modules
+      - client_node_modules:/app/node_modules
     environment:
       - NODE_ENV=development
-      - PORT=3401
-      - REACT_APP_API_URL=http://localhost:3400
+      - PORT=3410
+      - REACT_APP_API_URL=http://localhost:3402
     ports:
-      - "3401:3401"
+      - "3410:3410"
 
   client-build:
     image: client
@@ -25,7 +46,7 @@ services:
     command: npm run build
     volumes:
       - ./client:/app
-      - /app/node_modules
+      - client_node_modules:/app/node_modules
     environment:
       - NODE_ENV=production
     profiles: [ci]
@@ -56,9 +77,10 @@ services:
     build:
       context: ./app
     working_dir: /app
-    command: sh -c "/wait && npm run api-dev"
+    command: sh -c "/wait && pnpm run api-dev"
     volumes:
       - ./app:/app
+      - node_modules:/app/node_modules
     environment:
       NODE_ENV: development
       OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: http://jaeger:4318/v1/traces
@@ -66,21 +88,39 @@ services:
       DATABASE_URL: "postgresql://calendar:calendar@main-db:5432/calendar?schema=public"
       WAIT_HOSTS: main-db:5432
     ports:
-      - "3400:3000"
+      - "3402:3000"
 
-  api:
-    image: api
+  pnpm-install:
+    profiles:
+      - development
+    image: server
     depends_on: [main-db]
     build:
-      context: ./api
+      context: ./app
+    working_dir: /app
+    command: sh -c "/wait && pnpm install"
     volumes:
-      - ./api:/app
+      - ./app:/app
+      - node_modules:/app/node_modules
     environment:
-      DATABASE_HOST: main-db
-      DATABASE_NAME: calendar
-      DATABASE_USERNAME: calendar
-      DATABASE_PASSWORD: calendar
-      DATABASE_PORT: 5432
+      NODE_ENV: development
+      OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: http://jaeger:4318/v1/traces
+      OTEL_RESOURCE_ATTRIBUTES=service.name: calendar-server,env=docker-compose
+      DATABASE_URL: "postgresql://calendar:calendar@main-db:5432/calendar?schema=public"
+      WAIT_HOSTS: main-db:5432
+
+  api:
+    <<: *api-base
+    build:
+      context: ./api
+      target: assetbuild
+    command: "bundle exec rails s -b 0.0.0.0"
+    ports:
+      - "3403:3000"
+
+  db-migrate:
+    <<: *api-base
+    command: "bundle exec rails db:migrate db:seed"
 
   #prometheus:
   #  image: prom/prometheus:latest
@@ -90,3 +130,6 @@ services:
 
 volumes:
   main_db:
+  vendor_bundle:
+  node_modules:
+  client_node_modules:
