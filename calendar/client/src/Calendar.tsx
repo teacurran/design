@@ -4,6 +4,7 @@ import { Divider } from "primereact/divider"
 import { Dropdown } from "primereact/dropdown"
 import { API_URL } from "./constants"
 import { classNames } from "primereact/utils"
+import { toSnake } from "./request"
 
 function Calendar() {
   const [svg, setSvg] = useState("")
@@ -46,7 +47,7 @@ function Calendar() {
     hideWeekendDayNames: boolean
     theme: string
   } => {
-    return {
+    return toSnake({
       optShowMoonPhase: showMoonPhases,
       optShowMoonIllumination: showMoonIllunination,
       optShowGrid: showGrid,
@@ -54,7 +55,7 @@ function Calendar() {
       rotateMonthNames,
       hideWeekendDayNames,
       theme: theme as CalendarTheme
-    }
+    })
   }
 
   const getCalendar = (): Promise<Response> => {
@@ -101,8 +102,6 @@ function Calendar() {
       console.error("Error fetching SVG:", error)
     })
   }
-
-
 
   const themes = [
     {

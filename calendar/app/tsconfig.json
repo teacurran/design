@@ -19,7 +19,9 @@
       "~/*": ["./src/*"]
     },
     "forceConsistentCasingInFileNames": true,
-    "outDir": "lib"
+    "outDir": "lib",
+    "skipLibCheck": true,
+    "noImplicitAny": false
   },
   "include": [
     "**/*.ts",
