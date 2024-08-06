@@ -6,7 +6,7 @@ x-service-base: &api-base
     context: ./api
     target: development
   environment:
-    RAILS_ENV: assetbuild
+    RAILS_ENV: development
     DATABASE_HOST: main-db
     DATABASE_NAME: calendar
     DATABASE_USERNAME: calendar
@@ -111,12 +111,13 @@ services:
 
   api:
     <<: *api-base
-    build:
-      context: ./api
-      target: assetbuild
     command: "bundle exec rails s -b 0.0.0.0"
     ports:
       - "3403:3000"
+
+  bundle-install:
+    <<: *api-base
+    command: "bundle install"
 
   db-migrate:
     <<: *api-base
