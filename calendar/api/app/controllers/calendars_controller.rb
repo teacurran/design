@@ -8,17 +8,18 @@ class CalendarsController < ApplicationController
     body_json = request.body.read || '{}'
 
     Rails.logger.info("Received request with body: #{body_json}")
-    calendar_params = JSON.parse(body_json)
-    calendar_form = CalendarForm.new(calendar_params)
+    calendar_params = body_json.present? ? JSON.parse(body_json) : {}
+
+    default_calendar = get_default_calendar
+    effective_calendar = default_calendar.merge(calendar_params)
+
+    Rails.logger.info("Effective calendar: #{effective_calendar}")
+    calendar_form = CalendarForm.new(effective_calendar)
 
     unless calendar_form.valid?
       render json: { error: calendar_form.errors.full_messages }, status: :bad_request
       return
     end
-
-    default_calendar = get_default_calendar
-    calendar = parsed.data
-    effective_calendar = default_calendar.merge(calendar)
 
     svg_dom = get_svg_as_document_dom(effective_calendar)
     svg = svg_dom.html
@@ -47,7 +48,36 @@ class CalendarsController < ApplicationController
   private
 
   def get_default_calendar
-    # Implement this method to return the default calendar
+    {
+      header_height: 100,
+      year_x: 50,
+      year_y: 80,
+      year_fill: '#a1a1a1',
+      year_font_size: '80px',
+      year_font_family: 'Helvetica',
+      year_font_weight: 'bold',
+
+      month_name_fill: '#a1a1a1',
+      month_name_font_size: '20px',
+      month_name_font_family: 'Helvetica',
+      month_name_font_weight: 'bold',
+      rotate_month_names: false,
+
+      opt_highlight_weekends: false,
+      opt_show_day_names: false,
+      hide_weekend_day_names: false,
+      opt_show_moon_illumination: false,
+      opt_show_moon_phase: false,
+
+      opt_show_grid: false,
+      grid_stroke: '#c1c1c1',
+      lat: 44.25644,
+      lng: -72.26793,
+      cell_background_color: 'cellBackgroundColor',
+      weekend_background_color: 'weekendBackgroundColor',
+      start_date: 'startDate',
+      theme: ''
+    }
   end
 
   def get_svg_as_document_dom(calendar)
