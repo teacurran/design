@@ -161,6 +161,7 @@ ENV RAILS_SERVE_STATIC_FILES=1
 RUN bundle exec rake app:update:bin
 
 FROM assetbuild AS development
+
 ENTRYPOINT ["bash"]
 
 FROM release
