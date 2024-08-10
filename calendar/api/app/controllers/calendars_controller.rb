@@ -53,7 +53,8 @@ class CalendarsController < ApplicationController
         end
       end
     else
-      render xml: svg, content_type: 'image/svg+xml'
+      # render xml: svg, content_type: 'image/svg+xml'
+      send_data svg, type: 'image/svg+xml', disposition: 'inline'
     end
   end
 
@@ -79,7 +80,7 @@ class CalendarsController < ApplicationController
       opt_show_moon_illumination: false,
       opt_show_moon_phase: false,
 
-      opt_show_grid: false,
+      opt_show_grid: true,
       grid_stroke: '#c1c1c1',
       lat: 44.25644,
       lng: -72.26793,
@@ -107,31 +108,60 @@ class CalendarsController < ApplicationController
     xml.svg(width: width,
             height: height,
             xmlns: 'http://www.w3.org/2000/svg',
-            viewBox: "0 0 #{calendar[:grid_width]} #{calendar[:grid_height]}",
+            viewBox: "0 0 #{@grid_width} #{@grid_height}",
             preserveAspectRatio: 'xMidYMid meet') do
-      xml.text_(year, x: calendar[:year_x], y: calendar[:year_y], fill: calendar[:year_fill], fontSize: calendar[:year_font_size], fontFamily: calendar[:year_font_family], font_weight: calendar[:year_font_weight])
 
-      total_rows.times do |row|
-        total_columns.times do |day|
-          date = Date.new(year, row, day)
-          month = date.month
-          day_of_week = date.wday
+      xml.text(year,
+               x: calendar[:year_x],
+               y: calendar[:year_y],
+               fill: calendar[:year_fill],
+               :'font-size' => calendar[:year_font_size],
+               :'font-family' => calendar[:year_font_family], font_weight: calendar[:year_font_weight])
+
+      (1..total_rows).each do |row|
+        weekend_index = -1
+
+        (0..total_columns).each do |day|
+
+          x = day * @cell_width
+          y = row * @cell_height + 99
 
           if day == 0
+            append_month_cell(xml, x, y, row, calendar)
             # append_month_cell logic here
             next
           end
+
+          date = nil
+          begin
+            date = Date.new(year, row, day)
+          rescue ArgumentError
+            next
+          end
+
+          month = date.month
+          day_of_week = date.wday
+
+          is_weekend = false
+          if day_of_week === 0 || day_of_week === 6
+            is_weekend = true
+            weekend_index = weekend_index + 1
+          end
+
+
+          # cell background
           xml.rect(width: @cell_width,
                    height: @cell_height,
                    x: day * @cell_width,
                    y: row * @cell_height + 99,
                    fill: calendar[:cell_background_color])
+
           if month == row
-            xml.text_(day,
+            xml.text(day,
                       x: day * @cell_width + @cell_padding,
                       y: row * @cell_height + 99 + 14,
-                      font_size: '12px',
-                      font_family: 'Helvetica')
+                      :'font-size' => '12px',
+                      :'font-family' => 'Helvetica')
             # append_day_name logic here
             # append_moon logic here
             # append_moon_phase logic here
@@ -149,14 +179,24 @@ class CalendarsController < ApplicationController
       if calendar[:opt_show_grid]
         xml.rect(width: @cell_width * 31,
                  height: @cell_height * 12 + 2,
-                 strokeLocation: 'inside',
+                 :'stroke-location' => 'inside',
                  x: @cell_width,
                  y: calendar[:header_height] - 1,
                  stroke: calendar[:grid_stroke],
-                 stroke_width: 1,
+                 :'stroke-width' => 1,
                  fill: 'none')
       end
     end
+  end
+
+  def append_month_cell(xml, x, y, month, calendar)
+    xml.text(month,
+             x: x,
+             y: y,
+             fill: calendar[:month_name_fill],
+             :'font-size' => calendar[:month_name_font_size],
+             :'font-family' => calendar[:month_name_font_family],
+             :'font-weight' => calendar[:month_name_font_weight])
   end
 
   def get_day_name(date)
