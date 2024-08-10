@@ -2,6 +2,18 @@
 class CalendarsController < ApplicationController
   require 'puppeteer-ruby'
   require 'json'
+  require 'builder'
+
+  def initialize
+    super
+
+    @cell_width = 50
+    @cell_height = 75
+    @cell_padding = 5
+
+    @grid_width = 32 * @cell_width
+    @grid_height = 12 * @cell_height
+  end
 
   def create
     format = params[:format]
@@ -21,8 +33,8 @@ class CalendarsController < ApplicationController
       return
     end
 
-    svg_dom = get_svg_as_document_dom(effective_calendar)
-    svg = svg_dom.html
+    svg = generate_svg(effective_calendar)
+    # svg = svg_dom.html
 
     if %w[pdf png].include?(format)
       Puppeteer.launch(headless: true, args: ['--no-sandbox', '--disable-setuid-sandbox']) do |browser|
@@ -44,8 +56,6 @@ class CalendarsController < ApplicationController
       render xml: svg, content_type: 'image/svg+xml'
     end
   end
-
-  private
 
   def get_default_calendar
     {
@@ -73,14 +83,83 @@ class CalendarsController < ApplicationController
       grid_stroke: '#c1c1c1',
       lat: 44.25644,
       lng: -72.26793,
-      cell_background_color: 'cellBackgroundColor',
-      weekend_background_color: 'weekendBackgroundColor',
-      start_date: 'startDate',
+      cell_background_color: 'rgba(255, 255, 255, 0)',
+      weekend_background_color: 'rgba(0, 0, 0, 0.1)',
+      start_date: Date.new(Date.today.year, 1, 1),
       theme: ''
     }
   end
 
   def get_svg_as_document_dom(calendar)
     # Implement this method to return the SVG DOM
+  end
+
+  def generate_svg(calendar)
+
+    width = @grid_width
+    height = @grid_height + calendar[:header_height]
+    total_columns = 32
+    total_rows = 12
+    year = calendar[:start_date].year
+
+    xml = Builder::XmlMarkup.new(indent: 2)
+    xml.instruct! :xml, version: "1.0", encoding: "UTF-8"
+    xml.svg(width: width,
+            height: height,
+            xmlns: 'http://www.w3.org/2000/svg',
+            viewBox: "0 0 #{calendar[:grid_width]} #{calendar[:grid_height]}",
+            preserveAspectRatio: 'xMidYMid meet') do
+      xml.text_(year, x: calendar[:year_x], y: calendar[:year_y], fill: calendar[:year_fill], fontSize: calendar[:year_font_size], fontFamily: calendar[:year_font_family], font_weight: calendar[:year_font_weight])
+
+      total_rows.times do |row|
+        total_columns.times do |day|
+          date = Date.new(year, row, day)
+          month = date.month
+          day_of_week = date.wday
+
+          if day == 0
+            # append_month_cell logic here
+            next
+          end
+          xml.rect(width: @cell_width,
+                   height: @cell_height,
+                   x: day * @cell_width,
+                   y: row * @cell_height + 99,
+                   fill: calendar[:cell_background_color])
+          if month == row
+            xml.text_(day,
+                      x: day * @cell_width + @cell_padding,
+                      y: row * @cell_height + 99 + 14,
+                      font_size: '12px',
+                      font_family: 'Helvetica')
+            # append_day_name logic here
+            # append_moon logic here
+            # append_moon_phase logic here
+          end
+          if calendar[:opt_show_grid]
+            xml.rect(width: @cell_width,
+                     height: @cell_height,
+                     x: day * @cell_width,
+                     y: row * @cell_height + 99,
+                     stroke: calendar[:grid_stroke],
+                     fill: 'none')
+          end
+        end
+      end
+      if calendar[:opt_show_grid]
+        xml.rect(width: @cell_width * 31,
+                 height: @cell_height * 12 + 2,
+                 strokeLocation: 'inside',
+                 x: @cell_width,
+                 y: calendar[:header_height] - 1,
+                 stroke: calendar[:grid_stroke],
+                 stroke_width: 1,
+                 fill: 'none')
+      end
+    end
+  end
+
+  def get_day_name(date)
+    date.strftime('%a')
   end
 end
