@@ -4,8 +4,6 @@ import type * as d3 from 'd3'
 import * as puppeteer from 'puppeteer'
 
 export const getCalendar = async (req: Request, res: Response) => {
-  const format = req.query.format
-
   const requestBody = req.body
 
   console.log('requestBody', requestBody)
@@ -26,6 +24,7 @@ export const getCalendar = async (req: Request, res: Response) => {
     ...defaultCalendar,
     ...calendar
   }
+  const format = calendar.format
 
   const svgDom: d3.Selection<HTMLElement, unknown, null, undefined> = getSvgAsDocumentDom(effectiveCalendar)
   const svg = svgDom.html()
@@ -38,7 +37,7 @@ export const getCalendar = async (req: Request, res: Response) => {
     await page.setContent(svg)
   }
 
-  if (req.query.format === 'png' && page !== undefined) {
+  if (format === 'png' && page !== undefined) {
     const png = await page.screenshot({
       type: 'png',
       fullPage: true
@@ -51,7 +50,7 @@ export const getCalendar = async (req: Request, res: Response) => {
     return
   }
 
-  if (req.query.format === 'pdf' && page !== undefined) {
+  if (format === 'pdf' && page !== undefined) {
     const pdf = await page.pdf({ format: 'A1', landscape: true, scale: 2 })
     // set the filename with todays date
     const filename = `calendar-${new Date().toISOString().split('T')[0]}.pdf`

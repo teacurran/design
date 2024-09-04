@@ -4,7 +4,6 @@ import { Divider } from "primereact/divider"
 import { Dropdown } from "primereact/dropdown"
 import { API_URL } from "./constants"
 import { classNames } from "primereact/utils"
-import { toSnake } from "./request"
 
 function Calendar() {
   const [svg, setSvg] = useState("")
@@ -45,17 +44,19 @@ function Calendar() {
     optShowDayNames: boolean
     rotateMonthNames: boolean
     hideWeekendDayNames: boolean
-    theme: string
+    theme: string,
+    format: string
   } => {
-    return toSnake({
+    return {
       optShowMoonPhase: showMoonPhases,
       optShowMoonIllumination: showMoonIllunination,
       optShowGrid: showGrid,
       optShowDayNames: showDayNames,
       rotateMonthNames,
       hideWeekendDayNames,
-      theme: theme as CalendarTheme
-    })
+      theme: theme as CalendarTheme,
+      format: "svg"
+    }
   }
 
   const getCalendar = (): Promise<Response> => {
@@ -81,13 +82,16 @@ function Calendar() {
 
   const downloadFile = (format: string): void => {
     const url = API_URL + "/calendar"
+    const calendarParams = getCalendarParameters()
+    calendarParams.format = format
+    const calendarBody = JSON.stringify(calendarParams)
     // send a POST request to /api/calendar/export/pdf with the current state
-    fetch(`${url}/api/calendar/export?format=${format}`, {
+    fetch(`${url}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify(getCalendarParameters)
+      body: calendarBody
     })
       .then(async response => await response.blob())
       .then(blob => {

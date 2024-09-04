@@ -16,9 +16,9 @@ const CalendarSchema = z.object({
   yearX: z.number().default(0),
   yearY: z.number().default(0),
   yearFill: z.string().default('black'),
-  yearFontSize: z.string().default('12px'),
-  yearFontFamily: z.string().default('Arial'),
-  yearFontWeight: z.string().default('normal'),
+  yearFontSize: z.string().default('80px'),
+  yearFontFamily: z.string().default('Helvetica'),
+  yearFontWeight: z.string().default('bold'),
   monthNameFill: z.string().default('black'),
   monthNameFontSize: z.string().default('12px'),
   monthNameFontFamily: z.string().default('Arial'),
@@ -33,7 +33,8 @@ const CalendarSchema = z.object({
   optShowGrid: z.boolean().default(false),
   gridStroke: z.string().default('black'),
   lat: z.number().optional(),
-  lng: z.number().optional()
+  lng: z.number().optional(),
+  format: z.string().default('svg')
 })
 
 type Calendar = z.infer<typeof CalendarSchema>
@@ -56,9 +57,9 @@ const cellBackgroundColor = 'rgba(255, 255, 255, 0)'
 const weekendBackgroundColor = 'rgba(0, 0, 0, 0.1)'
 
 // start on the first day of the current year
-const startDate: Date = new Date(new Date().getFullYear(), 0, 1)
+const startDate: Date = new Date(2025, 0, 1)
 
-const gridWidth: number = 32 * cellWidth
+const gridWidth: number = 32 * cellWidth + 1
 const gridHeight: number = 12 * cellHeight
 
 const getDayName = (date: Date): string => {
@@ -89,8 +90,8 @@ const generateSvg = (documentBody: d3.Selection<HTMLElement, unknown, null, unde
   // year header
   svg.append('text')
     .text(year)
-    .attr('x', calendar.yearX)
-    .attr('y', calendar.yearY)
+    .attr('x', calendar.yearX + 50)
+    .attr('y', calendar.yearY + 80)
     .attr('fill', calendar.yearFill)
     .attr('font-size', calendar.yearFontSize)
     .attr('font-family', calendar.yearFontFamily)
@@ -135,7 +136,7 @@ const generateSvg = (documentBody: d3.Selection<HTMLElement, unknown, null, unde
       }
 
       // cell background
-      const cellBackgroundColor: string = getBackgroundColor(calendar, estDate, row, day, isWeekend, weekendIndex)
+      const cellBackgroundColor: string = (month === row) ? getBackgroundColor(calendar, estDate, row, day, isWeekend, weekendIndex) : calendar.cellBackgroundColor;
       svg.append('rect')
         .attr('width', cellWidth)
         .attr('height', cellHeight)
@@ -414,12 +415,15 @@ const getDefaultCalendar = (): Calendar => {
 
     optShowGrid: false,
     gridStroke: '#c1c1c1',
-    lat: 44.25644,
-    lng: -72.26793,
+    // lat: 44.25644,
+    // lng: -72.26793,
+    lat: 38.889805,
+    lng: -77.009056,
     cellBackgroundColor,
     weekendBackgroundColor,
     startDate,
-    theme: ''
+    theme: '',
+    format: 'svg'
   }
 }
 

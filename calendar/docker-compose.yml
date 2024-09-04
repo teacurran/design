@@ -34,7 +34,7 @@ services:
     environment:
       - NODE_ENV=development
       - PORT=3410
-      - REACT_APP_API_URL=http://localhost:3403
+      - REACT_APP_API_URL=http://localhost:3402
     ports:
       - "3410:3410"
 
@@ -113,7 +113,7 @@ services:
     <<: *api-base
     command: "bundle exec rails s -b 0.0.0.0"
     ports:
-      - "3403:3000"
+      - "343:3000"
 
   bundle-install:
     <<: *api-base
